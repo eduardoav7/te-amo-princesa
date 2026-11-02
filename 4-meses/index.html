@@ -914,6 +914,8 @@ body.velada .btn { box-shadow: 3px 4px 0 #ffb84d; }
 .mr-chip { display: inline-block; vertical-align: middle; font: 800 10px/1 var(--font-body); letter-spacing: .06em; text-transform: uppercase; color: #fff; background: #8f96ad; border: 1.5px solid var(--ink); border-radius: 99px; padding: 4px 7px; white-space: nowrap; }
 .mr-chip.r-r { background: #3f74e0; } .mr-chip.r-e { background: #9b55e0; } .mr-chip.r-l { background: #e09a12; } .mr-chip.r-m { background: #e23d52; }
 .mr-chip.r-d { background: linear-gradient(90deg, #e23d52, #e09a12, #2f9e5b, #3f74e0, #9b55e0); } .mr-chip.r-s { background: #22264a; color: #ffe39a; }
+.mr-chip.r-z { background: linear-gradient(90deg, #ff2d2d, #ff8a1f, #ffd23f); color: #22264a; }
+.mr-chip.r-u { background: linear-gradient(90deg, #ffd25e, #ff4fd8, #7fe3ff, #ffd25e); color: #22264a; }
 .mr-chip.r-x { background: linear-gradient(90deg, #16c1d6, #7b5cff, #ff4fa3); }
 .mr-chip.m-o { background: #ffc93c; color: var(--ink); } .mr-chip.m-d { background: #7fe3ff; color: var(--ink); } .mr-chip.m-a { background: linear-gradient(90deg, #ff7ad9, #ffd25e, #7ee2a0, #7fe3ff, #b48cff); color: var(--ink); }
 .mr-mut-o { filter: drop-shadow(0 0 10px #ffc93c) drop-shadow(0 0 4px #ffc93c); }
@@ -1497,7 +1499,7 @@ body.velada .btn { box-shadow: 3px 4px 0 #ffb84d; }
           <li><span>💰</span><span>Tus michirots ganan dinero en tu base. Pasa junto a ellos para cobrar.</span></li>
           <li><span>😼</span><span>Entra a una base rival, presiona «Robar» y corre a tu base antes de que el dueño te alcance.</span></li>
           <li><span>🎯</span><span>Cumple misiones, agranda tu base en la tiendita y aprovecha las sorpresas: lluvia de monedas, hora loca y regalos.</span></li>
-          <li><span>💎</span><span>Hay más de 35 michirots y 14 Exclusivos: 4 salen en momentos especiales y 10 ediciones de Diamante y Galácticas solo salen de los Bloques de suerte 🎲, que se abren con ruleta en tu base.</span></li>
+          <li><span>💎</span><span>Hay 49 michirots, entre ellos 8 Brainrot Titán 🔥, los que más dinero dan: hasta $20B por segundo, 14 Exclusivos (10 ediciones de Diamante y Galácticas solo salen de los Bloques de suerte 🎲, que se abren con ruleta) y 4 Súper Exclusivos celestiales 👑 que ganan hasta $700M por segundo.</span></li>
           <li><span>🪳</span><span>En la invasión de cucarachas, cada cucaracha que se sube a tu michirot le pega una mutación… ¡y se pueden juntar varias!</span></li>
           <li><span>✨</span><span>Junta 7 michirots distintos y pasará uno secreto muy especial… y después, otro todavía más especial 💞</span></li>
         </ul>
@@ -3817,6 +3819,64 @@ const michirot = (() => {
       <path d="M32 50 H68" stroke="${T}" stroke-width="2.6"/><rect x="32" y="47" width="15" height="10" rx="4.5" fill="${T}"/><rect x="53" y="47" width="15" height="10" rx="4.5" fill="${T}"/>
       <path d="M35 50 L39 50" stroke="#9ec5f5" stroke-width="2" stroke-linecap="round"/><path d="M56 50 L60 50" stroke="#9ec5f5" stroke-width="2" stroke-linecap="round"/>`,
 
+    panettino: () => `<ellipse cx="50" cy="90" rx="34" ry="5" fill="#000" opacity=".12"/>
+      <path d="M24 90 L26 52 Q50 46 74 52 L76 90 Z" fill="#f6e3b8" ${S2}/>
+      <path d="M30 56 V88 M38 54 V89 M46 53 V89 M54 53 V89 M62 54 V89 M70 56 V88" stroke="#d9b874" stroke-width="2"/>
+      <path d="M25 54 Q24 26 50 25 Q76 26 75 54 Q50 46 25 54 Z" fill="#c98a3e" ${S2}/>
+      ${[[34, 44], [44, 36], [58, 38], [66, 46], [40, 48], [54, 46]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.6" fill="#6b2f1f"/>`).join('')}
+      <path d="M30 34 Q40 30 46 33 M56 30 Q64 30 70 36" fill="none" stroke="#fff3c4" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+      ${cabeza(50, 22, .82, '#f4b37e', { ojos: 'felices' })}
+      <path d="M36 8 Q38 2 44 5 M64 8 Q62 2 56 5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>`,
+    gelatone: () => `<path d="M37 58 L50 95 L63 58 Z" fill="#e8b06a" ${S2}/>
+      <path d="M40 64 L57 82 M44 60 L60 74 M60 64 L43 82 M56 60 L41 74" stroke="#b97a33" stroke-width="1.8"/>
+      <circle cx="50" cy="58" r="14" fill="#ffb0c8" ${S2}/><path d="M37 60 q4 5 8 0 q4 5 8 0 q4 5 8 0" fill="none" stroke="#ffffff" stroke-width="2" opacity=".7"/>
+      <circle cx="50" cy="45" r="13" fill="#9ff0d0" ${S2}/>
+      ${cabeza(50, 30, .82, '#fff3c4', { ojos: 'felices' })}
+      <circle cx="50" cy="12" r="4" fill="#e23d52" ${S2}/><path d="M50 8 q2 -6 6 -6" fill="none" stroke="#3f8a52" stroke-width="2"/>
+      ${[[42, 52], [57, 48], [46, 62], [55, 64]].map(([x, y], i) => `<rect x="${x}" y="${y}" width="4" height="1.8" rx=".9" fill="${['#ffd25e', '#3f74e0', '#e23d52', '#9b55e0'][i]}" transform="rotate(${i * 40} ${x} ${y})"/>`).join('')}`,
+    tornadino: () => `<circle cx="50" cy="54" r="46" fill="#dfe6f2" opacity=".6"/>
+      ${[[34, 36, 0], [30, 48, 3], [25, 59, -3], [20, 69, 4], [15, 78, -2], [10, 86, 2]].map(([w, y, dx]) => `<ellipse cx="${50 + dx}" cy="${y}" rx="${w}" ry="${4 + w * .12}" fill="#b9c3dd" ${S2}/>`).join('')}
+      <path d="M22 40 Q50 48 78 38 M28 52 Q50 58 74 50 M32 63 Q50 68 70 61" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>
+      ${cabeza(50, 24, .8, '#9aa3bd', { ojos: 'abiertos' })}
+      <path d="M12 30 l6 2 -3 5 Z M86 58 l6 -2 -2 6 Z" fill="#7cc48a" ${S2}/><circle cx="82" cy="30" r="3" fill="#ffd25e" ${S2}/>`,
+    vulcanino: () => `<circle cx="50" cy="40" r="40" fill="#ffe0c4" opacity=".55"/>
+      <circle cx="30" cy="14" r="7" fill="#cfd3dd" ${S2}/><circle cx="40" cy="8" r="8" fill="#e2e5ec" ${S2}/><circle cx="64" cy="10" r="6" fill="#cfd3dd" ${S2}/>
+      <path d="M12 94 L36 46 L64 46 L88 94 Z" fill="#7a4b2e" ${S2}/>
+      <path d="M36 46 L64 46 L60 56 Q56 70 54 62 Q52 54 48 66 Q45 74 43 60 Q41 52 38 56 Z" fill="#ff6a1f" ${S2}/>
+      <path d="M22 80 L34 72 M74 82 L66 70 M30 90 L42 84" stroke="#5c3214" stroke-width="2.4" stroke-linecap="round"/>
+      <ellipse cx="50" cy="46" rx="14" ry="4" fill="#ffd23f" ${S2}/>
+      ${cabeza(50, 34, .9, '#ff8a3d', { ojos: 'felices' })}
+      <path d="M24 46 l-4 -6 M76 46 l4 -6 M18 56 l-6 -2 M82 56 l6 -2" stroke="#ffb21f" stroke-width="2.6" stroke-linecap="round"/>`,
+    balenita: () => `<path d="M14 92 Q50 84 86 92" fill="none" stroke="#7fb2ec" stroke-width="3" stroke-linecap="round"/>
+      <path d="M84 52 L96 40 L94 58 L98 70 L84 64 Z" fill="#4f8fd8" ${S2}/>
+      <path d="M44 22 Q42 10 46 4 M50 22 Q50 8 52 2 M56 22 Q60 12 58 4" fill="none" stroke="#9ec5f5" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="46" cy="4" r="2.4" fill="#cfe2fb"/><circle cx="58" cy="4" r="2.4" fill="#cfe2fb"/>
+      <path d="M26 36 L28 20 L38 30 Z M74 36 L72 20 L62 30 Z" fill="#6fa8e8" ${S2}/>
+      <ellipse cx="50" cy="60" rx="38" ry="27" fill="#6fa8e8" ${S2}/>
+      <path d="M16 66 Q50 92 84 66 Q50 80 16 66 Z" fill="#dfeaff"/>
+      <path d="M24 70 h52 M28 76 h44" stroke="#b5cdef" stroke-width="1.6"/>
+      ${cara(50, 52, 1.15)}`,
+    razzogatto: () => `<path d="M38 80 Q50 104 62 80 Z" fill="#ffb21f" ${S2}/><path d="M44 80 Q50 94 56 80 Z" fill="#ffe36b"/>
+      <path d="M32 66 L18 84 L34 80 Z M68 66 L82 84 L66 80 Z" fill="#e23d52" ${S2}/>
+      <path d="M34 82 L34 40 Q34 10 50 4 Q66 10 66 40 L66 82 Z" fill="#f4f4f8" ${S2}/>
+      <path d="M38 22 Q50 8 62 22 Z" fill="#e23d52"/>
+      <circle cx="50" cy="44" r="13" fill="#9ec5f5" ${S2}/>
+      ${cabeza(50, 46, .58, '#c4b5f4', { ojos: 'felices', bigotes: false })}
+      <path d="M38 70 H62" stroke="#e23d52" stroke-width="5"/><circle cx="42" cy="58" r="2" fill="#9aa3bd"/><circle cx="58" cy="58" r="2" fill="#9aa3bd"/>
+      ${brillo(18, 28, 5, '#ffd25e')}${brillo(84, 40, 4, '#ffffff')}`,
+    castellino: () => `<path d="M20 30 V20 h5 v4 h4 v-4 h5 v10 Z M66 30 V20 h5 v4 h4 v-4 h5 v10 Z" fill="#ffb0c8" ${S2}/>
+      <rect x="20" y="30" width="14" height="60" fill="#ffc4d4" ${S2}/><rect x="66" y="30" width="14" height="60" fill="#ffc4d4" ${S2}/>
+      <path d="M27 20 V8 M73 20 V8" stroke="${T}" stroke-width="2"/><path d="M27 8 l9 3 -9 3 Z M73 8 l9 3 -9 3 Z" fill="#3f74e0" ${S2}/>
+      <path d="M34 44 h32 v46 H34 Z" fill="#ffd6e1" ${S2}/>
+      <path d="M34 44 v-6 h6 v4 h5 v-4 h10 v4 h5 v-4 h6 v6" fill="#ffd6e1" ${S2}/>
+      <path d="M40 90 V70 Q50 54 60 70 V90 Z" fill="#7a4b2e" ${S2}/>
+      ${cabeza(50, 74, .62, '#ffffff', { ojos: 'felices', bigotes: false })}
+      <path d="M44 62 l3 -6 3 4 3 -4 3 6 Z" fill="#ffd25e" ${S2}/>
+      <rect x="24" y="44" width="6" height="9" rx="3" fill="#ffe8a8" ${S2}/><rect x="70" y="44" width="6" height="9" rx="3" fill="#ffe8a8" ${S2}/>`,
+    arcobalenino: () => `${['#ff5f87', '#ffb03a', '#ffe36b', '#6fd39b', '#7fb2ec', '#b08ae8'].map((c, i) => `<path d="M${8 + i * 5} 78 A${42 - i * 5} ${42 - i * 5} 0 0 1 ${92 - i * 5} 78" fill="none" stroke="${c}" stroke-width="5.4"/>`).join('')}
+      <g fill="#ffffff" ${S2}><path d="M2 84 a8 8 0 0 1 12 -8 a9 9 0 0 1 16 4 a7 7 0 0 1 0 12 h-24 a6 6 0 0 1 -4 -8 Z"/><path d="M70 84 a8 8 0 0 1 12 -8 a9 9 0 0 1 16 4 a7 7 0 0 1 0 12 h-24 a6 6 0 0 1 -4 -8 Z"/></g>
+      ${cabeza(50, 46, 1, '#ffffff', { ojos: 'felices', lazo: true })}
+      ${brillo(20, 20, 5, '#ffd25e')}${brillo(80, 18, 5, '#ff8fab')}${brillo(50, 8, 4, '#7fe3ff')}`,
     tacogatto: () => `<circle cx="50" cy="56" r="45" fill="#ffe7b0" opacity=".55"/>
       <path d="M8 62 Q10 46 20 49 Q23 40 32 45 Q40 38 50 44 Q60 38 68 45 Q77 40 80 49 Q90 46 92 62 Z" fill="#7ed957" ${S2}/>
       <circle cx="20" cy="54" r="4.6" fill="#ff5a5f" ${S2}/><circle cx="80" cy="54" r="4.6" fill="#ff5a5f" ${S2}/>
@@ -3883,8 +3943,8 @@ const michirot = (() => {
   }
 
   /* ---------- Datos ---------- */
-  const RAREZAS = { c: 'Común', r: 'Raro', e: 'Épico', l: 'Legendario', m: 'Mítico', d: 'Brainrot Dios', x: 'Exclusivo', s: 'Secreto', b: 'Bloque de suerte' };
-  const COLOR_R = { c: '#b8bfd3', r: '#3f74e0', e: '#9b55e0', l: '#f2b01e', m: '#e23d52', d: '#2fbf8f', x: '#16c1d6', s: '#ff7aa8', b: '#ffb800' };
+  const RAREZAS = { c: 'Común', r: 'Raro', e: 'Épico', l: 'Legendario', m: 'Mítico', d: 'Brainrot Dios', x: 'Exclusivo', u: 'Súper Exclusivo', s: 'Secreto', b: 'Bloque de suerte', z: 'Brainrot Titán' };
+  const COLOR_R = { c: '#b8bfd3', r: '#3f74e0', e: '#9b55e0', l: '#f2b01e', m: '#e23d52', d: '#2fbf8f', x: '#16c1d6', u: '#ff4fd8', s: '#ff7aa8', b: '#ffb800', z: '#ff6a1f' };
   const CAT = [
     { id: 'spaghettino', n: 'Gattino Spaghettino', r: 'c', p: 25, g: 1, d: 'Se cayó en un plato de espagueti y decidió quedarse a vivir ahí.' },
     { id: 'ciabattino', n: 'Ciabattino Miagolino', r: 'c', p: 60, g: 2, d: 'Vive dentro de una pantufla. Si te la pones, ronronea.' },
@@ -3907,6 +3967,14 @@ const michirot = (() => {
     { id: 'draghetto', n: 'Draghetto Miaugon', r: 'm', p: 50000, g: 560, d: 'Un dragoncito que echa fueguito… pero solo para calentar tu cobija.' },
     { id: 'lunetta', n: 'Lunetta Gattoletta', r: 'd', p: 100000, g: 1000, d: 'Duerme sobre la luna y cuida tus sueños toda la noche.' },
     { id: 'solecito', n: 'Solecito Gattosole', r: 'd', p: 140000, g: 1350, d: 'El sol con lentes oscuros. Sale todos los días solo para verte sonreír.' },
+    { id: 'panettino', n: 'Panettino Gattone', r: 'z', p: 25000000000.0, g: 1000000000.0, d: 'Se metió a un panettone a dormir la siesta y ya no quiso salir. Huele a Navidad.' },
+    { id: 'gelatone', n: 'Gelatone Triplo', r: 'z', p: 38000000000.0, g: 1500000000.0, d: 'Tres bolas de helado y un gato encima. No se derrite porque es puro amor.' },
+    { id: 'tornadino', n: 'Tornadino Miaurricano', r: 'z', p: 60000000000.0, g: 2500000000.0, d: 'Gira tan rápido que se lleva todos los calcetines del barrio.' },
+    { id: 'vulcanino', n: 'Vulcanino Lavagatto', r: 'z', p: 100000000000.0, g: 4000000000.0, d: 'Vive adentro de un volcán. Cuando está feliz, hace erupción de chispitas.' },
+    { id: 'balenita', n: 'Balenottera Miaolona', r: 'z', p: 150000000000.0, g: 6000000000.0, d: 'Una ballena con orejas de gato. Echa agua por la cabeza cuando te ve.' },
+    { id: 'razzogatto', n: 'Razzogatto Turbo', r: 'z', p: 220000000000.0, g: 9000000000.0, d: 'Va a la luna y regresa antes de la cena. Siempre trae un recuerdito.' },
+    { id: 'castellino', n: 'Castellino Regale', r: 'z', p: 350000000000.0, g: 14000000000.0, d: 'Un castillo entero con un gatito príncipe adentro. Tiene fosa de leche.' },
+    { id: 'arcobalenino', n: 'Arcobalenino Felice', r: 'z', p: 500000000000.0, g: 20000000000.0, d: 'Se sienta arriba del arcoíris y reparte suerte a quien lo mire.' },
     { id: 'tacogatto', n: 'Tacogatto Supremo', r: 'x', p: 220000, g: 2200, d: 'El rey de la lluvia de tacos. Viene con corona y con todo.', pista: 'Pasa en la lluvia de tacos 🌮 o sale de un Bloque de suerte 🎲' },
     { id: 'pinatino', n: 'Piñatino Fiestero', r: 'x', p: 300000, g: 2900, d: 'Una piñata gatuna. Si la quiebras, salen puros dulces y abrazos.', pista: 'Pasa en la hora loca 🎉 o sale de un Bloque de suerte 🎲' },
     { id: 'mariachino', n: 'Mariachino Miau', r: 'x', p: 400000, g: 3800, d: 'Te lleva serenata con su guitarrita a las tres de la mañana.', pista: 'Viene en los regalos misteriosos 🎁 o en un Bloque de suerte 🎲' },
@@ -3940,18 +4008,45 @@ const michirot = (() => {
       <circle cx="50" cy="52" r="46" fill="#2a1f6b" opacity=".55"/>${est}<g filter="url(#ed-${id})">${base}</g>
       <g transform="translate(80 18)"><circle r="8" fill="#b48cff" stroke="#22264a" stroke-width="2.4"/><ellipse rx="14" ry="4" fill="none" stroke="#ffe08a" stroke-width="2.4" transform="rotate(-20)"/><circle cx="-3" cy="-3" r="2" fill="#e3d6ff"/></g>`;
   }
+  // 4 Súper Exclusivos celestiales: salen solo del Bloque Celestial
+  const CELESTIALES = [
+    ['tacogatto', 'celTacogatto', 'Tacogatto Celestial', 2e9, 1e8],
+    ['pinatino', 'celPinatino', 'Piñatino Celestial', 5e9, 2.5e8],
+    ['mariachino', 'celMariachino', 'Mariachino Celestial', 9e9, 4.5e8],
+    ['reginella', 'celReginella', 'Reginella Celestial', 1.5e10, 7e8],
+  ];
+  CELESTIALES.forEach(([b, id, n, p, g]) => {
+    CAT.push({ id, base: b, ed: 'cel', n, r: 'u', soloBloque: true, p, g, d: `Bajó del cielo con alitas y aureola. Es de los michirots más poderosos que existen.`, pista: 'Solo sale del Bloque Celestial ☁️🎲' });
+    ARTE[id] = () => {
+      const base = ARTE[b]();
+      return `<defs><filter id="ed-${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".5 .3 .15 0 .22  .35 .45 .15 0 .16  .2 .25 .35 0 .1  0 0 0 1 0"/></filter>
+        <radialGradient id="au-${id}"><stop offset=".55" stop-color="#fff3b0" stop-opacity=".9"/><stop offset="1" stop-color="#ff9ad5" stop-opacity="0"/></radialGradient></defs>
+        <circle cx="50" cy="54" r="48" fill="url(#au-${id})"/>
+        <path d="M14 50 Q-2 30 10 22 Q16 34 26 40 Z M86 50 Q102 30 90 22 Q84 34 74 40 Z" fill="#ffffff" stroke="#22264a" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M10 30 Q14 36 22 40 M90 30 Q86 36 78 40" fill="none" stroke="#c9d6ff" stroke-width="1.6"/>
+        <g filter="url(#ed-${id})">${base}</g>
+        <ellipse cx="50" cy="8" rx="17" ry="4.5" fill="none" stroke="#ffd25e" stroke-width="3.4"/><ellipse cx="50" cy="8" rx="17" ry="4.5" fill="none" stroke="#fff6c9" stroke-width="1.2"/>
+        <path d="M16 78 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 Z M84 74 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 Z" fill="#ffffff"/>`;
+    };
+  });
+  ARTE.bloqueCel = () => `<defs><linearGradient id="grBqC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6c9"/><stop offset=".5" stop-color="#ffd25e"/><stop offset="1" stop-color="#ff9ad5"/></linearGradient></defs>
+    <path d="M10 46 Q-4 30 6 22 Q12 32 22 38 Z M90 46 Q104 30 94 22 Q88 32 78 38 Z" fill="#ffffff" stroke="#22264a" stroke-width="2.4" stroke-linejoin="round"/>`
+    + bloqueArte('url(#grBqC)', '#ffd25e', '#e09a12', '☁') + `<ellipse cx="50" cy="9" rx="16" ry="4.2" fill="none" stroke="#ffd25e" stroke-width="3.4"/>`;
   const POR = Object.fromEntries(CAT.map(c => [c.id, c]));
   // Bloques de suerte: se compran en la alfombra y al llegar a tu base se abren
   const BLOQUES = {
     bloque: { id: 'bloque', n: 'Bloque de suerte', r: 'b', p: 20000, g: 0, bloque: true, tabla: { spaghettinoDia: 30, croissantinoDia: 26, sushigattoDia: 20, donutellaDia: 14, astrogattoDia: 7, draghettoDia: 3 } },
     bloqueMitico: { id: 'bloqueMitico', n: 'Bloque Mítico', r: 'b', p: 90000, g: 0, bloque: true, tabla: { sushigattoDia: 18, donutellaDia: 20, astrogattoDia: 20, draghettoDia: 16, nuvolettaGal: 14, pianoforteGal: 8, lunettaGal: 3, solecitoGal: 1 } },
-    bloqueEx: { id: 'bloqueEx', n: 'Bloque Exclusivo', r: 'b', p: 300000, g: 0, bloque: true, tabla: { astrogattoDia: 10, draghettoDia: 14, nuvolettaGal: 26, pianoforteGal: 24, lunettaGal: 16, solecitoGal: 10 } },
+    bloqueEx: { id: 'bloqueEx', n: 'Bloque Exclusivo', r: 'b', p: 300000, g: 0, bloque: true, tabla: { astrogattoDia: 10, draghettoDia: 14, nuvolettaGal: 26, pianoforteGal: 24, lunettaGal: 16, solecitoGal: 10, celTacogatto: 2 } },
+    bloqueCel: { id: 'bloqueCel', n: 'Bloque Celestial', r: 'b', p: 1.2e8, g: 0, bloque: true, tabla: { celTacogatto: 40, celPinatino: 30, celMariachino: 20, celReginella: 10 } },
   };
   Object.assign(POR, BLOQUES);
   const esBloque = id => !!(POR[id] && POR[id].bloque);
-  const PESOS = { c: 40, r: 27, e: 17, l: 9, m: 5, d: 2 };
+  const PESOS = { c: 40, r: 27, e: 17, l: 9, m: 5, d: 2, z: 1.8 };
+  // Los Titanes: los más caros salen menos
+  const PESOS_TITAN = { panettino: 26, gelatone: 21, tornadino: 17, vulcanino: 13, balenita: 9, razzogatto: 7, castellino: 4.5, arcobalenino: 2.5 };
   const PESOS_RIVAL = { r: 25, e: 40, l: 25, m: 9, d: 1 };
-  const CAZA = { c: 4.8, r: 5.0, e: 5.2, l: 5.4, m: 5.6, d: 5.8, x: 6.0, s: 6.0 };
+  const CAZA = { c: 4.8, r: 5.0, e: 5.2, l: 5.4, m: 5.6, d: 5.8, z: 6.0, x: 6.0, u: 6.2, s: 6.0 };
   const SLOTS = 8, PARA_SECRETO = 7;
   const DUEÑO = [{ id: 'zombie', n: 'Zombie Gruñón' }, { id: 'bandido', n: 'Michi Bandido' }];
   // Mutaciones: ganan más y brillan
@@ -4035,7 +4130,7 @@ const michirot = (() => {
   // Base del otro jugador (cuando juegan juntos): ocupa todo el fondo y es su base tal cual,
   // reflejada para que la puerta dé a la alfombra (mismo orden izquierda→derecha que en su pantalla)
   const R2 = { cx: 0, cz: -MIA.cz, w: MIA.w, d: MIA.d };
-  const PED_R2 = PED_MIO.map(p => ({ x: p.x, z: -p.z }));
+  const PED_R2 = PED_MIO.map(p => ({ x: p.x, z: p.z - 2 * MIA.cz }));   // igual que en su pantalla: misma fila y mismo lado
 
   function fmt(n) {
     n = Math.max(0, Math.floor(n));
@@ -4054,7 +4149,7 @@ const michirot = (() => {
     for (const k in pesos) { t -= pesos[k]; if (t <= 0) return k; }
     return Object.keys(pesos)[0];
   }
-  function alAzar(r) { const l = CAT.filter(c => c.r === r); return l[Math.floor(Math.random() * l.length)].id; }
+  function alAzar(r) { if (r === 'z') return azar(PESOS_TITAN); const l = CAT.filter(c => c.r === r && !c.soloBloque); return l[Math.floor(Math.random() * l.length)].id; }
   function chip(r) { return `<span class="mr-chip r-${r}">${RAREZAS[r]}</span>`; }
   function chipMut(m) { return mutsDe(m).map(k => `<span class="mr-chip m-${k}">${MUT[k].ico} ${MUT[k].n}</span>`).join(' '); }
   function suerte() { return 1 + .5 * ((E && E.mej && E.mej.suerte) || 0); }
@@ -4080,7 +4175,7 @@ const michirot = (() => {
   function bloqueAzar() {
     const s = suerte() * (evento && evento.tipo === 'loca' ? 2 : 1);
     if (Math.random() > .055 * s) return null;
-    return azar({ bloque: 72, bloqueMitico: 23, bloqueEx: 5 });
+    return azar({ bloque: 70, bloqueMitico: 22, bloqueEx: 5, bloqueCel: 3 });
   }
   function slotRival() { return { id: alAzar(azar(PESOS_RIVAL)), vuelve: 0, mut: mutAzar(.6) }; }
   function nuevo() {
@@ -4273,6 +4368,35 @@ const michirot = (() => {
   function sombra(r = .6) {
     const m = new T3.Mesh(new T3.CircleGeometry(r, 20), new T3.MeshBasicMaterial({ color: 0x1d2a57, transparent: true, opacity: .16, depthWrite: false }));
     m.rotation.x = -Math.PI / 2; m.position.y = .02; return m;
+  }
+  const texMutCache = {};
+  function texMut(id, mut) {
+    const base = texturas[id], k = mutTop(mut);
+    if (!base || !k || k === 't' || !base.image) return base || null;
+    const clave = id + ':' + k;
+    if (texMutCache[clave]) return texMutCache[clave];
+    const img = base.image, S = img.width || 256, c = document.createElement('canvas'); c.width = c.height = S;
+    const g = c.getContext('2d');
+    g.drawImage(img, 0, 0, S, S);
+    g.globalCompositeOperation = 'source-atop';
+    const lin = (cols, a, ang = 1) => { const gr = g.createLinearGradient(0, 0, S * ang, S); cols.forEach((col, j) => gr.addColorStop(j / (cols.length - 1), col)); g.globalAlpha = a; g.fillStyle = gr; g.fillRect(0, 0, S, S); };
+    const puntos = (n, col, r) => { g.globalAlpha = .9; g.fillStyle = col; for (let j = 0; j < n; j++) { g.beginPath(); g.arc((j * 97 + 31) % S, (j * 61 + 17) % S, r * (j % 3 ? 1 : 1.7), 0, 7); g.fill(); } };
+    if (k === 'o') { lin(['#fff2a8', '#ffcf3d', '#d98e12'], .55); lin(['rgba(255,255,255,0)', '#ffffff', 'rgba(255,255,255,0)'], .25, .4); }
+    else if (k === 'd') { lin(['#e9fbff', '#9ceaff', '#5bc8f0'], .55); g.globalAlpha = .5; g.strokeStyle = '#ffffff'; g.lineWidth = S / 60; for (let j = 0; j < 5; j++) { g.beginPath(); g.moveTo(S * j / 4, 0); g.lineTo(S * (j / 4 - .3), S); g.stroke(); } }
+    else if (k === 'c') { g.globalAlpha = .38; for (let j = -4; j < 8; j++) { g.fillStyle = j % 2 ? '#ff9ad5' : '#9ff0d0'; g.beginPath(); g.moveTo(j * S / 6, 0); g.lineTo(j * S / 6 + S / 12, 0); g.lineTo(j * S / 6 + S / 12 + S / 2, S); g.lineTo(j * S / 6 + S / 2, S); g.fill(); } }
+    else if (k === 'k') { lin(['#c08a52', '#8a4f22', '#5c3214'], .5); puntos(10, '#3a2412', S / 40); }
+    else if (k === 'l') {
+      lin(['#ffd23f', '#ff6a1f', '#c8160e'], .62, .2);
+      g.globalAlpha = .85; g.strokeStyle = '#3a0800'; g.lineWidth = S / 50; g.lineJoin = 'round';
+      for (let j = 0; j < 6; j++) { g.beginPath(); let x = (j * 53 + 20) % S, y = (j * 37) % (S / 2); g.moveTo(x, y); for (let q = 0; q < 4; q++) { x += (q % 2 ? 1 : -1) * S / 9; y += S / 7; g.lineTo(x, y); } g.stroke(); }
+      g.globalAlpha = .7; g.strokeStyle = '#ffe36b'; g.lineWidth = S / 130;
+      for (let j = 0; j < 6; j++) { g.beginPath(); let x = (j * 53 + 20) % S, y = (j * 37) % (S / 2); g.moveTo(x, y); for (let q = 0; q < 4; q++) { x += (q % 2 ? 1 : -1) * S / 9; y += S / 7; g.lineTo(x, y); } g.stroke(); }
+    }
+    else if (k === 'a') lin(['#ff5f87', '#ffb03a', '#ffe36b', '#6fd39b', '#7fb2ec', '#b08ae8'], .5, 1.6);
+    else if (k === 'g') { const gr = g.createRadialGradient(S / 2, S / 2, S * .1, S / 2, S / 2, S * .7); gr.addColorStop(0, '#9b6bff'); gr.addColorStop(1, '#1d1a5c'); g.globalAlpha = .66; g.fillStyle = gr; g.fillRect(0, 0, S, S); puntos(22, '#ffffff', S / 110); puntos(6, '#ffe08a', S / 90); }
+    g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+    const t = new T3.CanvasTexture(c); t.anisotropy = 2; TEX.add(t);
+    texMutCache[clave] = t; return t;
   }
   function spriteDe(id, tam = 1.5) {
     const s = new T3.Sprite(new T3.SpriteMaterial({ map: texturas[id] || null, transparent: true, depthWrite: false }));
@@ -4564,7 +4688,7 @@ const michirot = (() => {
     p.spr.scale.set(p.esc, p.esc, 1);
     if (p.lab) p.lab.position.y = id === 'siempre' ? 3.05 : 2.45;
     p.spr.visible = !!id;
-    if (id) { p.spr.material.map = texturas[id] || null; p.spr.material.needsUpdate = true; }
+    if (id) { p.spr.material.map = texMut(id, p.mut) || null; p.spr.material.needsUpdate = true; }
     p.aro.material.color.set(id ? COLOR_R[POR[id].r] : '#b8bfd3');
     pintarHalo(p.halo, p.mut);
     p.taco.visible = mutsDe(p.mut).includes('t');
@@ -4577,6 +4701,7 @@ const michirot = (() => {
   function registrarMut(id, m) { const l = E.mutCol[id] || (E.mutCol[id] = []); mutsDe(m).forEach(k => { if (!l.includes(k)) l.push(k); }); }
   function mutarAlfombra(it, m) {
     it.mut = sumarMut(it.mut, m);
+    it.s.material.map = texMut(it.id, it.mut); it.s.material.needsUpdate = true;
     if (!it.halo) { it.halo = haloDe(2.3); it.g.add(it.halo); }
     pintarHalo(it.halo, it.mut);
     if (m === 't' && !it.taco) { it.taco = sombreroTaco(); it.g.add(it.taco); }
@@ -4615,22 +4740,26 @@ const michirot = (() => {
     const bq = esBloque(id);
     if (mut === undefined) mut = esSecreto(id) || bq ? null : mutAzar(evento && evento.tipo === 'loca' ? 3 : 1);
     if (bq) mut = null;
-    const especial = esSecreto(id) || POR[id].r === 'x' || id === 'bloqueEx' || id === 'bloqueMitico';
+    const especial = esSecreto(id) || POR[id].r === 'x' || POR[id].r === 'u' || POR[id].r === 'z' || id === 'bloqueEx' || id === 'bloqueMitico' || id === 'bloqueCel';
     const s = spriteDe(id, id === 'siempre' ? 3.1 : especial ? 1.9 : 1.55);
     const lab = etiqueta(2.3); lab.position.y = id === 'siempre' ? 3.2 : especial ? 2.45 : 2.15;
     const g = new T3.Group(); g.add(s, lab, sombra(.5));
     let halo = null;
-    if (mut) { halo = haloDe(2.3); g.add(halo); pintarHalo(halo, mut); }
+    if (mut) { halo = haloDe(2.3); g.add(halo); pintarHalo(halo, mut); s.material.map = texMut(id, mut); }
     if (especial || mut === 'a' || mut === 'g') {
       const haz = new T3.Mesh(new T3.CylinderGeometry(.8, .8, 9, 18, 1, true), new T3.MeshBasicMaterial({ color: esSecreto(id) ? 0xffd6ea : especial ? 0x9ff3ff : mut === 'g' ? 0xc9b8ff : 0xf3d6ff, transparent: true, opacity: .3, depthWrite: false, side: T3.DoubleSide }));
       haz.position.y = 4.5; g.add(haz);
     }
-    const it = { id, mut, g, s, lab, halo, taco: null, x: x0 != null ? x0 : ALF.x0, fase: Math.random() * 6, chispaT: 0, ex: POR[id].r === 'x', bq };
+    const it = { id, mut, g, s, lab, halo, taco: null, x: x0 != null ? x0 : ALF.x0, fase: Math.random() * 6, chispaT: 0, ex: POR[id].r === 'x' || POR[id].r === 'u', bq };
     g.position.set(it.x, .03, ALF.z + (Math.random() - .5) * .8);
     escena.add(g); alfombra.push(it);
     if (bq && x0 == null) {
-      if (id !== 'bloque') { aviso(`🎲 ¡Está pasando un ${POR[id].n.toUpperCase()}! Adentro puede venir un Exclusivo`, 3800); sonido('secreto'); }
+      if (id === 'bloqueCel') { aviso('☁️🎲 ¡Está pasando un BLOQUE CELESTIAL! Adentro viene un Súper Exclusivo 👑', 4600); sonido('secreto'); confetti(1500, 50); }
+      else if (id !== 'bloque') { aviso(`🎲 ¡Está pasando un ${POR[id].n.toUpperCase()}! Adentro puede venir un Exclusivo`, 3800); sonido('secreto'); }
       else { aviso('🎲 ¡Un Bloque de suerte está pasando por la alfombra!', 2600); sonido('mutado'); }
+    } else if (POR[id].r === 'z' && x0 == null) {
+      aviso(`🔥 ¡Un BRAINROT TITÁN está pasando por la alfombra: ${POR[id].n}! Gana ${fmt(POR[id].g)} por segundo`, 4200);
+      sonido('secreto'); confetti(1200, 30);
     } else if (it.ex && x0 == null) {
       aviso(`💎 ¡Un michirot EXCLUSIVO está pasando por la alfombra: ${POR[id].n}! ${E.col.includes(id) ? '' : '¡Todavía no lo tienes!'}`, 4200);
       sonido('secreto'); confetti(1500, 40);
@@ -4651,6 +4780,20 @@ const michirot = (() => {
     });
   }
   function quitar(it) { escena.remove(it.g); liberar(it.g); alfombra = alfombra.filter(x => x !== it); }
+  let alfSid = 0;
+  function alfDeHost(m) {
+    if (!POR[m.id] || alfombra.some(x => x.sid === m.sid)) return;
+    const it = spawnear(m.id, m.x != null ? m.x : undefined, m.mut || null); it.sid = m.sid;
+  }
+  function alfTodo(m) {
+    alfombra.slice().forEach(it => { if (!esSecreto(it.id)) quitar(it); });
+    (m.items || []).forEach(x => { if (POR[x.id]) { const it = spawnear(x.id, x.x, x.mut || null); it.sid = x.sid; } });
+  }
+  function mandarAlfombra() {
+    if (!enLinea() || red.rol !== 'host') return;
+    alfombra.forEach(it => { if (!it.sid && !esSecreto(it.id)) it.sid = ++alfSid; });
+    mandar({ t: 'alfTodo', items: alfombra.filter(it => !esSecreto(it.id)).map(it => ({ sid: it.sid, id: it.id, mut: it.mut || null, x: +it.x.toFixed(2) })) });
+  }
   function secretoListo() { return !E.col.includes('secreto') && sinSecretos(E.col).length >= PARA_SECRETO; }
   function siempreListo() { return E.col.includes('secreto') && !E.col.includes('siempre'); }
 
@@ -4661,6 +4804,7 @@ const michirot = (() => {
     const i = E.base.findIndex(b => !b);
     if (i < 0) { sonido('no'); aviso(E.mej.base < MEJORA_BASE.costos.length ? 'Tu base está llena. Agrándala en la tiendita 🛍️ o vende un michirot (párate junto a él y presiona «Ver»).' : 'Tu base está llena. Párate junto a un michirot tuyo y presiona «Ver» para venderlo.', 3800); return; }
     E.dinero -= p;
+    if (enLinea() && it.sid) mandar({ t: 'alfQuita', sid: it.sid });
     if (it.bq) { comprarBloque(it, i); return; }
     E.base[i] = { id: it.id, banco: 0, llegando: true, mut: it.mut || null };
     const desde = it.g.position.clone(); quitar(it);
@@ -4692,11 +4836,46 @@ const michirot = (() => {
     const p = pedMio[i];
     abriendo = { i, t: 0, dur: 3.6, sig: 0, k: 0, premio, mut, opciones, B };
     b.abriendo = true;
+    if (enLinea()) mandar({ t: 'ruleta', bi: i, premio, mut, bloque: b.id });
     sonido('evento');
     aviso(`🎲 Abriendo tu ${B.n}…`, 3400);
     chispas(p.x, 1, p.z, '#ffd25e', 10, 3);
   }
+  // Ruleta del otro jugador (solo se ve; el premio ya lo decidió su celular)
+  let girosOtro = [];
+  function ruletaOtro(m) {
+    const B = POR[m.bloque], k = (red.otro.base || []).findIndex(q => q && q.bi === m.bi);
+    if (!B || !POR[m.premio]) return;
+    const p = pedR2[k >= 0 ? k : m.bi]; if (!p) return;
+    girosOtro.push({ p, t: 0, dur: 3.6, sig: 0, k: 0, premio: m.premio, mut: m.mut || null, opciones: Object.keys(B.tabla), B });
+    aviso(`🎲 ${red.otro.nombre} está abriendo su ${B.n}… 👀`, 3000);
+  }
+  function girarOtros(dt) {
+    girosOtro = girosOtro.filter(A => {
+      const p = A.p; A.t += dt; A.sig -= dt;
+      const fr = Math.min(1, A.t / A.dur);
+      p.spr.visible = true;
+      p.spr.scale.x = (p.esc || 1.5) * Math.cos(A.t * (26 - 22 * fr));
+      if (A.sig <= 0 && fr < 1) {
+        A.sig = .05 + fr * fr * .35;
+        const id = fr > .86 ? A.premio : A.opciones[A.k++ % A.opciones.length];
+        if (texturas[id]) { p.spr.material.map = texturas[id]; p.spr.material.needsUpdate = true; }
+        chispas(p.x, 1.2, p.z, ['#7fe3ff', '#b48cff', '#ffd25e', '#ff8fab'][A.k % 4], 2, 2.2, .32);
+      }
+      if (fr >= 1) {
+        p.spr.scale.set(p.esc || 1.5, p.esc || 1.5, 1);
+        ['#ffd25e', '#ff8fab', '#7fe3ff'].forEach(col => chispas(p.x, 1, p.z, col, 8, 4));
+        const c = POR[A.premio];
+        aviso(`🎲 ¡A ${red && red.otro ? red.otro.nombre : 'tu pareja'} le salió ${c.r === 'u' ? 'el SÚPER EXCLUSIVO 👑' : 'el EXCLUSIVO'} ${A.mut ? icosMut(A.mut) + ' ' : ''}${c.n}! 💎`, 4200);
+        sonido('regalo');
+        if (red) pintarRivales();
+        return false;
+      }
+      return true;
+    });
+  }
   function giroBloque(dt) {
+    girarOtros(dt);
     if (!abriendo) return;
     const A = abriendo, p = pedMio[A.i];
     A.t += dt; A.sig -= dt;
@@ -4716,11 +4895,12 @@ const michirot = (() => {
       sacudida = .45;
       colocar(A.i, A.premio, 'bloque', A.mut);
       sonido('secreto'); confetti(3000, 120);
-      aviso(`🎲 ¡Del ${A.B.n} salió el EXCLUSIVO ${A.mut ? icosMut(A.mut) + ' ' : ''}${c.n}! 💎`, 4600);
+      aviso(`🎲 ¡Del ${A.B.n} salió el ${c.r === 'u' ? 'SÚPER EXCLUSIVO 👑' : 'EXCLUSIVO'} ${A.mut ? icosMut(A.mut) + ' ' : ''}${c.n}! 💎`, 4600);
+      if (enLinea()) mandarBase();
       progreso('bloque', 1);
     }
   }
-  const chipTexto = r => ({ e: '(Épico)', l: '(Legendario)', m: '(Mítico)', d: '(Brainrot Dios)', x: '💎' }[r] || '');
+  const chipTexto = r => ({ e: '(Épico)', l: '(Legendario)', m: '(Mítico)', d: '(Brainrot Dios)', z: '(Brainrot Titán) 🔥', x: '💎', u: '👑' }[r] || '');
   function volar(id, desde, ped, fin, tam = 1.5) {
     const s = spriteDe(id, tam); s.position.copy(desde); escena.add(s);
     vuelos.push({ s, desde, hasta: new T3.Vector3(ped.x, .58, ped.z), t: 0, fin });
@@ -5243,7 +5423,7 @@ const michirot = (() => {
       <div class="mr-col">${CAT.map(c => {
         const t = E.col.includes(c.id);
         const mm = (E.mutCol[c.id] || []).filter(m => MUT[m]).sort((a, b) => ORDEN_MUT.indexOf(a) - ORDEN_MUT.indexOf(b)).map(m => MUT[m].ico).join('');
-        return `<div class="mr-col-i${t ? '' : ' falta'}${c.r === 'x' ? ' ex' : ''}">${arte(c.id)}<span class="n">${t ? esc(c.n) : '???'}</span>${chip(c.r)}${t ? `<span class="g">${fmtDe(c.id, c.g)}/s</span>` : c.pista ? `<span class="pista">${esc(c.pista)}</span>` : ''}${mm ? `<span class="mm" title="Mutaciones que tienes">${mm}</span>` : ''}</div>`;
+        return `<div class="mr-col-i${t ? '' : ' falta'}${c.r === 'x' || c.r === 'u' ? ' ex' : ''}">${arte(c.id)}<span class="n">${t ? esc(c.n) : '???'}</span>${chip(c.r)}${t ? `<span class="g">${fmtDe(c.id, c.g)}/s</span>` : c.pista ? `<span class="pista">${esc(c.pista)}</span>` : ''}${mm ? `<span class="mm" title="Mutaciones que tienes">${mm}</span>` : ''}</div>`;
       }).join('')}</div>
       <p class="mr-tip">${ORDEN_MUT.split('').map(m => `${MUT[m].ico} ${MUT[m].n} ×${MUT[m].x}`).join(' · ')}</p>`, [['Cerrar', cerrarHoja]]);
   }
@@ -5257,6 +5437,10 @@ const michirot = (() => {
         <li><span>🌮</span><span>Cada 2 minutos hay lluvia de tacos: al michirot que le cae un taco se vuelve Taco (×4), ¡hasta los de tu base!</span></li>
         <li><span>🏠</span><span>Cuando se llene tu base, agrándala en la tiendita: puede llegar a 20 lugares.</span></li>
         <li><span>🎲</span><span>A veces pasan Bloques de suerte. Cómpralos y llegan cerrados a tu base: acércate, presiona «Abrir» y gira la ruleta. Solo traen ediciones exclusivas de Diamante 💎 y Galácticas 🪐 que nunca pasan por la alfombra.</span></li>
+        <li><span>🔥</span><span>Los Brainrot Titán son los que más dinero dan de todo el juego: ganan de $1B hasta $20B por segundo. Pasan por la alfombra muy de vez en cuando.</span></li>
+        <li><span>☁️</span><span>Muy de vez en cuando pasa un Bloque Celestial: trae uno de los 4 Súper Exclusivos 👑, que ganan hasta $700M por segundo.</span></li>
+        <li><span>🎨</span><span>Las mutaciones cambian el aspecto del michirot: el de lava se ve de lava, el de galaxia lleno de estrellas, el dorado de oro…</span></li>
+        <li><span>👥</span><span>Jugando juntos, los dos ven la misma alfombra en vivo, la base del otro tal cual la tiene y hasta la ruleta cuando el otro abre un bloque.</span></li>
         <li><span>🪳</span><span>Entre una lluvia de tacos y otra llega una sorpresa, y una de cada dos es la invasión de cucarachas. Cada cucaracha que se sube a tu michirot le pega una mutación. ¡Se juntan! Un michirot puede tener muchas mutaciones y gana más con cada una.</span></li>
         <li><span>💎</span><span>Hay ${CAT.length} michirots que coleccionar. Los Exclusivos solo salen en momentos especiales: en la lluvia de tacos, en la hora loca, en los regalos… y una reina que casi nunca pasa.</span></li>
         <li><span>😼</span><span>Entra a una base rival, presiona «Robar» y corre a tu base. Si el dueño te alcanza, ¡salta para esquivarlo!</span></li>
@@ -5473,7 +5657,11 @@ const michirot = (() => {
       actualizarTacos(dt);
       // alfombra
       spawnT -= dt;
-      if (spawnT <= 0) { spawnT = (2.6 + Math.random() * 1.2) / (evento && evento.tipo === 'loca' ? 2.3 : 1); spawnear(exclusivoAzar() || bloqueAzar() || alAzar(azar(PESOS))); }
+      if (spawnT <= 0) {
+        spawnT = (2.6 + Math.random() * 1.2) / (evento && evento.tipo === 'loca' ? 2.3 : 1);
+        // Jugando juntos, el celular que creó la sala decide qué pasa por la alfombra y se lo manda al otro
+        if (!(enLinea() && red.rol === 'guest')) { const it = spawnear(exclusivoAzar() || bloqueAzar() || alAzar(azar(PESOS))); if (enLinea()) { it.sid = ++alfSid; mandar({ t: 'alf', sid: it.sid, id: it.id, mut: it.mut || null }); } }
+      }
       if (secretoListo()) {
         secretoT -= dt;
         if (secretoT <= 0 && !alfombra.some(x => x.id === 'secreto')) {
@@ -5647,7 +5835,8 @@ const michirot = (() => {
   const enLinea = () => !!(red && red.listo);
   const LETRAS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
   // Su mundo → el mío: reflejado de frente (su base queda al fondo, con la puerta hacia la alfombra)
-  const aMio = (x, z) => ({ x, z: -z });
+  const enSuBase = (x, z) => { const w = (red && red.otro && red.otro.w) || MIA.w; return Math.abs(x) < w / 2 + .3 && z > MIA.cz - MIA.d / 2 - .2 && z < MIA.cz + MIA.d / 2 + .3; };
+  const aMio = (x, z) => (enSuBase(x, z) ? { x, z: z - 2 * MIA.cz } : { x, z: -z });
   function nombreMio() { return (E.nombre || '').trim() || 'Jugador'; }
   function sala(msg = '') {
     const conectado = enLinea();
@@ -5743,9 +5932,19 @@ const michirot = (() => {
     if (!red.listo || m.de !== red.par) return;
     const o = red.otro;
     if (m.t === 'adios') { salirSala(`${o.nombre} salió de la sala.`); return; }
-    if (m.t === 'pos') { const p = aMio(m.x, m.z); o.tx = p.x; o.tz = p.z; o.y = m.y || 0; o.ang = Math.PI - (m.ang || 0); o.carga = m.carga || null; o.cargaMut = m.mut || null; return; }
-    if (m.t === 'base') { o.base = Array.isArray(m.slots) ? m.slots.slice(0, 20) : []; o.candado = !!m.candado; if (m.w && +m.w !== o.w) { o.w = +m.w; if (red.listo) modoRemoto(true, o.w); } pintarRivales(); return; }
+    if (m.t === 'pos') { const p = aMio(m.x, m.z); o.tx = p.x; o.tz = p.z; o.y = m.y || 0; o.ang = enSuBase(m.x, m.z) ? (m.ang || 0) : Math.PI - (m.ang || 0); o.carga = m.carga || null; o.cargaMut = m.mut || null; return; }
+    if (m.t === 'base') {
+      o.base = Array.isArray(m.slots) ? m.slots.slice(0, 20) : []; o.candado = !!m.candado;
+      const cap = Math.max(+m.cap || 0, o.base.length), wCap = cap > 8 ? ANCHO_BASE(Math.min(3, Math.round((cap - 8) / 4))) : 0;
+      const w = Math.max(+m.w || 0, wCap);
+      if (w && w !== o.w) { o.w = w; if (red.listo) modoRemoto(true, o.w); }
+      pintarRivales(); return;
+    }
     if (m.t === 'robo') { recibirRobo(m); return; }
+    if (m.t === 'ruleta') { ruletaOtro(m); return; }
+    if (m.t === 'alf') { if (red.rol === 'guest') alfDeHost(m); return; }
+    if (m.t === 'alfTodo') { if (red.rol === 'guest') alfTodo(m); return; }
+    if (m.t === 'alfQuita') { const it = alfombra.find(x => x.sid === m.sid); if (it) { chispas(it.x, 1, it.g.position.z, '#ffd25e', 8); quitar(it); flotar(`${o.nombre} lo compró`, { x: it.x, z: it.g.position.z }, '#ffd3dc', 2.4); } return; }
     if (m.t === 'roboOk') { if (red.pidiendo && red.pidiendo.bi === m.bi) empezarRoboRemoto(m); return; }
     if (m.t === 'roboNo') { red.pidiendo = null; sonido('no'); aviso(m.motivo === 'candado' ? `${o.nombre} cerró su base con candado 🔒` : 'Ese michirot ya no está 😿'); return; }
     if (m.t === 'robado') { const b = E.base[m.bi]; if (b && b.robando) { E.base[m.bi] = null; red.meRoban = null; pintarBase(); guardar(); aviso(`😿 ${o.nombre} se llevó a tu ${POR[b.id].n}… ¡ve a robárselo de vuelta!`, 3600); mandarBase(); } return; }
@@ -5766,6 +5965,7 @@ const michirot = (() => {
     if (letreroBandido) letreroBandido.userData.poner([red.otro.nombre], '#9b55e0', '#ffffff');
     $m('mrCorazon').hidden = false;
     mandarBase(); envioT = 0;
+    setTimeout(mandarAlfombra, 400);
     pintarRivales();
     sonido('mision'); confetti(1500, 60);
     aviso(`💞 ¡Conectado con ${red.otro.nombre}! Su base es la del fondo`, 3600);
@@ -5800,7 +6000,7 @@ const michirot = (() => {
   function visiblesMios() {
     return E.base.slice(0, 20).map((b, i) => (b && !b.llegando && !b.robando ? { bi: i, id: b.id, mut: b.mut || null } : null));
   }
-  function mandarBase() { if (enLinea()) mandar({ t: 'base', slots: visiblesMios(), candado: E.candado > Date.now(), w: MIA.w }); }
+  function mandarBase() { if (enLinea()) mandar({ t: 'base', slots: visiblesMios(), candado: E.candado > Date.now(), w: MIA.w, cap: E.base.length }); }
   function recibirRobo(m) {
     const b = E.base[m.bi];
     if (E.candado > Date.now()) { mandar({ t: 'roboNo', bi: m.bi, motivo: 'candado' }); return; }
