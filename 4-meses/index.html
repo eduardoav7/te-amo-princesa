@@ -1499,7 +1499,8 @@ body.velada .btn { box-shadow: 3px 4px 0 #ffb84d; }
           <li><span>💰</span><span>Tus michirots ganan dinero en tu base. Pasa junto a ellos para cobrar.</span></li>
           <li><span>😼</span><span>Entra a una base rival, presiona «Robar» y corre a tu base antes de que el dueño te alcance.</span></li>
           <li><span>🎯</span><span>Cumple misiones, agranda tu base en la tiendita y aprovecha las sorpresas: lluvia de monedas, hora loca y regalos.</span></li>
-          <li><span>💎</span><span>Hay 49 michirots, entre ellos 8 Brainrot Titán 🔥, los que más dinero dan: hasta $20B por segundo, 14 Exclusivos (10 ediciones de Diamante y Galácticas solo salen de los Bloques de suerte 🎲, que se abren con ruleta) y 4 Súper Exclusivos celestiales 👑 que ganan hasta $700M por segundo.</span></li>
+          <li><span>💎</span><span>Hay 50 michirots, entre ellos Lalon el osito 🧸, entre ellos 8 Brainrot Titán 🔥, los que más dinero dan: hasta $20B por segundo, 14 Exclusivos (10 ediciones de Diamante y Galácticas solo salen de los Bloques de suerte 🎲, que se abren con ruleta) y 4 Súper Exclusivos celestiales 👑 que ganan hasta $700M por segundo.</span></li>
+          <li><span>🎪</span><span>Cada 2 horas, en punto (12, 2, 4, 6, 8 y 10), hay un desfile: durante 20 segundos pasan TODOS los brainrots por la alfombra. Un minuto antes te avisa.</span></li>
           <li><span>🪳</span><span>En la invasión de cucarachas, cada cucaracha que se sube a tu michirot le pega una mutación… ¡y se pueden juntar varias!</span></li>
           <li><span>✨</span><span>Junta 7 michirots distintos y pasará uno secreto muy especial… y después, otro todavía más especial 💞</span></li>
         </ul>
@@ -4230,6 +4231,8 @@ const michirot = (() => {
   let jugador, cargando = null, accion = null;
   let alfombra = [], spawnT = 0, secretoT = 4, vuelos = [], flotantes = [];
   let pedMio = [], pedRiv = [[], []], laseres = [], muros = [];
+  // Desfile: cada 2 horas (en punto, horas pares) pasan TODOS los brainrots durante 20 segundos
+  let desfile = null, desfileClave = '', desfileAvisoClave = '', desfileFin = 0;
   let pedR2 = [], grupoRiv0 = null, grupoRiv1 = null, murosRiv0 = [], murosRiv1 = [], laserRiv1 = null, varR2 = [], nivR2 = 0, letreroZombie = null;
   let npc = [], ladronT = 90;
   const teclas = new Set(); let joy = { x: 0, z: 0, activo: false };
@@ -5145,6 +5148,38 @@ const michirot = (() => {
     guardar();
   }
 
+  /* ---------- Desfile de todos los brainrots ---------- */
+  const ORDEN_DESF = 'crelmdxuzs';
+  // Desfiles especiales extra (año, mes 0-11, día, hora, minuto)
+  const DESFILES_EXTRA = [[2026, 10, 2, 16, 20]];
+  const tocaDesfile = d => (d.getHours() % 2 === 0 && d.getMinutes() === 0) || DESFILES_EXTRA.some(([a, me, di, h, mi]) => d.getFullYear() === a && d.getMonth() === me && d.getDate() === di && d.getHours() === h && d.getMinutes() === mi);
+  function revisarDesfile(dt) {
+    const d = new Date(), h = d.getHours(), m = d.getMinutes(), sg = d.getSeconds();
+    const sig = new Date(d.getTime() + 60000); sig.setSeconds(0); const claveSig = sig.toDateString() + sig.getHours() + ':' + sig.getMinutes();
+    if (tocaDesfile(sig) && desfileAvisoClave !== claveSig) { desfileAvisoClave = claveSig; aviso('🎪 ¡En 1 minuto pasan TODOS los brainrots por la alfombra! Prepárate 👀', 4600); sonido('alerta'); }
+    const clave = d.toDateString() + h + ':' + m;
+    if (!desfile && tocaDesfile(d) && sg < 20 && desfileClave !== clave) {
+      desfileClave = clave;
+      const lista = CAT.filter(c => !esBloque(c.id) && !(esSecreto(c.id) && E.base.some(b => b && b.id === c.id)))
+        .sort((a, b) => ORDEN_DESF.indexOf(a.r) - ORDEN_DESF.indexOf(b.r) || a.g - b.g).map(c => c.id);
+      desfile = { lista, i: 0, ini: performance.now(), cada: Math.max(.22, (20 - sg) / lista.length) * 1000 };
+      desfileFin = performance.now() + (20 - sg + 26) * 1000;
+      aviso(`🎪 ¡DESFILE! Durante 20 segundos pasan TODOS los brainrots (${lista.length}) por la alfombra 🤩`, 5000);
+      sonido('secreto'); confetti(2200, 90);
+    }
+    if (!desfile) return;
+    // Va con el reloj de verdad (aunque el celular vaya lento, en 20 segundos salen todos)
+    const toca = Math.min(desfile.lista.length, Math.floor((performance.now() - desfile.ini) / desfile.cada) + 1);
+    while (desfile.i < toca) {
+      const id = desfile.lista[desfile.i++];
+      if (enLinea() && red.rol === 'guest') continue;   // jugando juntos, el que creó la sala los manda
+      const it = spawnear(id, ALF.x0, esSecreto(id) ? null : undefined);
+      it.g.position.z = ALF.z + (desfile.i % 2 ? .85 : -.85);
+      if (enLinea()) { it.sid = ++alfSid; mandar({ t: 'alf', sid: it.sid, id: it.id, mut: it.mut || null }); }
+    }
+    if (desfile.i >= desfile.lista.length) { desfile = null; aviso('🎪 ¡Ya pasaron todos! El próximo desfile es en 2 horas', 3200); }
+  }
+
   /* ---------- Eventos sorpresa ---------- */
   function iniciarEvento(tipo) {
     if (evento) return;
@@ -5690,8 +5725,9 @@ const michirot = (() => {
       actualizarMonedas(dt, t);
       actualizarTacos(dt);
       // alfombra
+      revisarDesfile(dt);
       spawnT -= dt;
-      if (spawnT <= 0) {
+      if (spawnT <= 0 && !desfile) {
         spawnT = (2.6 + Math.random() * 1.2) / (evento && evento.tipo === 'loca' ? 2.3 : 1);
         // Jugando juntos, el celular que creó la sala decide qué pasa por la alfombra y se lo manda al otro
         if (!(enLinea() && red.rol === 'guest')) { const it = spawnear(exclusivoAzar() || bloqueAzar() || alAzar(azar(PESOS))); if (enLinea()) { it.sid = ++alfSid; mandar({ t: 'alf', sid: it.sid, id: it.id, mut: it.mut || null }); } }
@@ -5719,6 +5755,11 @@ const michirot = (() => {
           aviso('💞 ¡«Por siempre, contigo» está pasando por la alfombra! Cuesta $140626', 4600);
         }
       }
+      // En el desfile solo se ve el letrero del que tienes más cerquita (si no, se amontonan)
+      const enDesfile = performance.now() < desfileFin;
+      let masCerca = null;
+      if (enDesfile) { let dm = 4; alfombra.forEach(it => { const dd = dist(it.g.position, jugador); if (dd < dm) { dm = dd; masCerca = it; } }); }
+      if (enDesfile && accion && accion.tipo === 'comprar') masCerca = accion.it;   // el mismo que dice el botón de comprar
       alfombra.slice().forEach(it => {
         it.x += ALF.vel * (esSecreto(it.id) || it.ex || it.bq ? .75 : 1) * dt;
         if (it.bq) it.s.material.rotation = Math.sin(t * 3 + it.fase) * .12;
@@ -5727,6 +5768,7 @@ const michirot = (() => {
         it.s.position.y = Math.abs(Math.sin(t * 5 + it.fase)) * .14;
         const c = POR[it.id], p = precio(it), puede = E.dinero >= p, M = it.mut && MUT[mutTop(it.mut)];
         const cerca = dist(it.g.position, jugador) < 5;
+        it.lab.visible = !enDesfile || it === masCerca;
         const pref = it.bq ? '🎲 ' : it.ex ? '💎 ' : esSecreto(it.id) ? '💞 ' : '';
         it.lab.userData.poner([pref + c.n, it.bq ? 'Trae un exclusivo' : `${icosMut(it.mut) ? icosMut(it.mut) + ' ' : ''}${fmtDe(it.id, c.g * multG(it.mut))}/s`, (cerca ? 'Precio: ' : '') + fmtDe(it.id, p)], puede ? '#7ee2a0' : it.bq ? '#ffe9a8' : it.ex ? '#bff6fb' : esSecreto(it.id) ? '#ffd3e6' : M ? '#fff3c4' : '#ffffff');
         if (it.halo && it.mut) {
