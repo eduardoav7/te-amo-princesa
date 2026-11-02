@@ -4936,7 +4936,10 @@ const michirot = (() => {
     if (evento) return;
     if (!tipo) {
       const m = E.mision && E.mision.evento;
-      tipo = m && m !== 'tacos' && Math.random() < .8 ? m : azar({ lluvia: 30, loca: 22, regalo: 22, cucarachas: E.base.some(b => b && !esBloque(b.id)) ? 26 : 0, siesta: npc[0].estado === 'casa' ? 14 : 0 });
+      const hayMichis = E.base.some(b => b && !b.llegando && !esBloque(b.id) && !esSecreto(b.id));
+      // Las cucarachas salen seguido: la primera sorpresa y después una de cada dos
+      if (hayMichis && (!E.cucaVista || (E.sinCuca || 0) >= 1)) tipo = 'cucarachas';
+      else tipo = m && m !== 'tacos' && Math.random() < .8 ? m : azar({ lluvia: 30, loca: 22, regalo: 22, cucarachas: hayMichis ? 26 : 0, siesta: npc[0].estado === 'casa' ? 14 : 0 });
     }
     if (tipo === 'siesta' && npc[0].estado !== 'casa') tipo = 'lluvia';
     const D = EVENTOS[tipo];
@@ -4945,7 +4948,8 @@ const michirot = (() => {
     if (tipo === 'loca') { escena.background.set('#f1dcff'); escena.fog.color.set('#f1dcff'); spawnT = Math.min(spawnT, .4); }
     if (tipo === 'regalo') crearRegalo();
     if (tipo === 'siesta') { npc[0].dormido = true; zzz.visible = true; E.riv[0].cerrada = 0; }
-    if (tipo === 'cucarachas') { cucaT = 0; cucaMuts = 0; }
+    if (tipo === 'cucarachas') { cucaT = 0; cucaMuts = 0; E.cucaVista = true; E.sinCuca = 0; }
+    else if (tipo !== 'tacos') E.sinCuca = (E.sinCuca || 0) + 1;
     if (tipo === 'tacos') { tacoLanzaT = 0; tacosMios = 0; tacoT = TACO_CADA; tacoAviso = false; escena.background.set('#ffe9c4'); escena.fog.color.set('#ffe9c4'); }
     sonido(tipo === 'tacos' ? 'taco' : 'evento'); musica(abierto);
     aviso(D.txt, 3800);
@@ -5253,7 +5257,7 @@ const michirot = (() => {
         <li><span>🌮</span><span>Cada 2 minutos hay lluvia de tacos: al michirot que le cae un taco se vuelve Taco (×4), ¡hasta los de tu base!</span></li>
         <li><span>🏠</span><span>Cuando se llene tu base, agrándala en la tiendita: puede llegar a 20 lugares.</span></li>
         <li><span>🎲</span><span>A veces pasan Bloques de suerte. Cómpralos y llegan cerrados a tu base: acércate, presiona «Abrir» y gira la ruleta. Solo traen ediciones exclusivas de Diamante 💎 y Galácticas 🪐 que nunca pasan por la alfombra.</span></li>
-        <li><span>🪳</span><span>En la invasión de cucarachas, cada cucaracha que se sube a tu michirot le pega una mutación. ¡Se juntan! Un michirot puede tener muchas mutaciones y gana más con cada una.</span></li>
+        <li><span>🪳</span><span>Entre una lluvia de tacos y otra llega una sorpresa, y una de cada dos es la invasión de cucarachas. Cada cucaracha que se sube a tu michirot le pega una mutación. ¡Se juntan! Un michirot puede tener muchas mutaciones y gana más con cada una.</span></li>
         <li><span>💎</span><span>Hay ${CAT.length} michirots que coleccionar. Los Exclusivos solo salen en momentos especiales: en la lluvia de tacos, en la hora loca, en los regalos… y una reina que casi nunca pasa.</span></li>
         <li><span>😼</span><span>Entra a una base rival, presiona «Robar» y corre a tu base. Si el dueño te alcanza, ¡salta para esquivarlo!</span></li>
         <li><span>🔒</span><span>Si Michi Bandido se lleva uno de los tuyos, alcánzalo. Con el candado no puede entrar a tu base.</span></li>
