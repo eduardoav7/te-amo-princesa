@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bienvenida a tu página 💙</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@400;600;800&display=swap">
+<style>
+:root {
+  --paper: #fdfbf6; --grid: #e3e9f6; --ink: #22264a; --ink-soft: #5d6186;
+  --marker: #e23d52; --blush: #f6b3c2; --blush-2: #fde3ea; --azul: #3f6fd8;
+  --tape: rgba(246, 179, 194, .78);
+  --font-hand: 'Caveat', 'Segoe Print', 'Bradley Hand', cursive;
+  --font-body: 'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; color: var(--ink);
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 26px 26px;
+  font: 400 17px/1.6 var(--font-body);
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+}
+main { max-width: 560px; margin: 0 auto; padding: 56px 18px 70px; display: flex; flex-direction: column; gap: 26px; }
+.sello { align-self: flex-start; font: 800 12px/1.3 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--marker); border: 2px dashed var(--marker); border-radius: 6px; padding: 5px 10px; transform: rotate(-2deg); }
+h1 { margin: 0; font: 700 clamp(52px, 15vw, 72px)/.92 var(--font-hand); text-wrap: balance; }
+h1 .sub { display: block; font-size: .6em; font-weight: 500; color: var(--marker); margin-top: 8px; }
+.intro { margin: 0; color: var(--ink-soft); max-width: 40ch; }
+.dias { display: flex; align-items: baseline; gap: 10px; align-self: flex-start; background: #fff; border: 2.5px solid var(--ink); border-radius: 10px 16px 12px 14px; box-shadow: 4px 5px 0 var(--ink); padding: 10px 18px; transform: rotate(1deg); }
+.dias b { font: 700 46px/1 var(--font-hand); color: var(--azul); }
+.dias span { font: 800 13px/1.2 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.lista { display: flex; flex-direction: column; gap: 22px; margin: 0; padding: 0; list-style: none; }
+.mes { position: relative; display: grid; grid-template-columns: 112px 1fr; gap: 16px; align-items: center; text-decoration: none; color: var(--ink); background: #fff; border: 2.5px solid var(--ink); border-radius: 8px 16px 10px 14px; box-shadow: 5px 6px 0 var(--ink); padding: 14px; transition: transform .12s ease, box-shadow .12s ease; -webkit-tap-highlight-color: transparent; }
+.mes:active { transform: translate(2px, 3px); box-shadow: 2px 2px 0 var(--ink); }
+.mes:focus-visible { outline: 3px dashed var(--marker); outline-offset: 5px; }
+.mes:nth-child(odd) { transform: rotate(-.6deg); }
+.mes:nth-child(even) { transform: rotate(.6deg); }
+.foto { display: block; position: relative; background: #fff; padding: 6px 6px 18px; border: 1.5px solid #d9dce8; box-shadow: 0 3px 8px rgba(34, 38, 74, .16); transform: rotate(-3deg); }
+.foto img { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
+.foto::before { content: ''; position: absolute; top: -8px; left: 50%; width: 46px; height: 16px; margin-left: -23px; background: var(--tape); transform: rotate(-4deg); }
+.mes h2 { margin: 0; font: 700 38px/.95 var(--font-hand); }
+.mes .fecha { margin: 4px 0 6px; font: 800 11.5px/1.3 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--marker); }
+.mes p { margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink-soft); }
+.entrar { display: inline-flex; margin-top: 10px; font: 800 15px/1 var(--font-body); color: #fff; background: var(--marker); border: 2.2px solid var(--ink); border-radius: 255px 16px 225px 16px / 16px 225px 16px 255px; padding: 10px 16px; box-shadow: 2px 3px 0 var(--ink); }
+.mes.azul .entrar { background: var(--azul); }
+.mes.pronto { grid-template-columns: 1fr; text-align: center; background: repeating-linear-gradient(45deg, #fff 0 14px, #f7f4ff 14px 28px); border-style: dashed; cursor: default; }
+.mes.pronto h2 { font-size: 34px; }
+.candado { font-size: 34px; line-height: 1; }
+.mes.consola { background: #2b2f5e; color: #fff; }
+.mes.consola p { color: #c9cdf2; }
+.mes.consola .fecha { color: #ffd24a; }
+.mes.consola .entrar { background: #ffd24a; color: var(--ink); }
+.mini-consola { display: block; transform: rotate(-3deg); }
+.mini-consola svg { display: block; width: 100%; height: auto; }
+.en-proceso { display: inline-block; margin-top: 8px; font: 800 11px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: #8a5cd6; border: 2px dashed #8a5cd6; border-radius: 999px; padding: 6px 10px; }
+.firma { margin: 6px 0 0; text-align: center; font: 700 30px/1.1 var(--font-hand); color: var(--marker); }
+.corazon { display: inline-block; animation: late 1.4s ease-in-out infinite; }
+@keyframes late { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.25); } 30% { transform: scale(1); } 45% { transform: scale(1.15); } }
+@media (prefers-reduced-motion: reduce) { .corazon { animation: none; } }
+</style>
+</head>
+<body>
+<main>
+  <span class="sello">Para: Brittany · De: Eduardo</span>
+  <h1>Bienvenida a tu página<span class="sub">mi princesita hermosa 💙</span></h1>
+  <p class="intro">Aquí guardo todos los regalos que te he hecho. Escoge qué quieres abrir; puedes volver a esta página cuando quieras.</p>
+  <div class="dias" aria-live="off"><b id="dias">0</b><span>días juntos<br>y contando <span class="corazon">💗</span></span></div>
+
+  <ul class="lista" id="lista"></ul>
+
+  <p class="firma">Te amo, Eduardo</p>
+</main>
+<script>
+// Para agregar un mes nuevo: copia una línea, cambia la carpeta, la foto, la fecha y el texto.
+const MESES = [
+  { carpeta: '3-meses/', foto: 'portadas/3-meses.jpg', alt: 'Ramo de flores rosas con un listón de felices 3 meses', titulo: 'Felices 3 meses', fecha: '14 de septiembre de 2026', texto: 'Tu carta, nuestras fotos, películas, canciones, el contador y el juego de adivinar.', color: '' },
+  { carpeta: '4-meses/', foto: 'portadas/4-meses.jpg', alt: 'Dibujo que dice Te amo, Brittany', titulo: 'Felices 4 meses', fecha: '14 de octubre de 2026', texto: 'El camino, nuestro cielo, las cartas, los juegos, tu vitrina de trofeos y el altar para tu abuelito.', color: 'azul' },
+];
+const INICIO = new Date(2026, 5, 14);
+const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+document.getElementById('dias').textContent = Math.round((hoy - INICIO) / 864e5);
+// El siguiente mes (bloqueado hasta su día 14)
+const n = MESES.length + 3, prox = new Date(2026, 5 + n, 14), faltan = Math.ceil((prox - hoy) / 864e5);
+const MESN = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+let html = MESES.map(m => `<li><a class="mes ${m.color}" href="${m.carpeta}">
+  <span class="foto"><img src="${m.foto}" alt="${m.alt}" width="300" height="300"></span>
+  <div><h2>${m.titulo}</h2><p class="fecha">${m.fecha}</p><p>${m.texto}</p><span class="entrar">Entrar 💞</span></div></a></li>`).join('');
+html += `<li><a class="mes consola" href="juegos/">
+  <span class="mini-consola"><svg viewBox="0 0 100 130" aria-hidden="true"><rect x="8" y="4" width="84" height="122" rx="12" fill="#ff8fab" stroke="#22264a" stroke-width="4"/><rect x="18" y="14" width="64" height="50" rx="5" fill="#22264a"/><rect x="23" y="19" width="54" height="40" rx="3" fill="#9be0c4"/><path d="M43 34 C38 28 30 34 43 46 C56 34 48 28 43 34 Z" transform="translate(7 0)" fill="#ff5f87"/><path d="M22 82 h8 v-8 h8 v8 h8 v8 h-8 v8 h-8 v-8 h-8 Z" fill="#22264a"/><circle cx="70" cy="80" r="6" fill="#ffd24a" stroke="#22264a" stroke-width="2.5"/><circle cx="82" cy="92" r="6" fill="#7fb2ec" stroke="#22264a" stroke-width="2.5"/><path d="M40 110 h8 M54 110 h8" stroke="#22264a" stroke-width="4" stroke-linecap="round"/></svg></span>
+  <div><h2>Juegos</h2><p class="fecha">Consola Michi · 9 juegos</p><p>Todos los juegos de tu página de 4 meses, en tu propia consolita.</p><span class="entrar">Jugar 🎮</span></div></a></li>`;
+html += `<li><div class="mes pronto"><span class="candado">🔒</span><h2>Felices ${n} meses</h2><p class="fecha">${prox.getDate()} de ${MESN[prox.getMonth()]} de ${prox.getFullYear()}</p><p>${faltan > 0 ? `Se abre en ${faltan} ${faltan === 1 ? 'día' : 'días'}. ` : ''}Estoy preparando algo bonito para ti.</p><span class="en-proceso">En proceso 🛠️</span></div></li>`;
+document.getElementById('lista').innerHTML = html;
+</script>
+</body>
+</html>

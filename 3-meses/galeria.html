@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💞 Un par de fotos para ti</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #FFB6C1, #ADD8E6);
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            color: #4a4a4a;
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px 15px;
+        }
+        h2 {
+            color: #d63384;
+            margin-bottom: 5px;
+            font-size: 2em;
+        }
+        p {
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        .galeria {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .polaroid {
+            background: white;
+            padding: 15px 15px 25px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            width: 250px;
+        }
+        .polaroid:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+        .polaroid img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .descripcion {
+            margin-top: 15px;
+            font-size: 1em;
+            color: #d63384;
+            font-weight: bold;
+        }
+        .btn-regresar {
+            display: block;
+            width: 200px;
+            margin: 50px auto 0;
+            background-color: #87CEFA;
+            color: #ffffff;
+            padding: 12px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 2px solid #FFB6C1;
+        }
+        .btn-regresar:hover {
+            background-color: #FFC0CB;
+            transform: scale(1.05);
+            border-color: #87CEFA;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>💞 Un par de fotos para ti</h2>
+    <p>Fotos que me recuerdan a ti, hasta que llegue nuestra primera foto real.</p>
+
+    <div class="galeria">
+        <!-- Foto 1 -->
+        <div class="polaroid">
+            <img src="foto1.jpeg" alt="Tu muñequito">
+            <div class="descripcion">El segundo muñequito que te hice con un par de tuercas pero con mucho amor 💞</div>
+        </div>
+        
+        <!-- Foto 2 -->
+        <div class="polaroid">
+            <img src="foto2.jpeg" alt="Siempre seras mi camino">
+            <div class="descripcion">Tu eres mi camino y siempre seras mi camino 💞</div>
+        </div>
+
+        <!-- Foto 3 -->
+        <div class="polaroid">
+            <img src="foto3.jpeg" alt="Mi enojona">
+            <div class="descripcion">Tu eres mi niña enojona, a la que tanto amo, con todo mi corazon 💞</div>
+        </div>
+    </div>
+
+    <a href="index.html" class="btn-regresar">⬅ Regresar al Menú</a>
+
+</body>
+</html>

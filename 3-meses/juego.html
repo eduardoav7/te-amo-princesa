@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Podrás adivinarlo? ❓</title>
+    <style>
+        body { 
+            background: linear-gradient(135deg, #FFB6C1, #ADD8E6); 
+            font-family: 'Arial', sans-serif; 
+            text-align: center; 
+            color: #4a4a4a; 
+            min-height: 100vh; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 20px; 
+        }
+        .container { 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+            max-width: 500px; 
+            width: 90%; 
+            text-align: left; 
+        }
+        h2 { 
+            color: #d63384; 
+            margin-bottom: 5px; 
+            text-align: center; 
+            font-size: 1.8em; 
+        }
+        .pregunta { 
+            margin-top: 25px; 
+            font-weight: bold; 
+            color: #4a4a4a; 
+            font-size: 1.05em; 
+        }
+        .opciones {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .btn-opcion {
+            background-color: #f8f9fa;
+            border: 2px solid #87CEFA;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95em;
+            text-align: left;
+            transition: all 0.2s;
+            color: #4a4a4a;
+        }
+        .btn-opcion:hover {
+            background-color: #e3f2fd;
+        }
+        /* Estilos cuando acierta o falla */
+        .correcto {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724 !important;
+            font-weight: bold;
+        }
+        .incorrecto {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24 !important;
+        }
+        .mensaje-resultado {
+            margin-top: 5px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: none;
+        }
+        .btn-regresar { 
+            display: block; 
+            width: fit-content; 
+            margin: 30px auto 0; 
+            background-color: #87CEFA; 
+            color: #fff; 
+            padding: 12px 25px; 
+            border-radius: 30px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            transition: 0.3s; 
+            text-align: center; 
+            border: 2px solid #FFB6C1; 
+        }
+        .btn-regresar:hover { 
+            background-color: #FFC0CB; 
+            transform: scale(1.05); 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>¿Podrás adivinarlo? ❓</h2>
+        <p style="text-align: center; font-size: 1.05em; margin-bottom: 15px; color: #666;">¡Pon a prueba tu memoria, mi amor!</p>
+        
+        <!-- Pregunta 1 -->
+        <div class="pregunta">1. ¿Cómo fue que nos conocimos?</div>
+        <div class="opciones" id="p1">
+            <button class="btn-opcion" onclick="verificar(this, false, 'p1')">En la escuela</button>
+            <button class="btn-opcion" onclick="verificar(this, true, 'p1')">En la isla de Free Fire</button>
+            <button class="btn-opcion" onclick="verificar(this, false, 'p1')">Por casualidad en la calle</button>
+        </div>
+        <div class="mensaje-resultado" id="msj-p1"></div>
+
+        <!-- Pregunta 2 -->
+        <div class="pregunta">2. ¿Qué día nos hicimos novios oficialmente?</div>
+        <div class="opciones" id="p2">
+            <button class="btn-opcion" onclick="verificar(this, false, 'p2')">14 de julio de 2026</button>
+            <button class="btn-opcion" onclick="verificar(this, true, 'p2')">14 de junio de 2026</button>
+            <button class="btn-opcion" onclick="verificar(this, false, 'p2')">20 de agosto de 2026</button>
+        </div>
+        <div class="mensaje-resultado" id="msj-p2"></div>
+
+        <!-- Pregunta 3 -->
+        <div class="pregunta">3. ¿Quién ama más a quién?</div>
+        <div class="opciones" id="p3">
+            <button class="btn-opcion" onclick="verificar(this, false, 'p3')">Mi novio me ama más</button>
+            <button class="btn-opcion" onclick="verificar(this, false, 'p3')">Lalito me ama más</button>
+            <button class="btn-opcion" onclick="verificar(this, true, 'p3')">Mi novio Lalito, en esta vida y en todas las vidas, porque siempre me buscara, porque yo soy su camino y siempre sere su camino. ✨</button>
+        </div>
+        <div class="mensaje-resultado" id="msj-p3"></div>
+
+        <a href="index.html" class="btn-regresar">⬅ Regresar al Menú</a>
+    </div>
+
+    <script>
+        function verificar(boton, esCorrecta, grupoId) {
+            const contenedor = document.getElementById(grupoId);
+            const botones = contenedor.getElementsByClassName('btn-opcion');
+            const mensaje = document.getElementById('msj-' + grupoId);
+
+            // Desactiva todos los botones de esa pregunta para que no cambie de opinión
+            for (let b of botones) {
+                b.style.pointerEvents = 'none';
+            }
+
+            if (esCorrecta) {
+                boton.classList.add('correcto');
+                mensaje.style.color = '#28a745';
+                mensaje.innerText = '¡Correcto! ❤️ ¡Eres la que más me conoce!';
+            } else {
+                boton.classList.add('incorrecto');
+                mensaje.style.color = '#dc3545';
+                mensaje.innerText = 'Mmm casi, ¡intenta recordar bien! 😉';
+                
+                // Muestra cuál era la correcta para ayudarla
+                for (let b of botones) {
+                    if (b.getAttribute('onclick').includes('true')) {
+                        b.classList.add('correcto');
+                    }
+                }
+            }
+            mensaje.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

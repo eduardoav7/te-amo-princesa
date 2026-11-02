@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felices 3 meses, mi princesita hermosa 💞</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #FFB6C1, #ADD8E6); 
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            color: #4a4a4a;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            max-width: 500px;
+            width: 85%;
+        }
+        h1 { 
+            color: #d63384; 
+            margin-bottom: 5px;
+            font-size: 1.6em;
+        }
+        .fecha {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        /* Estilo para el reproductor de video */
+        .video-container {
+            margin: 15px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px dashed #FFB6C1;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background: #000;
+        }
+        video {
+            width: 100%;
+            max-height: 250px;
+            display: block;
+        }
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: #87CEFA; 
+            color: #ffffff;
+            padding: 12px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 1.05em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 2px solid #FFB6C1; 
+        }
+        .btn:hover {
+            background-color: #FFC0CB; 
+            color: #ffffff;
+            transform: scale(1.05);
+            border-color: #87CEFA;
+        }
+        .volver { display: inline-block; margin-bottom: 14px; color: #d63384; text-decoration: none; font-weight: bold; font-size: .95em; border: 2px solid #FFB6C1; border-radius: 30px; padding: 8px 16px; background: #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../" class="volver">🏠 Volver a la bienvenida</a>
+        <h1>Felices 3 meses, mi princesita hermosa 💞</h1>
+        <p class="fecha">14 de junio 2026, el dia que cambio mi vida para siempre</p>
+        
+        <!-- Reproductor del video de Hakuji y Koyuki -->
+        <div class="video-container">
+            <video controls>
+                <source src="video.mp4" type="video/mp4">
+                Tu navegador no soporta la reproducción de video.
+            </video>
+        </div>
+
+        <p style="font-size: 0.95em; margin: 10px 0;">¿Qué deseas ver primero?</p>
+
+        <div class="menu">
+            <a href="carta.html" class="btn">💌 Una carta para ti</a>
+            <a href="galeria.html" class="btn">💞 Un par de fotos para ti</a>
+            <a href="cartelera.html" class="btn">🍿 Peliculas que te dedico</a>
+            <a href="playlist.html" class="btn">🎶 Canciones que me recuerdan a ti</a>
+            <a href="contador.html" class="btn">⏳ Nuestro tiempo juntos</a>
+            <a href="juego.html" class="btn">❓ ¿Podras adivinarlo?</a>
+        </div>
+    </div>
+</body>
+</html>

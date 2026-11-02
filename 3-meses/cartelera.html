@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Películas que te dedico 🍿</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #FFB6C1, #ADD8E6);
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            color: #4a4a4a;
+            min-height: 100vh; margin: 0; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9); 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+            max-width: 600px; 
+            width: 90%;
+            margin: 20px 0;
+        }
+        h2 { 
+            color: #d63384; 
+            margin-bottom: 10px; 
+            font-size: 2em;
+        }
+        p.intro {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            font-weight: bold;
+            color: #555;
+        }
+        /* Diseño de cada tarjeta de película */
+        .peli-card {
+            background: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 2px dashed #87CEFA;
+            transition: transform 0.3s ease;
+        }
+        .peli-card:hover {
+            transform: scale(1.02);
+            border-color: #FFB6C1;
+        }
+        /* Recuadro para la portada */
+        .peli-portada {
+            width: 130px;
+            height: 190px;
+            background-color: #f0f0f0;
+            object-fit: cover;
+            border-right: 2px dashed #87CEFA;
+        }
+        .peli-info {
+            padding: 20px;
+            text-align: left;
+            flex: 1;
+        }
+        .peli-titulo {
+            color: #d63384;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .peli-desc {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+        .btn-regresar {
+            display: inline-block; margin-top: 20px; background-color: #87CEFA; color: #fff; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; border: 2px solid #FFB6C1; transition: 0.3s;
+        }
+        .btn-regresar:hover { background-color: #FFC0CB; border-color: #87CEFA; transform: scale(1.05); }
+        
+        /* Para celulares */
+        @media (max-width: 480px) {
+            .peli-card {
+                flex-direction: column;
+            }
+            .peli-portada {
+                width: 100%;
+                height: 250px;
+                border-right: none;
+                border-bottom: 2px dashed #87CEFA;
+            }
+            .peli-info {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Películas que te dedico 🍿</h2>
+        <p class="intro">Cada una de estas historias me hace pensar en ti, en nosotros y en todo lo que siento. Las elegí especialmente para ti.</p>
+        
+        <!-- Película 1 -->
+        <div class="peli-card">
+            <!-- Sube una imagen que se llame portada1.jpg a GitHub -->
+            <img src="portada1.jpg" alt="A dos metros de ti" class="peli-portada" onerror="this.src='https://via.placeholder.com/130x190/f0f0f0/87CEFA?text=Foto+A+dos+metros+de+ti'">
+            <div class="peli-info">
+                <div class="peli-titulo">🎬 A dos metros de ti</div>
+                <div class="peli-desc">Porque aunque ahora la distancia nos separe un poquito, sé que nuestro amor es más fuerte que cualquier kilómetro.</div>
+            </div>
+        </div>
+
+        <!-- Película 2 -->
+        <div class="peli-card">
+            <!-- Sube una imagen que se llame portada2.jpg a GitHub -->
+            <img src="portada2.jpg" alt="Demon Slayer" class="peli-portada" onerror="this.src='https://via.placeholder.com/130x190/f0f0f0/87CEFA?text=Foto+Demon+Slayer'">
+            <div class="peli-info">
+                <div class="peli-titulo">🎬 Demon Slayer: Castillo Infinito</div>
+                <div class="peli-desc">Especialmente por la historia de Hakuji y Koyuki... un amor puro que trasciende todo y que siempre me hace pensar en lo mucho que quiero cuidarte.</div>
+            </div>
+        </div>
+
+        <!-- Película 3 -->
+        <div class="peli-card">
+            <!-- Sube una imagen que se llame portada3.jpg a GitHub -->
+            <img src="portada3.jpg" alt="Violet y Finch" class="peli-portada" onerror="this.src='https://via.placeholder.com/130x190/f0f0f0/87CEFA?text=Foto+Violet+y+Finch'">
+            <div class="peli-info">
+                <div class="peli-titulo">🎬 Violet y Finch</div>
+                <div class="peli-desc">Porque me has enseñado a ver los colores y los lugares más brillantes, incluso en los días difíciles.</div>
+            </div>
+        </div>
+
+        <a href="index.html" class="btn-regresar">⬅ Regresar al Menú</a>
+    </div>
+</body>
+</html>

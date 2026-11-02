@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Consola Michi 🎮</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@600;800&display=swap">
+<style>
+:root {
+  --ink: #22264a; --cuerpo: #c4b5f4; --cuerpo-2: #a995ec; --sombra: #8a74d8; --rosa: #ff8fab;
+  --pantalla: #14183a; --verde: #9be0c4; --amarillo: #ffd24a; --azul: #7fb2ec;
+  --pixel: 'Press Start 2P', ui-monospace, monospace; --font-body: 'Nunito', system-ui, sans-serif;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  padding: calc(18px + env(safe-area-inset-top, 0px)) 16px calc(18px + env(safe-area-inset-bottom, 0px));
+  background: #1b1d3a radial-gradient(120% 80% at 50% 0%, #34386e 0%, #1b1d3a 70%);
+  font: 600 16px/1.5 var(--font-body); color: #fff; overflow-x: hidden;
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.estrellas { position: fixed; inset: 0; pointer-events: none; background-image: radial-gradient(1.4px 1.4px at 12% 18%, #fff8 50%, transparent 51%), radial-gradient(1.2px 1.2px at 78% 12%, #fff8 50%, transparent 51%), radial-gradient(1.6px 1.6px at 40% 70%, #fff6 50%, transparent 51%), radial-gradient(1.2px 1.2px at 88% 64%, #fff8 50%, transparent 51%), radial-gradient(1.2px 1.2px at 22% 86%, #fff6 50%, transparent 51%); }
+
+/* La consola */
+.consola { position: relative; width: min(380px, 100%); background: linear-gradient(160deg, var(--cuerpo) 0%, var(--cuerpo-2) 100%); border: 3px solid var(--ink); border-radius: 26px 26px 70px 26px; padding: 18px 18px 26px; box-shadow: 0 10px 0 var(--sombra), 0 10px 0 3px var(--ink), 0 24px 40px rgba(0, 0, 0, .45); }
+.consola::before { content: ''; position: absolute; inset: 7px; border-radius: 20px 20px 62px 20px; border: 2px solid rgba(255, 255, 255, .35); pointer-events: none; }
+.bisel { background: #3a3f73; border: 3px solid var(--ink); border-radius: 12px 12px 34px 12px; padding: 14px 14px 10px; position: relative; }
+.bisel .led { position: absolute; left: 10px; top: 46%; width: 9px; height: 9px; border-radius: 50%; background: #444; border: 1.5px solid var(--ink); }
+.bisel .led.on { background: #ff4f7a; box-shadow: 0 0 8px #ff4f7a; }
+.bisel .led-txt { position: absolute; left: 4px; top: calc(46% + 13px); font: 6px/1 var(--pixel); color: #c9cdf2; letter-spacing: .05em; }
+.pantalla { position: relative; margin-left: 14px; aspect-ratio: 10 / 9; background: var(--pantalla); border: 3px solid #0b0d22; border-radius: 6px; overflow: hidden; font-family: var(--pixel); color: #fff; image-rendering: pixelated; }
+.pantalla::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .18) 0 1px, transparent 1px 3px); mix-blend-mode: multiply; }
+.marca { margin: 8px 0 0 14px; font: 9px/1.4 var(--pixel); color: #c9cdf2; letter-spacing: .08em; }
+.marca b { color: var(--rosa); }
+.logo { margin: 14px 0 18px; text-align: center; font: italic 800 22px/1 var(--font-body); color: #2b2f5e; letter-spacing: .02em; text-shadow: 0 1px 0 rgba(255, 255, 255, .5); }
+.logo span { color: #e23d52; }
+
+/* Pantallas */
+.vista { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 10px; }
+.vista[hidden] { display: none; }
+#vArranque { align-items: center; justify-content: center; text-align: center; gap: 14px; }
+.arr-logo { font-size: 15px; line-height: 1.5; color: var(--rosa); text-shadow: 2px 2px 0 #3b1a3a; transform: translateY(-140%); }
+.arr-logo.cae { animation: cae 1.4s steps(14) forwards; }
+@keyframes cae { to { transform: none; } }
+.arr-sub { font-size: 8px; color: var(--verde); opacity: 0; }
+.arr-sub.ve { opacity: 1; transition: opacity .3s steps(3); }
+.arr-start { font-size: 9px; color: var(--amarillo); opacity: 0; }
+.arr-start.ve { animation: parpadea 1s steps(1) infinite; }
+@keyframes parpadea { 50% { opacity: 0; } 0%, 49% { opacity: 1; } }
+.arr-gato { font-size: 26px; opacity: 0; }
+.arr-gato.ve { opacity: 1; animation: brinca .6s steps(3) infinite alternate; }
+@keyframes brinca { to { transform: translateY(-5px); } }
+
+#vMenu { gap: 6px; }
+.menu-tit { margin: 0; font-size: 9px; color: var(--amarillo); text-align: center; letter-spacing: .06em; }
+.menu-tit small { display: block; margin-top: 4px; font-size: 7px; color: #9aa0d6; }
+.lista { flex: 1; min-height: 0; margin: 2px 0 0; padding: 0; list-style: none; overflow: hidden; position: relative; }
+.lista ul { margin: 0; padding: 0; list-style: none; transition: transform .15s steps(2); }
+.item { display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 6px; font-size: 8px; color: #dfe2ff; cursor: pointer; border: 2px solid transparent; border-radius: 3px; }
+.item .ic { width: 20px; text-align: center; font-size: 14px; font-family: var(--font-body); line-height: 1; }
+.item .nom { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
+.item .ok { font-size: 7px; color: var(--verde); }
+.item.sel { background: #2b2f6e; border-color: var(--amarillo); color: #fff; }
+.item.sel::before { content: '▶'; color: var(--amarillo); font-size: 7px; margin-right: -2px; animation: parpadea .8s steps(1) infinite; }
+.desc { min-height: 42px; padding: 6px; border-top: 2px dashed #3a3f8a; font-size: 7px; line-height: 1.7; color: #c9cdf2; }
+.desc b { color: var(--rosa); font-weight: normal; }
+
+#vCarga { align-items: center; justify-content: center; gap: 14px; text-align: center; }
+.carga-ic { font-size: 40px; font-family: var(--font-body); }
+.carga-nom { font-size: 9px; line-height: 1.6; color: var(--amarillo); padding: 0 6px; }
+.barra { width: 80%; height: 14px; border: 2px solid #fff; padding: 2px; display: flex; gap: 2px; }
+.barra i { flex: 1; background: transparent; }
+.barra i.on { background: var(--verde); }
+.carga-txt { font-size: 8px; color: #fff; animation: parpadea .7s steps(1) infinite; }
+
+/* Controles */
+.controles { display: grid; grid-template-columns: 1fr 1fr; align-items: center; margin-top: 4px; }
+.cruz { position: relative; width: 112px; height: 112px; }
+.cruz button { position: absolute; width: 38px; height: 38px; background: #2b2f5e; border: 3px solid var(--ink); color: #c9cdf2; font-size: 13px; padding: 0; cursor: pointer; touch-action: manipulation; }
+.cruz button:active, .cruz button.pulsa { background: #1d2047; transform: scale(.94); }
+.cruz .up { left: 37px; top: 0; border-radius: 6px 6px 0 0; border-bottom: 0; }
+.cruz .down { left: 37px; bottom: 0; border-radius: 0 0 6px 6px; border-top: 0; }
+.cruz .left { left: 0; top: 37px; border-radius: 6px 0 0 6px; border-right: 0; }
+.cruz .right { right: 0; top: 37px; border-radius: 0 6px 6px 0; border-left: 0; }
+.cruz .centro { position: absolute; left: 37px; top: 37px; width: 38px; height: 38px; background: #2b2f5e; border-left: 0; }
+.ab { position: relative; height: 112px; transform: rotate(-24deg); }
+.ab button { position: absolute; width: 54px; height: 54px; border-radius: 50%; border: 3px solid var(--ink); font: 14px/1 var(--pixel); color: #fff; cursor: pointer; box-shadow: 0 4px 0 var(--ink); touch-action: manipulation; }
+.ab button:active, .ab button.pulsa { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+.ab .a { right: 4px; top: 12px; background: #e23d52; }
+.ab .b { right: 72px; top: 34px; background: #3f6fd8; }
+.ab .etq { position: absolute; font: 7px/1 var(--pixel); color: #2b2f5e; }
+.sel-start { display: flex; justify-content: center; gap: 26px; margin-top: 14px; }
+.pastilla { display: flex; flex-direction: column; align-items: center; gap: 6px; font: 7px/1 var(--pixel); color: #2b2f5e; }
+.pastilla button { width: 46px; height: 14px; border-radius: 99px; background: #6b5fb0; border: 2.5px solid var(--ink); transform: rotate(-24deg); cursor: pointer; touch-action: manipulation; }
+.pastilla button:active, .pastilla button.pulsa { background: #4a3f8a; }
+.bocina { position: absolute; right: 26px; bottom: 26px; display: grid; grid-template-columns: repeat(4, 5px); gap: 6px; transform: rotate(-24deg); }
+.bocina i { width: 5px; height: 22px; border-radius: 3px; background: var(--sombra); box-shadow: inset 1px 1px 0 rgba(0, 0, 0, .3); }
+button:focus-visible { outline: 3px dashed var(--amarillo); outline-offset: 3px; }
+.ayuda { margin: 0; max-width: 380px; text-align: center; font-size: 13px; color: #c9cdf2; }
+.volver { color: #fff; text-decoration: none; font: 800 15px/1 var(--font-body); background: #e23d52; border: 2.5px solid #0b0d22; border-radius: 999px; padding: 12px 18px; box-shadow: 0 4px 0 #0b0d22; }
+@media (prefers-reduced-motion: reduce) { .arr-logo.cae, .arr-start.ve, .arr-gato.ve, .item.sel::before, .carga-txt { animation: none; transform: none; opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="estrellas" aria-hidden="true"></div>
+
+<div class="consola">
+  <div class="bisel">
+    <span class="led" id="led"></span><span class="led-txt">POWER</span>
+    <div class="pantalla" id="pantalla" role="application" aria-label="Pantalla de la consola. Usa las flechas para escoger un juego y A para jugar.">
+      <div class="vista" id="vArranque">
+        <div class="arr-logo" id="arrLogo">CONSOLA<br>MICHI</div>
+        <div class="arr-gato" id="arrGato">🐱</div>
+        <div class="arr-sub" id="arrSub">♥ DE LALITO PARA BRITTANY ♥</div>
+        <div class="arr-start" id="arrStart">PRESIONA START</div>
+      </div>
+      <div class="vista" id="vMenu" hidden>
+        <p class="menu-tit">ELIGE TU JUEGO<small id="ganados"></small></p>
+        <div class="lista"><ul id="lista"></ul></div>
+        <div class="desc" id="desc" aria-live="polite"></div>
+      </div>
+      <div class="vista" id="vCarga" hidden>
+        <div class="carga-ic" id="cargaIc"></div>
+        <div class="carga-nom" id="cargaNom"></div>
+        <div class="barra" id="barra"></div>
+        <div class="carga-txt">CARGANDO…</div>
+      </div>
+    </div>
+    <p class="marca">CONSOLA MICHI <b>♥</b> COLOR</p>
+  </div>
+  <div class="logo">Consola <span>Michi</span> 💙</div>
+  <div class="controles">
+    <div class="cruz" aria-label="Cruceta">
+      <span class="centro"></span>
+      <button class="up" type="button" data-btn="up" aria-label="Arriba">▲</button>
+      <button class="left" type="button" data-btn="left" aria-label="Izquierda">◀</button>
+      <button class="right" type="button" data-btn="right" aria-label="Derecha">▶</button>
+      <button class="down" type="button" data-btn="down" aria-label="Abajo">▼</button>
+    </div>
+    <div class="ab">
+      <button class="b" type="button" data-btn="b" aria-label="Botón B: volver">B</button>
+      <button class="a" type="button" data-btn="a" aria-label="Botón A: jugar">A</button>
+    </div>
+  </div>
+  <div class="sel-start">
+    <div class="pastilla"><button type="button" data-btn="select" aria-label="Select: sonido encendido o apagado"></button><span id="selTxt">SONIDO</span></div>
+    <div class="pastilla"><button type="button" data-btn="start" aria-label="Start"></button><span>START</span></div>
+  </div>
+  <div class="bocina" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+</div>
+
+<p class="ayuda">▲▼ para escoger · <b>A</b> para jugar · <b>B</b> para regresar. También puedes tocar el juego en la pantalla.</p>
+<a class="volver" href="../">← Volver al menú</a>
+
+<script>
+// Los juegos viven en la página de 4 meses; aquí solo se escogen.
+const JUEGOS = [
+  { id: 'corazones', ic: '💗', t: 'Mishi atrapa corazones', d: 'Atrapa 14 corazones y esquiva las nubes grises.' },
+  { id: 'memorama', ic: '🃏', t: 'Memorama de nosotros', d: 'Encuentra los pares de nuestras fotos y dibujos.' },
+  { id: 'vales', ic: '🎟️', t: 'Rasca y gana', d: 'Raspa las tarjetas y descubre vales para cobrarme.' },
+  { id: 'rompe', ic: '🧩', t: 'Rompecabezas', d: 'Arma otra vez uno de mis dibujos.' },
+  { id: 'laberinto', ic: '🗺️', t: 'El laberinto de los kilómetros', d: 'Ayuda a Mishi a llevarte un abrazo.' },
+  { id: 'aventura', ic: '👑', t: 'La princesa y los zombies', d: 'Una aventura de 5 niveles con un premio especial al final.' },
+  { id: 'michirot', ic: '🐱', t: 'Roba un Michirot', d: 'Un mundo en 3D: compra, colecciona y roba michirots. ¡Se juega de a dos!' },
+  { id: 'dulces', ic: '🎃', t: '¡Dulce o truco!', d: 'Pide dulces casa por casa. En la última casa alguien te espera…' },
+  { id: 'boda', ic: '👰‍♀️', t: 'Vístete para nuestra boda', d: 'Escoge tu look de novia… y cásate conmigo.' },
+];
+const $ = s => document.querySelector(s);
+let S = {}; try { S = JSON.parse(localStorage.getItem('felices-4-meses-v2')) || {}; } catch (e) {}
+const J = S.juegos || {};
+function ganado(id) {
+  if (id === 'michirot') return !!(J.michirot && J.michirot.ganado);
+  if (id === 'aventura') return !!(J.aventura && J.aventura.ganado);
+  if (id === 'vales') return Array.isArray(J.vales) && J.vales.length >= 6;
+  return !!J[id];
+}
+let sel = 0; try { sel = Math.min(JUEGOS.length - 1, +sessionStorage.getItem('consola-sel') || 0); } catch (e) {}
+let vista = 'arranque', sonido = true, ocupado = false;
+try { sonido = localStorage.getItem('consola-sonido') !== 'no'; } catch (e) {}
+
+// ----- Sonidos de 8 bits -----
+let ac = null;
+function bip(f = 660, dur = .07, tipo = 'square', vol = .06, cuando = 0) {
+  if (!sonido) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ac.currentTime + cuando, o = ac.createOscillator(), g = ac.createGain();
+    o.type = tipo; o.frequency.setValueAtTime(f, t); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur + .02);
+  } catch (e) {}
+}
+const melodia = notas => notas.forEach(([f, d], i) => bip(f, d, 'square', .05, notas.slice(0, i).reduce((a, n) => a + n[1], 0)));
+
+// ----- Vistas -----
+function mostrar(v) { vista = v; ['vArranque', 'vMenu', 'vCarga'].forEach(id => { $('#' + id).hidden = id !== 'v' + v[0].toUpperCase() + v.slice(1); }); }
+function pintarMenu() {
+  const n = JUEGOS.filter(j => ganado(j.id)).length;
+  $('#ganados').textContent = `${n} DE ${JUEGOS.length} GANADOS`;
+  $('#lista').innerHTML = JUEGOS.map((j, i) => `<li class="item${i === sel ? ' sel' : ''}" data-i="${i}" role="option" aria-selected="${i === sel}"><span class="ic">${j.ic}</span><span class="nom">${j.t}</span>${ganado(j.id) ? '<span class="ok">✓</span>' : ''}</li>`).join('');
+  const caja = $('.lista'), alto = 30, visibles = Math.max(1, Math.floor(caja.clientHeight / alto));
+  const ini = Math.max(0, Math.min(sel - Math.floor(visibles / 2), JUEGOS.length - visibles));
+  $('#lista').style.transform = `translateY(${-ini * alto}px)`;
+  const j = JUEGOS[sel];
+  $('#desc').innerHTML = `<b>${j.t.toUpperCase()}</b><br>${j.d}${ganado(j.id) ? '<br><b>✓ YA LO GANASTE</b>' : ''}`;
+  try { sessionStorage.setItem('consola-sel', sel); } catch (e) {}
+}
+function mover(d) { if (vista !== 'menu') return; sel = (sel + d + JUEGOS.length) % JUEGOS.length; bip(880, .05); pintarMenu(); }
+function jugar() {
+  if (vista !== 'menu' || ocupado) return;
+  ocupado = true; const j = JUEGOS[sel];
+  melodia([[523, .08], [659, .08], [784, .08], [1047, .16]]);
+  mostrar('carga'); $('#cargaIc').textContent = j.ic; $('#cargaNom').textContent = j.t.toUpperCase();
+  const barra = $('#barra'); barra.innerHTML = '<i></i>'.repeat(10);
+  const cuadros = [...barra.children];
+  cuadros.forEach((c, k) => setTimeout(() => { c.classList.add('on'); bip(440 + k * 40, .03, 'square', .03); }, 120 + k * 110));
+  setTimeout(() => { location.href = `../4-meses/?consola=1#jugar-${j.id}`; }, 1500);
+}
+function arrancar() {
+  $('#led').classList.add('on');
+  const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('#arrLogo').classList.add('cae');
+  setTimeout(() => { $('#arrGato').classList.add('ve'); $('#arrSub').classList.add('ve'); }, reducido ? 0 : 1500);
+  setTimeout(() => $('#arrStart').classList.add('ve'), reducido ? 0 : 2100);
+}
+function start() {
+  if (vista === 'arranque') { melodia([[784, .1], [1047, .2]]); mostrar('menu'); pintarMenu(); return; }
+  jugar();
+}
+function presionar(btn) {
+  if (btn === 'up' || btn === 'left') mover(-1);
+  else if (btn === 'down' || btn === 'right') mover(1);
+  else if (btn === 'a') { if (vista === 'arranque') start(); else jugar(); }
+  else if (btn === 'start') start();
+  else if (btn === 'b') { bip(330, .08); if (vista === 'menu') location.href = '../'; }
+  else if (btn === 'select') { sonido = !sonido; try { localStorage.setItem('consola-sonido', sonido ? 'si' : 'no'); } catch (e) {} $('#selTxt').textContent = sonido ? 'SONIDO' : 'MUDO'; bip(600, .06); }
+}
+document.querySelectorAll('[data-btn]').forEach(b => b.addEventListener('click', () => presionar(b.dataset.btn)));
+$('#lista').addEventListener('click', e => {
+  const it = e.target.closest('.item'); if (!it) return;
+  const i = +it.dataset.i;
+  if (i === sel) jugar(); else { sel = i; bip(880, .05); pintarMenu(); }
+});
+$('#pantalla').addEventListener('click', () => { if (vista === 'arranque') start(); });
+const TECLAS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', Enter: 'a', ' ': 'a', z: 'a', x: 'b', Escape: 'b', Backspace: 'b', Shift: 'select' };
+document.addEventListener('keydown', e => {
+  const b = TECLAS[e.key]; if (!b) return; e.preventDefault();
+  const el = document.querySelector(`[data-btn="${b}"]`); if (el) { el.classList.add('pulsa'); setTimeout(() => el.classList.remove('pulsa'), 120); }
+  presionar(b);
+});
+$('#selTxt').textContent = sonido ? 'SONIDO' : 'MUDO';
+// Si regresa desde un juego, entra directo al menú
+window.addEventListener('pageshow', () => { ocupado = false; if (vista === 'carga') { mostrar('menu'); pintarMenu(); } });
+if (document.referrer.includes('/4-meses/')) { $('#led').classList.add('on'); mostrar('menu'); pintarMenu(); } else arrancar();
+</script>
+</body>
+</html>

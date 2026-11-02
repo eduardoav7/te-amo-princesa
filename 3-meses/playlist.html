@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestra Sintonía 🎶</title>
+    <style>
+        body { background: linear-gradient(135deg, #FFB6C1, #ADD8E6); font-family: 'Arial', sans-serif; text-align: center; color: #4a4a4a; min-height: 100vh; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .container { background: rgba(255, 255, 255, 0.9); padding: 40px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); max-width: 500px; width: 90%; }
+        h2 { color: #d63384; margin-bottom: 15px; font-size: 1.8em; }
+        .mensaje { font-size: 1.1em; margin-bottom: 25px; line-height: 1.5; font-weight: bold; color: #555; }
+        .cancion-box { background: #fdfdfd; border: 2px dashed #FFB6C1; border-radius: 15px; padding: 15px; margin-bottom: 20px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .cancion-titulo { font-size: 1.1em; font-weight: bold; color: #d63384; margin-bottom: 10px; }
+        audio { width: 100%; outline: none; }
+        .btn-musica { display: inline-block; margin: 15px 0; background-color: #1DB954; color: white; padding: 15px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 1em; transition: 0.3s; }
+        .btn-musica:hover { transform: scale(1.05); background-color: #1ed760; }
+        .btn-regresar { display: block; margin-top: 10px; color: #87CEFA; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Canciones que me recuerdan a ti 🎶</h2>
+        
+        <p class="mensaje">
+            Estas canciones ya están en la playlist que te hice hace tiempo, pero quería ponerlas aquí para que las escuches ahora mismo porque me recuerdan muchísimo a ti. 💞
+        </p>
+
+        <!-- Canción 1 -->
+        <div class="cancion-box">
+            <div class="cancion-titulo">🎵 Cinderella - Mac Miller</div>
+            <audio controls>
+                <source src="cinderella.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+
+        <!-- Canción 2 -->
+        <div class="cancion-box">
+            <div class="cancion-titulo">🎵 Congratulations - Mac Miller</div>
+            <audio controls>
+                <source src="congratulations.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+
+        <!-- Canción 3 -->
+        <div class="cancion-box">
+            <div class="cancion-titulo">🎵 Neo Roneo - Latin Mafia</div>
+            <audio controls>
+                <source src="neoroneo.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+
+        <!-- Canción 4 -->
+        <div class="cancion-box">
+            <div class="cancion-titulo">🎵 Mi sorpresa fuiste tú - Calibre 50</div>
+            <audio controls>
+                <source src="sorpresa.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+        
+        <!-- Botón hacia la playlist de Spotify -->
+        <!-- Cambia AQUI_PON_TU_LINK por el link real de tu playlist -->
+        <a href="https://open.spotify.com/playlist/6KEaCrIh5V5XhcSS13jjKU?si=8jOvTB24TCelL2IYArS4Tw&utm_source=whatsapp&pi=0BoqJC8ZRyO92&pt=cae911a28832a899ada2338634c22b58" target="_blank" class="btn-musica">🎧 Escuchar la Playlist completa</a>
+        
+        <br>
+        <a href="index.html" class="btn-regresar">⬅ Regresar al Menú</a>
+    </div>
+</body>
+</html>

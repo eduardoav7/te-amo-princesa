@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestro Tiempo ⏳</title>
+    <style>
+        body { background: linear-gradient(135deg, #FFB6C1, #ADD8E6); font-family: 'Arial', sans-serif; text-align: center; color: #4a4a4a; min-height: 100vh; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .container { background: rgba(255, 255, 255, 0.9); padding: 40px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); max-width: 450px; width: 90%; }
+        h2 { color: #d63384; margin-bottom: 5px; }
+        #numero-dias { font-size: 4em; color: #87CEFA; font-weight: bold; margin: 10px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        .btn-regresar { display: inline-block; margin-top: 30px; background-color: #87CEFA; color: #fff; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; border: 2px solid #FFB6C1; transition: 0.3s; }
+        .btn-regresar:hover { background-color: #FFC0CB; border-color: #87CEFA; transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Nuestro tiempo juntos ⏳</h2>
+        <p>Juntos oficialmente desde el <b>14 de junio de 2026</b>.</p>
+        
+        <div id="numero-dias">0</div>
+        <p>Días llenos de amor, aventuras en los juegos y felicidad. <br><b>¡Felices 3 meses!</b></p>
+        <p style="margin-top:20px; font-size:0.9em; color:#6c757d;">Y contando los días para por fin vernos en persona...</p>
+
+        <a href="index.html" class="btn-regresar">⬅ Regresar al Menú</a>
+    </div>
+
+    <script>
+        // Calcula los días desde el 14 de junio 2026
+        const fechaInicio = new Date('2026-06-14T00:00:00');
+        const hoy = new Date();
+        const diferencia = hoy.getTime() - fechaInicio.getTime();
+        const dias = Math.floor(diferencia / (1000 * 3600 * 24));
+        document.getElementById('numero-dias').innerText = dias;
+    </script>
+</body>
+</html>
