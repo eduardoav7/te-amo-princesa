@@ -51,6 +51,10 @@ h1 .sub { display: block; font-size: .6em; font-weight: 500; color: var(--marker
 .mes.pronto h2 { font-size: 34px; }
 .candado { font-size: 34px; line-height: 1; }
 .mes.consola { background: #2b2f5e; color: #fff; }
+.mes.historia { background: linear-gradient(160deg, #1b2050, #3b2a6b); color: #fff; }
+.mes.historia p { color: #d9dcff; }
+.mes.historia .fecha { color: #ff8fab; }
+.mes.historia .entrar { background: #ff8fab; color: var(--ink); }
 .mes.consola p { color: #c9cdf2; }
 .mes.consola .fecha { color: #ffd24a; }
 .mes.consola .entrar { background: #ffd24a; color: var(--ink); }
@@ -92,6 +96,9 @@ let html = MESES.map(m => `<li><a class="mes ${m.color}" href="${m.carpeta}">
 html += `<li><a class="mes consola" href="juegos/">
   <span class="mini-consola"><svg viewBox="0 0 100 130" aria-hidden="true"><rect x="8" y="4" width="84" height="122" rx="12" fill="#ff8fab" stroke="#22264a" stroke-width="4"/><rect x="18" y="14" width="64" height="50" rx="5" fill="#22264a"/><rect x="23" y="19" width="54" height="40" rx="3" fill="#9be0c4"/><path d="M43 34 C38 28 30 34 43 46 C56 34 48 28 43 34 Z" transform="translate(7 0)" fill="#ff5f87"/><path d="M22 82 h8 v-8 h8 v8 h8 v8 h-8 v8 h-8 v-8 h-8 Z" fill="#22264a"/><circle cx="70" cy="80" r="6" fill="#ffd24a" stroke="#22264a" stroke-width="2.5"/><circle cx="82" cy="92" r="6" fill="#7fb2ec" stroke="#22264a" stroke-width="2.5"/><path d="M40 110 h8 M54 110 h8" stroke="#22264a" stroke-width="4" stroke-linecap="round"/></svg></span>
   <div><h2>Juegos</h2><p class="fecha">Consola Michi · 9 juegos</p><p>Todos los juegos de tu página de 4 meses, en tu propia consolita.</p><span class="entrar">Jugar 🎮</span></div></a></li>`;
+html += `<li><a class="mes historia" href="historia/">
+  <span class="mini-consola"><svg viewBox="0 0 100 130" aria-hidden="true"><rect x="10" y="6" width="80" height="118" rx="16" fill="#22264a"/><rect x="16" y="14" width="68" height="100" rx="10" fill="#1b2050"/><circle cx="68" cy="34" r="9" fill="#fff3c4"/><circle cx="72" cy="31" r="8" fill="#1b2050"/><circle cx="28" cy="26" r="1.6" fill="#fff"/><circle cx="44" cy="40" r="1.2" fill="#fff"/><circle cx="76" cy="58" r="1.4" fill="#fff"/><rect x="22" y="62" width="40" height="12" rx="6" fill="#ffffff"/><rect x="38" y="80" width="40" height="12" rx="6" fill="#7fb2ec"/><path d="M50 108 C44 102 38 108 50 116 C62 108 56 102 50 108 Z" fill="#ff5f87"/></svg></span>
+  <div><h2>Cómo nos conocimos</h2><p class="fecha">10:48 pm · una animación</p><p>Desde aquel «hola» en un juego en línea hasta nuestra boda en 2030 💕. Con nuestra canción 🎶</p><span class="entrar">Ver 🎬</span></div></a></li>`;
 html += `<li><div class="mes pronto"><span class="candado">🔒</span><h2>Felices ${n} meses</h2><p class="fecha">${prox.getDate()} de ${MESN[prox.getMonth()]} de ${prox.getFullYear()}</p><p>${faltan > 0 ? `Se abre en ${faltan} ${faltan === 1 ? 'día' : 'días'}. ` : ''}Estoy preparando algo bonito para ti.</p><span class="en-proceso">En proceso 🛠️</span></div></li>`;
 document.getElementById('lista').innerHTML = html;
 </script>
