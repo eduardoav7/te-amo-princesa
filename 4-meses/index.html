@@ -919,7 +919,7 @@ body.velada .btn { box-shadow: 3px 4px 0 #ffb84d; }
 .mr-mut-o { filter: drop-shadow(0 0 10px #ffc93c) drop-shadow(0 0 4px #ffc93c); }
 .mr-mut-d { filter: drop-shadow(0 0 10px #7fe3ff) drop-shadow(0 0 4px #7fe3ff); }
 .mr-mut-a { filter: drop-shadow(0 0 10px #ff7ad9) drop-shadow(0 0 5px #7fe3ff); }
-.mr-chip.m-c { background: #ff9ad5; color: var(--ink); } .mr-chip.m-t { background: #ffb23d; color: var(--ink); } .mr-chip.m-l { background: linear-gradient(90deg, #ff2d2d, #ff8a1f); } .mr-chip.m-g { background: linear-gradient(90deg, #2a1f6b, #7b5cff, #2a1f6b); color: #fff; }
+.mr-chip.m-k { background: #a0622d; color: #fff; } .mr-chip.m-c { background: #ff9ad5; color: var(--ink); } .mr-chip.m-t { background: #ffb23d; color: var(--ink); } .mr-chip.m-l { background: linear-gradient(90deg, #ff2d2d, #ff8a1f); } .mr-chip.m-g { background: linear-gradient(90deg, #2a1f6b, #7b5cff, #2a1f6b); color: #fff; }
 .mr-mut-c { filter: drop-shadow(0 0 10px #ff9ad5) drop-shadow(0 0 4px #9ff0d0); }
 .mr-mut-t { filter: drop-shadow(0 0 10px #ffb23d) drop-shadow(0 0 4px #ffcf5c); }
 .mr-mut-l { filter: drop-shadow(0 0 10px #ff5a1f) drop-shadow(0 0 5px #ffb21f); }
@@ -1497,7 +1497,8 @@ body.velada .btn { box-shadow: 3px 4px 0 #ffb84d; }
           <li><span>💰</span><span>Tus michirots ganan dinero en tu base. Pasa junto a ellos para cobrar.</span></li>
           <li><span>😼</span><span>Entra a una base rival, presiona «Robar» y corre a tu base antes de que el dueño te alcance.</span></li>
           <li><span>🎯</span><span>Cumple misiones, agranda tu base en la tiendita y aprovecha las sorpresas: lluvia de monedas, hora loca y regalos.</span></li>
-          <li><span>💎</span><span>Hay más de 20 michirots, y 4 Exclusivos que solo salen en momentos especiales.</span></li>
+          <li><span>💎</span><span>Hay más de 35 michirots y 14 Exclusivos: 4 salen en momentos especiales y 10 ediciones de Diamante y Galácticas solo salen de los Bloques de suerte 🎲, que se abren con ruleta en tu base.</span></li>
+          <li><span>🪳</span><span>En la invasión de cucarachas, cada cucaracha que se sube a tu michirot le pega una mutación… ¡y se pueden juntar varias!</span></li>
           <li><span>✨</span><span>Junta 7 michirots distintos y pasará uno secreto muy especial… y después, otro todavía más especial 💞</span></li>
         </ul>
       </div>
@@ -3913,12 +3914,38 @@ const michirot = (() => {
     { id: 'secreto', n: 'Brittanina Eduardino', r: 's', p: 150000, g: 5000, d: 'Dos gatitos tan enamorados que se fusionaron en un solo corazón. Solo existe uno en todo el universo, y es nuestro. 💞' },
     { id: 'siempre', n: 'Por siempre, contigo', r: 's', p: 140626, g: 14062026, exacto: true, d: 'Tú y yo, de la mano. Cuesta $140626 y gana $14062026 por segundo, porque es la fecha de nuestro aniversario: 14 de junio de 2026. 💞', pista: 'Aparece después de encontrar a Brittanina Eduardino 💞' },
   ];
+  // Ediciones exclusivas de nuestros brainrots: SOLO salen de los Bloques de suerte (nunca en la alfombra)
+  const EDICIONES = [
+    ['spaghettino', 'dia', 150000, 1500], ['croissantino', 'dia', 180000, 1800], ['sushigatto', 'dia', 220000, 2200],
+    ['donutella', 'dia', 260000, 2600], ['astrogatto', 'dia', 320000, 3100], ['draghetto', 'dia', 380000, 3600],
+    ['nuvoletta', 'gal', 480000, 4500], ['pianoforte', 'gal', 600000, 5600], ['lunetta', 'gal', 750000, 6800], ['solecito', 'gal', 900000, 8200],
+  ];
+  const BASE_ED = Object.fromEntries(CAT.map(c => [c.id, c]));
+  EDICIONES.forEach(([b, t, p, g]) => {
+    const c = BASE_ED[b]; if (!c) return;
+    const dia = t === 'dia';
+    CAT.push({ id: b + (dia ? 'Dia' : 'Gal'), base: b, ed: t, n: `${c.n} ${dia ? 'de Diamante' : 'Galáctico'}`, r: 'x', soloBloque: true, p, g,
+      d: dia ? `Edición de diamante de ${c.n}. Brilla tanto que casi no se le puede ver de frente.` : `Edición galáctica de ${c.n}. Vino de otra galaxia solo para estar contigo.`,
+      pista: dia ? 'Solo sale de un Bloque de suerte 🎲' : 'Solo sale de un Bloque Mítico o Exclusivo 🎲' });
+    ARTE[b + (dia ? 'Dia' : 'Gal')] = () => edicionArte(b, t);
+  });
+  function edicionArte(b, t) {
+    const id = b + t, base = ARTE[b]();
+    if (t === 'dia') return `<defs><filter id="ed-${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".22 .32 .22 0 .16  .26 .4 .28 0 .24  .28 .4 .36 0 .36  0 0 0 1 0"/></filter></defs>
+      <circle cx="50" cy="52" r="46" fill="#bff1ff" opacity=".35"/><g filter="url(#ed-${id})">${base}</g>
+      <path d="M18 24 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 Z M80 70 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 Z M30 82 l1.5 3.5 3.5 1.5 -3.5 1.5 -1.5 3.5 -1.5 -3.5 -3.5 -1.5 3.5 -1.5 Z" fill="#ffffff"/>
+      <g transform="translate(80 18)"><path d="M-10 -4 L-5 -10 H5 L10 -4 L0 10 Z" fill="#7fe3ff" stroke="#22264a" stroke-width="2.4" stroke-linejoin="round"/><path d="M-10 -4 H10 M-5 -10 L-2 -4 L0 10 M5 -10 L2 -4" fill="none" stroke="#22264a" stroke-width="1.4"/><path d="M-6 -7 L-3 -4" stroke="#fff" stroke-width="2" stroke-linecap="round"/></g>`;
+    let est = ''; for (let k = 0; k < 14; k++) est += `<circle cx="${(k * 37 + 9) % 92 + 4}" cy="${(k * 53 + 13) % 92 + 4}" r="${k % 3 ? 1 : 1.8}" fill="${k % 2 ? '#ffffff' : '#ffe08a'}"/>`;
+    return `<defs><filter id="ed-${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".38 .22 .3 0 .12  .16 .16 .26 0 .04  .46 .3 .52 0 .3  0 0 0 1 0"/></filter></defs>
+      <circle cx="50" cy="52" r="46" fill="#2a1f6b" opacity=".55"/>${est}<g filter="url(#ed-${id})">${base}</g>
+      <g transform="translate(80 18)"><circle r="8" fill="#b48cff" stroke="#22264a" stroke-width="2.4"/><ellipse rx="14" ry="4" fill="none" stroke="#ffe08a" stroke-width="2.4" transform="rotate(-20)"/><circle cx="-3" cy="-3" r="2" fill="#e3d6ff"/></g>`;
+  }
   const POR = Object.fromEntries(CAT.map(c => [c.id, c]));
   // Bloques de suerte: se compran en la alfombra y al llegar a tu base se abren
   const BLOQUES = {
-    bloque: { id: 'bloque', n: 'Bloque de suerte', r: 'b', p: 6000, g: 0, bloque: true, tabla: { e: 45, l: 33, m: 15, d: 4, x: 3 } },
-    bloqueMitico: { id: 'bloqueMitico', n: 'Bloque Mítico', r: 'b', p: 45000, g: 0, bloque: true, tabla: { l: 30, m: 38, d: 20, x: 12 } },
-    bloqueEx: { id: 'bloqueEx', n: 'Bloque Exclusivo', r: 'b', p: 250000, g: 0, bloque: true, tabla: { d: 35, x: 65 } },
+    bloque: { id: 'bloque', n: 'Bloque de suerte', r: 'b', p: 20000, g: 0, bloque: true, tabla: { spaghettinoDia: 30, croissantinoDia: 26, sushigattoDia: 20, donutellaDia: 14, astrogattoDia: 7, draghettoDia: 3 } },
+    bloqueMitico: { id: 'bloqueMitico', n: 'Bloque Mítico', r: 'b', p: 90000, g: 0, bloque: true, tabla: { sushigattoDia: 18, donutellaDia: 20, astrogattoDia: 20, draghettoDia: 16, nuvolettaGal: 14, pianoforteGal: 8, lunettaGal: 3, solecitoGal: 1 } },
+    bloqueEx: { id: 'bloqueEx', n: 'Bloque Exclusivo', r: 'b', p: 300000, g: 0, bloque: true, tabla: { astrogattoDia: 10, draghettoDia: 14, nuvolettaGal: 26, pianoforteGal: 24, lunettaGal: 16, solecitoGal: 10 } },
   };
   Object.assign(POR, BLOQUES);
   const esBloque = id => !!(POR[id] && POR[id].bloque);
@@ -3936,10 +3963,16 @@ const michirot = (() => {
     l: { n: 'Lava', ico: '🔥', x: 5, p: 3.4, color: '#ff5a1f', chance: .012 },
     a: { n: 'Arcoíris', ico: '🌈', x: 6, p: 4, color: '#ff7ad9', chance: .01 },
     g: { n: 'Galaxia', ico: '🌌', x: 8, p: 5.2, color: '#7b5cff', chance: .004 },
+    k: { n: 'Cucaracha', ico: '🪳', x: 3.5, p: 2.6, color: '#a0622d', chance: 0 },
   };
-  const ORDEN_MUT = 'odctlag';
-  const multG = m => (m && MUT[m] ? MUT[m].x : 1);
-  const multP = m => (m && MUT[m] ? MUT[m].p : 1);
+  const ORDEN_MUT = 'odkctlag';
+  // Un michirot puede tener varias mutaciones: se guardan juntas, p. ej. 'okg' (Dorado + Cucaracha + Galaxia)
+  const mutsDe = m => (m ? ORDEN_MUT.split('').filter(k => m.includes(k)) : []);
+  const mutTop = m => { const l = mutsDe(m); return l.length ? l[l.length - 1] : null; };
+  const sumarMut = (m, k) => mutsDe((m || '') + k).join('');
+  const multG = m => 1 + mutsDe(m).reduce((a, k) => a + MUT[k].x - 1, 0);
+  const multP = m => 1 + mutsDe(m).reduce((a, k) => a + MUT[k].p - 1, 0);
+  const icosMut = m => mutsDe(m).map(k => MUT[k].ico).join('');
   // Tiendita de mejoras
   const IMAN = [1.25, 2.3, 3.6, 5.2, 9];
   const CANDADO_S = [60, 80, 100, 130];
@@ -3961,6 +3994,7 @@ const michirot = (() => {
     regalo: { n: 'Regalo misterioso', ico: '🎁', dur: 45, txt: '🎁 ¡Apareció un regalo misterioso en el mapa! Búscalo antes de que desaparezca' },
     tacos: { n: '¡Lluvia de tacos!', ico: '🌮', dur: 25, txt: '🌮 ¡Lluvia de tacos! Al michirot que le caiga un taco se vuelve TACO y gana ×4. Atrapa tacos para ganar dinero' },
     siesta: { n: 'Siesta zombie', ico: '😴', dur: 30, txt: '😴 ¡El Zombie Gruñón se quedó dormido! Róbale sin que te persiga' },
+    cucarachas: { n: '¡Invasión de cucarachas!', ico: '🪳', dur: 35, txt: '🪳 ¡Invasión de cucarachas! Si una se sube a uno de tus michirots le pega una mutación… ¡y se pueden juntar muchas!' },
   };
   // Misiones (las primeras van en orden; después salen al azar)
   const MISIONES = [
@@ -4022,7 +4056,7 @@ const michirot = (() => {
   }
   function alAzar(r) { const l = CAT.filter(c => c.r === r); return l[Math.floor(Math.random() * l.length)].id; }
   function chip(r) { return `<span class="mr-chip r-${r}">${RAREZAS[r]}</span>`; }
-  function chipMut(m) { return m && MUT[m] ? `<span class="mr-chip m-${m}">${MUT[m].ico} ${MUT[m].n}</span>` : ''; }
+  function chipMut(m) { return mutsDe(m).map(k => `<span class="mr-chip m-${k}">${MUT[k].ico} ${MUT[k].n}</span>`).join(' '); }
   function suerte() { return 1 + .5 * ((E && E.mej && E.mej.suerte) || 0); }
   function mutAzar(extra = 1) {
     const s = suerte() * extra, r = Math.random();
@@ -4065,7 +4099,7 @@ const michirot = (() => {
     if (typeof e.misN !== 'number') e.misN = 0;
     if (typeof e.sonido !== 'number') e.sonido = 2;
     if (!e.mutCol || typeof e.mutCol !== 'object') e.mutCol = {};
-    e.base.forEach(b => { if (b) delete b.robando; });
+    e.base.forEach(b => { if (b) { delete b.robando; delete b.abriendo; } });
     return e;
   }
   const dentroDe = (b, x, z, m = 0) => x > b.cx - b.w / 2 + m && x < b.cx + b.w / 2 - m && z > b.cz - b.d / 2 + m && z < b.cz + b.d / 2 - m;
@@ -4083,6 +4117,7 @@ const michirot = (() => {
   const teclas = new Set(); let joy = { x: 0, z: 0, activo: false };
   const $m = id => document.getElementById(id);
   // Diversión extra
+  let cucas = [], cucaT = 0, cucaMuts = 0, texCuca = null;
   let evento = null, eventoT = 50, monedas = [], monedaT = 0, regalo = null, particulas = [], sacudida = 0, turboT = 0;
   let siempreT = 20, tacosCaen = [], tacoT = TACO_CADA, tacoLanzaT = 0, tacoAviso = false, tacosMios = 0, texTaco = null, grupoBase = null, murosBase = [], anchoHecho = 0;
   let texChispa = null, texHalo = null, geoMoneda = null, matMoneda = null, geoSomMon = null, matSomMon = null, zzz = null;
@@ -4256,14 +4291,29 @@ const michirot = (() => {
     const h = g.createRadialGradient(64, 64, 8, 64, 64, 62); h.addColorStop(0, 'rgba(255,255,255,.95)'); h.addColorStop(.45, 'rgba(255,255,255,.55)'); h.addColorStop(1, 'rgba(255,255,255,0)');
     g.fillStyle = h; g.fillRect(0, 0, 128, 128);
     texHalo = new T3.CanvasTexture(c); TEX.add(texHalo);
+    // Cucaracha (vista desde arriba, caricaturesca)
+    c = document.createElement('canvas'); c.width = c.height = 96; g = c.getContext('2d');
+    g.strokeStyle = '#3a2412'; g.lineWidth = 3.4; g.lineCap = 'round';
+    [[-1, 30], [-1, 46], [-1, 62], [1, 30], [1, 46], [1, 62]].forEach(([l, y]) => { g.beginPath(); g.moveTo(48 + l * 10, y); g.quadraticCurveTo(48 + l * 26, y - 4, 48 + l * 34, y + (y - 46) * .6 + 6); g.stroke(); });
+    g.beginPath(); g.moveTo(44, 20); g.quadraticCurveTo(30, 4, 20, 6); g.moveTo(52, 20); g.quadraticCurveTo(66, 4, 76, 6); g.stroke();
+    g.fillStyle = '#8a4f22'; g.strokeStyle = '#22264a'; g.lineWidth = 3;
+    g.beginPath(); g.ellipse(48, 52, 17, 26, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+    g.fillStyle = '#5c3214'; g.beginPath(); g.ellipse(48, 24, 11, 9, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+    g.strokeStyle = '#5c3214'; g.lineWidth = 2; g.beginPath(); g.moveTo(48, 34); g.lineTo(48, 76); g.stroke();
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(43, 22, 3.4, 0, 7); g.arc(53, 22, 3.4, 0, 7); g.fill();
+    g.fillStyle = '#22264a'; g.beginPath(); g.arc(43.6, 22.6, 1.7, 0, 7); g.arc(53.6, 22.6, 1.7, 0, 7); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.ellipse(42, 46, 4, 10, -.2, 0, 7); g.fill();
+    texCuca = new T3.CanvasTexture(c); TEX.add(texCuca);
   }
   function haloDe(tam = 2.1) {
     const s = new T3.Sprite(new T3.SpriteMaterial({ map: texHalo, transparent: true, depthWrite: false, opacity: .85 }));
     s.scale.set(tam, tam, 1); s.center.set(.5, .3); s.renderOrder = 1; s.visible = false; s.userData.tam = tam; return s;
   }
-  function pintarHalo(h, mut, t = 0) {
-    h.visible = !!(mut && MUT[mut]);
+  function pintarHalo(h, mutes, t = 0) {
+    const l = mutsDe(mutes);
+    h.visible = l.length > 0;
     if (!h.visible) return;
+    const mut = l.length > 1 ? l[Math.floor(t * .8) % l.length] : l[0];
     if (mut === 'a') h.material.color.setHSL((t * .25) % 1, .9, .62);
     else if (mut === 'g') h.material.color.setHSL(.7 + Math.sin(t * 1.5) * .06, .85, .58);
     else if (mut === 'l') h.material.color.setHSL(.04 + Math.sin(t * 9) * .025, 1, .55);
@@ -4285,6 +4335,8 @@ const michirot = (() => {
   function arcoiris() { return new T3.Color().setHSL(Math.random(), .9, .62); }
   const ALEATORIO = l => l[Math.floor(Math.random() * l.length)];
   function colorMut(m) {
+    const l = mutsDe(m); m = l.length > 1 ? ALEATORIO(l) : l[0];
+    if (!m) return '#ffd25e';
     if (m === 'a') return arcoiris();
     if (m === 'c') return ALEATORIO(['#ff9ad5', '#9ff0d0', '#c9b0ff', '#fff3a6']);
     if (m === 'l') return ALEATORIO(['#ff5a1f', '#ffb21f', '#ff2d2d']);
@@ -4515,20 +4567,20 @@ const michirot = (() => {
     if (id) { p.spr.material.map = texturas[id] || null; p.spr.material.needsUpdate = true; }
     p.aro.material.color.set(id ? COLOR_R[POR[id].r] : '#b8bfd3');
     pintarHalo(p.halo, p.mut);
-    p.taco.visible = p.mut === 't';
+    p.taco.visible = mutsDe(p.mut).includes('t');
     if (p.lab && !id) p.lab.userData.poner([]);
   }
   function pintarBase() {
     pedMio.forEach((p, i) => { p.g.visible = i < E.base.length; });
     E.base.forEach((b, i) => pintarPed(pedMio[i], b && !b.robando ? b.id : null, b && b.mut));
   }
-  function registrarMut(id, m) { const l = E.mutCol[id] || (E.mutCol[id] = []); if (!l.includes(m)) l.push(m); }
+  function registrarMut(id, m) { const l = E.mutCol[id] || (E.mutCol[id] = []); mutsDe(m).forEach(k => { if (!l.includes(k)) l.push(k); }); }
   function mutarAlfombra(it, m) {
-    it.mut = m;
+    it.mut = sumarMut(it.mut, m);
     if (!it.halo) { it.halo = haloDe(2.3); it.g.add(it.halo); }
-    pintarHalo(it.halo, m);
+    pintarHalo(it.halo, it.mut);
     if (m === 't' && !it.taco) { it.taco = sombreroTaco(); it.g.add(it.taco); }
-    if (it.taco) it.taco.visible = m === 't';
+    if (it.taco) it.taco.visible = mutsDe(it.mut).includes('t');
   }
   // Mientras juegan juntos, el fondo del mapa es la base del otro (Zombie y Bandido se van de vacaciones)
   function modoRemoto(on, w) {
@@ -4617,24 +4669,56 @@ const michirot = (() => {
     volar(it.id, desde, pedMio[i], () => colocar(i, it.id, 'compra', it.mut));
   }
   function comprarBloque(it, i) {
-    const B = POR[it.id], premio = alAzar(azar(B.tabla)), mut = mutAzar(1.5);
-    E.base[i] = { id: premio, banco: 0, llegando: true, mut };
+    const B = POR[it.id];
+    E.base[i] = { id: it.id, banco: 0, llegando: true };
     const desde = it.g.position.clone(); quitar(it);
     sonido('comprar'); chispas(desde.x, 1, desde.z, '#ffd25e', 12);
     progreso('comprar', 1);
-    aviso(`🎲 ¡Compraste un ${B.n}! Va a tu base a abrirse…`, 2400);
+    aviso(`🎲 ¡Compraste un ${B.n}! Va volando a tu base…`, 2400);
     guardar();
-    volar(it.id, desde, pedMio[i], () => abrirBloque(i, B, premio, mut), 1.3);
+    volar(it.id, desde, pedMio[i], () => {
+      E.base[i] = { id: it.id, banco: 0 };
+      pintarBase(); guardar();
+      const p = pedMio[i]; p.rebote = 1; chispas(p.x, 1.1, p.z, '#ffd25e', 12);
+      sonido('moneda');
+      aviso(`🎲 Tu ${B.n} ya está en tu base. Acércate y presiona «Abrir» para ver qué exclusivo trae 💎`, 4200);
+    }, 1.3);
   }
-  function abrirBloque(i, B, premio, mut) {
-    const p = pedMio[i], c = POR[premio], ex = c.r === 'x';
-    ['#ffd25e', '#ff8fab', '#7fe3ff', '#7ee2a0'].forEach(col => chispas(p.x, 1, p.z, col, 8, 4.2));
-    sacudida = ex ? .45 : .25;
-    colocar(i, premio, 'bloque', mut);
-    sonido(ex ? 'secreto' : 'regalo');
-    if (ex) confetti(3000, 120);
-    aviso(`🎲 ¡Del ${B.n} salió ${ex ? 'el EXCLUSIVO ' : ''}${mut ? MUT[mut].ico + ' ' : ''}${c.n}! ${chipTexto(c.r)}`, 4200);
-    progreso('bloque', 1);
+  // La ruleta: el bloque gira mostrando exclusivos hasta detenerse en el premio
+  let abriendo = null;
+  function abrirBloque(i) {
+    const b = E.base[i]; if (!b || !esBloque(b.id) || abriendo) return;
+    const B = POR[b.id], premio = azar(B.tabla), mut = mutAzar(1.5), opciones = Object.keys(B.tabla);
+    const p = pedMio[i];
+    abriendo = { i, t: 0, dur: 3.6, sig: 0, k: 0, premio, mut, opciones, B };
+    b.abriendo = true;
+    sonido('evento');
+    aviso(`🎲 Abriendo tu ${B.n}…`, 3400);
+    chispas(p.x, 1, p.z, '#ffd25e', 10, 3);
+  }
+  function giroBloque(dt) {
+    if (!abriendo) return;
+    const A = abriendo, p = pedMio[A.i];
+    A.t += dt; A.sig -= dt;
+    const fr = Math.min(1, A.t / A.dur);
+    p.spr.scale.x = (p.esc || 1.5) * Math.cos(A.t * (26 - 22 * fr));
+    if (A.sig <= 0 && fr < 1) {
+      A.sig = .05 + fr * fr * .35;
+      const id = fr > .86 ? A.premio : A.opciones[A.k++ % A.opciones.length];
+      if (texturas[id]) { p.spr.material.map = texturas[id]; p.spr.material.needsUpdate = true; }
+      sonido('moneda');
+      chispas(p.x, 1.2, p.z, ['#7fe3ff', '#b48cff', '#ffd25e', '#ff8fab'][A.k % 4], 2, 2.2, .32);
+    }
+    if (fr >= 1) {
+      abriendo = null;
+      const c = POR[A.premio];
+      ['#ffd25e', '#ff8fab', '#7fe3ff', '#b48cff'].forEach(col => chispas(p.x, 1, p.z, col, 9, 4.4));
+      sacudida = .45;
+      colocar(A.i, A.premio, 'bloque', A.mut);
+      sonido('secreto'); confetti(3000, 120);
+      aviso(`🎲 ¡Del ${A.B.n} salió el EXCLUSIVO ${A.mut ? icosMut(A.mut) + ' ' : ''}${c.n}! 💎`, 4600);
+      progreso('bloque', 1);
+    }
   }
   const chipTexto = r => ({ e: '(Épico)', l: '(Legendario)', m: '(Mítico)', d: '(Brainrot Dios)', x: '💎' }[r] || '');
   function volar(id, desde, ped, fin, tam = 1.5) {
@@ -4653,7 +4737,7 @@ const michirot = (() => {
     if (id === 'secreto') { sonido('secreto'); ganarSecreto(); return; }
     if (id === 'siempre') { sonido('secreto'); ganarSiempre(); return; }
     sonido(como === 'robo' ? 'llegar' : 'moneda');
-    const c = POR[id], nm = mut ? `${MUT[mut].ico} ${c.n}` : c.n;
+    const c = POR[id], nm = mut ? `${icosMut(mut)} ${c.n}` : c.n;
     if (como === 'robo') aviso(`¡Robaste a ${nm}! 😼`);
     else aviso(nuevoEnCol ? `¡Nuevo en tu colección: ${nm}! ✨` : `¡${nm} llegó a tu base!`);
     if (nuevoEnCol && !esSecreto(id) && sinSecretos(E.col).length === PARA_SECRETO) {
@@ -4677,8 +4761,8 @@ const michirot = (() => {
   }
   function info(i) {
     const b = E.base[i]; if (!b) return; const c = POR[b.id], venta = Math.floor(c.p * multP(b.mut) / 2);
-    const dibujo = arte(c.id, 'mr-grande' + (b.mut ? ' mr-mut-' + b.mut : ''));
-    hoja(`${b.mut === 't' ? `<div class="mr-tacowrap">${dibujo}<svg class="mr-taco-mini" viewBox="0 0 100 100" aria-hidden="true">${TACO_SVG}</svg></div>` : dibujo}<p class="mr-ficha-n">${esc(c.n)}</p><p>${chip(c.r)} ${chipMut(b.mut)}</p><p class="mr-ganan">Gana ${fmtDe(c.id, ganaB(b))} por segundo${b.mut ? ` (×${MUT[b.mut].x})` : ''}</p><p class="mr-ficha-d">${esc(c.d)}</p>`
+    const dibujo = arte(c.id, 'mr-grande' + (b.mut ? ' mr-mut-' + mutTop(b.mut) : ''));
+    hoja(`${mutsDe(b.mut).includes('t') ? `<div class="mr-tacowrap">${dibujo}<svg class="mr-taco-mini" viewBox="0 0 100 100" aria-hidden="true">${TACO_SVG}</svg></div>` : dibujo}<p class="mr-ficha-n">${esc(c.n)}</p><p>${chip(c.r)} ${chipMut(b.mut)}</p><p class="mr-ganan">Gana ${fmtDe(c.id, ganaB(b))} por segundo${b.mut ? ` (×${+multG(b.mut).toFixed(1)})` : ''}</p><p class="mr-ficha-d">${esc(c.d)}</p>`
       + (esSecreto(c.id) ? '<p class="mr-tip">Este no se vende. Es nuestro 💞</p>' : ''),
       esSecreto(c.id) ? [['Cerrar', cerrarHoja]] : [['Vender por ' + fmt(venta), () => { vender(i); cerrarHoja(); }], ['Cerrar', cerrarHoja]]);
   }
@@ -4852,7 +4936,7 @@ const michirot = (() => {
     if (evento) return;
     if (!tipo) {
       const m = E.mision && E.mision.evento;
-      tipo = m && m !== 'tacos' && Math.random() < .8 ? m : azar({ lluvia: 34, loca: 24, regalo: 26, siesta: npc[0].estado === 'casa' ? 16 : 0 });
+      tipo = m && m !== 'tacos' && Math.random() < .8 ? m : azar({ lluvia: 30, loca: 22, regalo: 22, cucarachas: E.base.some(b => b && !esBloque(b.id)) ? 26 : 0, siesta: npc[0].estado === 'casa' ? 14 : 0 });
     }
     if (tipo === 'siesta' && npc[0].estado !== 'casa') tipo = 'lluvia';
     const D = EVENTOS[tipo];
@@ -4861,6 +4945,7 @@ const michirot = (() => {
     if (tipo === 'loca') { escena.background.set('#f1dcff'); escena.fog.color.set('#f1dcff'); spawnT = Math.min(spawnT, .4); }
     if (tipo === 'regalo') crearRegalo();
     if (tipo === 'siesta') { npc[0].dormido = true; zzz.visible = true; E.riv[0].cerrada = 0; }
+    if (tipo === 'cucarachas') { cucaT = 0; cucaMuts = 0; }
     if (tipo === 'tacos') { tacoLanzaT = 0; tacosMios = 0; tacoT = TACO_CADA; tacoAviso = false; escena.background.set('#ffe9c4'); escena.fog.color.set('#ffe9c4'); }
     sonido(tipo === 'tacos' ? 'taco' : 'evento'); musica(abierto);
     aviso(D.txt, 3800);
@@ -4872,6 +4957,10 @@ const michirot = (() => {
     eventoT = ev.tipo === 'tacos' ? 10 + Math.random() * 18 : 999;
     if (ev.tipo === 'loca' || ev.tipo === 'tacos') { escena.background.set('#bfe0ff'); escena.fog.color.set('#bfe0ff'); }
     if (ev.tipo === 'tacos' && abierto) aviso(tacosMios ? `🌮 Se acabó la lluvia de tacos. ¡${tacosMios === 1 ? 'Uno de tus michirots quedó' : tacosMios + ' de tus michirots quedaron'} Taco!` : '🌮 Se acabó la lluvia de tacos. La próxima es en 2 minutos', 3200);
+    if (ev.tipo === 'cucarachas') {
+      cucas.forEach(q => { q.estado = 'huye'; });
+      if (abierto) aviso(cucaMuts ? `🪳 Se fueron las cucarachas… ¡dejaron ${cucaMuts} ${cucaMuts === 1 ? 'mutación' : 'mutaciones'} en tus michirots!` : '🪳 Se fueron las cucarachas sin tocar a tus michirots', 3400);
+    }
     if (ev.tipo === 'regalo' && regalo) { quitarRegalo(); if (abierto) aviso('El regalo misterioso desapareció… ¡a la próxima! 🎁'); }
     if (ev.tipo === 'siesta') {
       const n = npc[0]; n.dormido = false; zzz.visible = false;
@@ -4953,14 +5042,14 @@ const michirot = (() => {
   function golpeTaco(c) {
     const o = c.blanco;
     chispas(c.x, c.suelo, c.z, '#ffcf5c', 6, 2.6, .34); chispas(c.x, c.suelo, c.z, '#7ed957', 3, 2.2, .3);
-    const mejora = m => multG(m) < MUT.t.x;
+    const mejora = m => !mutsDe(m).includes('t');
     if (o.tipo === 'alf') {
       const it = o.it;
       if (alfombra.includes(it) && mejora(it.mut) && Math.random() < .6) { mutarAlfombra(it, 't'); chispas(it.x, 1.2, it.g.position.z, '#ffb23d', 10, 3); sonido('mutado'); }
     } else if (o.tipo === 'mio') {
       const b = E.base[o.i];
-      if (b && !b.llegando && !esSecreto(b.id) && mejora(b.mut) && tacosMios < 3 && Math.random() < .3) {
-        b.mut = 't'; registrarMut(b.id, 't'); tacosMios++;
+      if (b && !b.llegando && !esSecreto(b.id) && !esBloque(b.id) && mejora(b.mut) && tacosMios < 3 && Math.random() < .3) {
+        b.mut = sumarMut(b.mut, 't'); registrarMut(b.id, 't'); tacosMios++;
         pintarBase(); pedMio[o.i].rebote = 1;
         chispas(c.x, 1.4, c.z, '#ffb23d', 16, 3.6);
         sonido('mutado'); sacudida = .15;
@@ -4969,7 +5058,7 @@ const michirot = (() => {
       }
     } else {
       const sl = E.riv[o.r].slots[o.k];
-      if (sl.id && !sl.robando && mejora(sl.mut) && Math.random() < .5) { sl.mut = 't'; pintarRivales(); chispas(c.x, 1.4, c.z, '#ffb23d', 8, 3); }
+      if (sl.id && !sl.robando && mejora(sl.mut) && Math.random() < .5) { sl.mut = sumarMut(sl.mut, 't'); pintarRivales(); chispas(c.x, 1.4, c.z, '#ffb23d', 8, 3); }
     }
   }
   function actualizarTacos(dt) {
@@ -5027,7 +5116,7 @@ const michirot = (() => {
       E.base[libre] = { id, banco: 0, llegando: true, mut };
       volar(id, new T3.Vector3(x, 1, z), pedMio[libre], () => colocar(libre, id, 'regalo', mut));
       if (mari) { sonido('secreto'); confetti(2400, 90); }
-      aviso(mari ? '🎁🎸 ¡Adentro venía el EXCLUSIVO Mariachino Miau! Ya va volando a tu base' : `🎁 ¡Adentro venía ${mut ? MUT[mut].ico + ' ' : ''}${POR[id].n}! Ya va volando a tu base`, 3800);
+      aviso(mari ? '🎁🎸 ¡Adentro venía el EXCLUSIVO Mariachino Miau! Ya va volando a tu base' : `🎁 ¡Adentro venía ${mut ? icosMut(mut) + ' ' : ''}${POR[id].n}! Ya va volando a tu base`, 3800);
     } else if (r < .62) {
       turboT = 20; sonido('mejora');
       aviso('🎁 ¡Turbo de patitas! Corres súper rápido por 20 segundos ⚡', 3200);
@@ -5039,6 +5128,47 @@ const michirot = (() => {
     }
     if (evento && evento.tipo === 'regalo') terminarEvento();
     guardar();
+  }
+  /* ---------- Cucarachas: mutaciones que se acumulan ---------- */
+  const PESO_CUCA = { k: 40, o: 22, d: 16, c: 10, l: 6, a: 4, g: 2 };
+  function soltarCuca() {
+    const ok = E.base.map((b, i) => (b && !b.llegando && !b.robando && !b.abriendo && !esSecreto(b.id) && !esBloque(b.id) ? i : -1)).filter(i => i >= 0);
+    if (!ok.length) return;
+    const i = ok[Math.floor(Math.random() * ok.length)];
+    const lado = Math.random() < .5 ? -1 : 1, x = lado * (LIM.x + .5), z = MIA.cz + (Math.random() - .5) * 10;
+    const s = new T3.Sprite(new T3.SpriteMaterial({ map: texCuca, transparent: true, depthWrite: false }));
+    s.scale.set(1.05, 1.05, 1); s.center.set(.5, .15); s.renderOrder = 3; s.position.set(x, .24, z); escena.add(s);
+    cucas.push({ s, x, z, i, estado: 'va', vel: 3 + Math.random() * 1.4, fase: Math.random() * 6, sx: lado });
+  }
+  function picarCuca(q) {
+    const b = E.base[q.i], p = pedMio[q.i];
+    if (!b || b.llegando || b.robando || b.abriendo || esSecreto(b.id) || esBloque(b.id)) return;
+    const tiene = mutsDe(b.mut), opc = {};
+    for (const k in PESO_CUCA) if (!tiene.includes(k)) opc[k] = PESO_CUCA[k];
+    if (!Object.keys(opc).length) return;
+    const k = azar(opc);
+    b.mut = sumarMut(b.mut, k); registrarMut(b.id, k); cucaMuts++;
+    pintarBase(); guardar(); progreso('mutado', 1);
+    p.rebote = 1; chispas(p.x, 1.1, p.z, colorMut(k), 12, 3.2);
+    flotar(`${MUT[k].ico} ¡${MUT[k].n}!`, p, '#ffe3b0', 2.5);
+    sonido('mutado');
+    const n = mutsDe(b.mut).length;
+    aviso(`🪳 Una cucaracha le pegó ${MUT[k].ico} ${MUT[k].n} a ${POR[b.id].n}${n > 1 ? ` · ya tiene ${n} mutaciones (×${+multG(b.mut).toFixed(1)})` : ''}`, 3200);
+  }
+  function actualizarCucas(dt, t) {
+    if (!cucas.length) return;
+    cucas = cucas.filter(q => {
+      let tx, tz;
+      if (q.estado === 'va') { const p = PED_MIO[q.i]; tx = p.x; tz = p.z; }
+      else { tx = q.sx * (LIM.x + 2); tz = q.z; }
+      const dx = tx - q.x, dz = tz - q.z, d = Math.hypot(dx, dz) || 1;
+      const zig = Math.sin(t * 9 + q.fase) * .6;
+      q.x += (dx / d * q.vel + (-dz / d) * zig) * dt; q.z += (dz / d * q.vel + (dx / d) * zig) * dt;
+      q.s.position.set(q.x, .24 + Math.abs(Math.sin(t * 22 + q.fase)) * .06, q.z);
+      if (q.estado === 'va' && d < .5) { picarCuca(q); q.estado = 'huye'; q.vel *= 1.5; q.sx = q.x < 0 ? -1 : 1; }
+      if (q.estado === 'huye' && Math.abs(q.x) > LIM.x + 1.5) { escena.remove(q.s); q.s.material.dispose(); return false; }
+      return true;
+    });
   }
   function actualizarEvento(dt, t) {
     tacoT -= dt;
@@ -5054,6 +5184,7 @@ const michirot = (() => {
       return;
     }
     evento.t -= dt;
+    if (evento.tipo === 'cucarachas') { cucaT -= dt; if (cucaT <= 0 && cucas.filter(q => q.estado === 'va').length < 7) { cucaT = .9 + Math.random() * .8; soltarCuca(); } }
     if (evento.tipo === 'lluvia') { monedaT -= dt; while (monedaT <= 0) { monedaT += .2; soltarMoneda(); } }
     if (evento.tipo === 'loca' && Math.random() < dt * 12) {
       const a = Math.random() * Math.PI * 2, r = 1.5 + Math.random() * 6;
@@ -5121,12 +5252,13 @@ const michirot = (() => {
         <li><span>🌟</span><span>A veces pasan michirots mutados que brillan y ganan más: Dorado ×2, Diamante ×3, Dulce ×4, Lava ×5, Arcoíris ×6 y Galaxia ×8.</span></li>
         <li><span>🌮</span><span>Cada 2 minutos hay lluvia de tacos: al michirot que le cae un taco se vuelve Taco (×4), ¡hasta los de tu base!</span></li>
         <li><span>🏠</span><span>Cuando se llene tu base, agrándala en la tiendita: puede llegar a 20 lugares.</span></li>
-        <li><span>🎲</span><span>A veces pasan Bloques de suerte. Cómpralos y se abren en tu base: de ahí salen los más exclusivos.</span></li>
+        <li><span>🎲</span><span>A veces pasan Bloques de suerte. Cómpralos y llegan cerrados a tu base: acércate, presiona «Abrir» y gira la ruleta. Solo traen ediciones exclusivas de Diamante 💎 y Galácticas 🪐 que nunca pasan por la alfombra.</span></li>
+        <li><span>🪳</span><span>En la invasión de cucarachas, cada cucaracha que se sube a tu michirot le pega una mutación. ¡Se juntan! Un michirot puede tener muchas mutaciones y gana más con cada una.</span></li>
         <li><span>💎</span><span>Hay ${CAT.length} michirots que coleccionar. Los Exclusivos solo salen en momentos especiales: en la lluvia de tacos, en la hora loca, en los regalos… y una reina que casi nunca pasa.</span></li>
         <li><span>😼</span><span>Entra a una base rival, presiona «Robar» y corre a tu base. Si el dueño te alcanza, ¡salta para esquivarlo!</span></li>
         <li><span>🔒</span><span>Si Michi Bandido se lleva uno de los tuyos, alcánzalo. Con el candado no puede entrar a tu base.</span></li>
         <li><span>🎯</span><span>Cumple misiones para ganar premios, y gasta en la tiendita 🛍️ para mejorar a tu gatita.</span></li>
-        <li><span>🎉</span><span>Hay sorpresas: lluvia de monedas, hora loca, regalos misteriosos y siestas zombie.</span></li>
+        <li><span>🎉</span><span>Hay sorpresas: lluvia de monedas, hora loca, regalos misteriosos, cucarachas y siestas zombie.</span></li>
         <li><span>✨</span><span>Junta 7 michirots distintos y pasará uno secreto muy especial…</span></li>
       </ul>`, [['¡A jugar! 🐾', cerrarHoja]]);
   }
@@ -5188,7 +5320,7 @@ const michirot = (() => {
   /* ---------- NPCs ---------- */
   function iniciarLadron() {
     const n = npc[1];
-    const eleg = E.base.map((b, i) => (b && !esSecreto(b.id) && !b.llegando ? i : -1)).filter(i => i >= 0);
+    const eleg = E.base.map((b, i) => (b && !esSecreto(b.id) && !esBloque(b.id) && !b.llegando && !b.abriendo ? i : -1)).filter(i => i >= 0);
     if (eleg.length < 3 || n.estado !== 'casa' || cargando) { ladronT = 30; return; }
     const i = eleg[Math.floor(Math.random() * eleg.length)], p = PED_MIO[i];
     n.estado = 'va'; n.objetivo = i; n.t = 0;
@@ -5358,7 +5490,7 @@ const michirot = (() => {
         if (it.x > ALF.x1) { quitar(it); return; }
         it.g.position.x = it.x;
         it.s.position.y = Math.abs(Math.sin(t * 5 + it.fase)) * .14;
-        const c = POR[it.id], p = precio(it), puede = E.dinero >= p, M = it.mut && MUT[it.mut];
+        const c = POR[it.id], p = precio(it), puede = E.dinero >= p, M = it.mut && MUT[mutTop(it.mut)];
         const cerca = dist(it.g.position, jugador) < 5;
         it.lab.userData.poner(cerca ? [fmtDe(it.id, p), M ? `${M.n} ×${M.x} · ${c.n}` : it.ex ? `💎 ${c.n}` : it.bq ? `🎲 ${c.n}` : c.n] : [M ? `${M.ico} ${fmt(p)}` : it.ex ? `💎 ${fmt(p)}` : esSecreto(it.id) ? `💞 ${fmtDe(it.id, p)}` : it.bq ? `🎲 ${fmt(p)}` : fmt(p)], puede ? '#7ee2a0' : it.bq ? '#ffe9a8' : it.ex ? '#bff6fb' : esSecreto(it.id) ? '#ffd3e6' : M ? '#fff3c4' : '#ffffff');
         if (it.halo && it.mut) {
@@ -5400,6 +5532,7 @@ const michirot = (() => {
       const b = E.base[i];
       if (p.lab) p.lab.userData.poner(b && !b.llegando && b.banco >= 1 ? [fmt(b.banco)] : [], '#2f9e5b', '#ffffff');
     });
+    giroBloque(dt); actualizarCucas(dt, t);
     if (enLinea()) pedR2.forEach((p, k) => { if (p.halo.visible) { pintarHalo(p.halo, p.mut, t + k); if (p.taco.visible) p.taco.position.y = p.spr.position.y + 1.2; } });
     pedRiv.forEach((l, r) => l.forEach((p, k) => { if (p.halo.visible) { pintarHalo(p.halo, p.mut, t + k + r * 4); if (p.taco.visible) p.taco.position.y = p.spr.position.y + 1.2; } }));
     camaraSigue(dt);
@@ -5414,15 +5547,15 @@ const michirot = (() => {
     if (!pausa && !cargando) {
       let mejor = null, dmin = 2.1;
       alfombra.forEach(it => { const d = dist(it.g.position, jugador); if (d < dmin) { dmin = d; mejor = it; } });
-      if (mejor) a = { tipo: 'comprar', it: mejor, txt: `Comprar ${fmtDe(mejor.id, precio(mejor))}`, ico: mejor.mut ? MUT[mejor.mut].ico : mejor.bq ? '🎲' : '🛒', ok: E.dinero >= precio(mejor) };
+      if (mejor) a = { tipo: 'comprar', it: mejor, txt: `Comprar ${fmtDe(mejor.id, precio(mejor))}`, ico: mejor.mut ? MUT[mutTop(mejor.mut)].ico : mejor.bq ? '🎲' : '🛒', ok: E.dinero >= precio(mejor) };
       if (!a && enLinea() && dentroDe(R2, jugador.x, jugador.z)) red.otro.base.forEach((o, k) => {
-        if (!a && o && POR[o.id] && PED_R2[k] && dist(PED_R2[k], jugador) < 1.4) a = esSecreto(o.id) ? { tipo: 'noRobar', k, txt: 'Es de los dos 💞', ico: '💞', ok: false } : { tipo: 'robarRemoto', k, txt: `Robar a ${red.otro.nombre}`, ico: '😼', ok: !red.pidiendo };
+        if (!a && o && POR[o.id] && PED_R2[k] && dist(PED_R2[k], jugador) < 1.4) a = esSecreto(o.id) ? { tipo: 'noRobar', k, txt: 'Es de los dos 💞', ico: '💞', ok: false } : esBloque(o.id) ? { tipo: 'noRobar', k, txt: 'Bloque sin abrir 🎲', ico: '🎲', ok: false } : { tipo: 'robarRemoto', k, txt: `Robar a ${red.otro.nombre}`, ico: '😼', ok: !red.pidiendo };
       });
       if (!a) E.riv.forEach((R, r) => R.slots.forEach((s, k) => {
         if (a || !s.id || s.robando || enLinea()) return;
         if (dist(PED_RIV[r][k], jugador) < 1.45 && dentroDe(RIV[r], jugador.x, jugador.z)) a = { tipo: 'robar', r, k, txt: 'Robar', ico: '😼', ok: true };
       }));
-      if (!a) E.base.forEach((b, i) => { if (!a && b && !b.llegando && !b.robando && dist(PED_MIO[i], jugador) < 1.4) a = { tipo: 'ver', i, txt: 'Ver / vender', ico: '🔍', ok: true }; });
+      if (!a) E.base.forEach((b, i) => { if (!a && b && !b.llegando && !b.robando && dist(PED_MIO[i], jugador) < 1.4) a = esBloque(b.id) ? { tipo: 'abrir', i, txt: abriendo && abriendo.i === i ? 'Abriendo…' : 'Abrir 🎲', ico: '🎲', ok: !abriendo } : { tipo: 'ver', i, txt: 'Ver / vender', ico: '🔍', ok: true }; });
     }
     accion = a;
     const btn = $m('mrAccion');
@@ -5437,8 +5570,9 @@ const michirot = (() => {
     if (a.tipo === 'comprar') comprar(a.it);
     else if (a.tipo === 'robar') robar(a.r, a.k);
     else if (a.tipo === 'robarRemoto') pedirRobo(a.k);
-    else if (a.tipo === 'noRobar') { sonido('no'); aviso('💞 Este no se puede robar: es de los dos', 2600); }
+    else if (a.tipo === 'noRobar') { sonido('no'); aviso(esBloque((red && red.otro.base[a.k] || {}).id) ? '🎲 Los bloques sin abrir no se pueden robar' : '💞 Este no se puede robar: es de los dos', 2600); }
     else if (a.tipo === 'ver') info(a.i);
+    else if (a.tipo === 'abrir') abrirBloque(a.i);
   }
   function uiHud() {
     const d = $m('mrDinero');
@@ -5666,7 +5800,7 @@ const michirot = (() => {
   function recibirRobo(m) {
     const b = E.base[m.bi];
     if (E.candado > Date.now()) { mandar({ t: 'roboNo', bi: m.bi, motivo: 'candado' }); return; }
-    if (!b || b.id !== m.id || b.robando || b.llegando || esSecreto(b.id) || red.meRoban) { mandar({ t: 'roboNo', bi: m.bi }); return; }
+    if (!b || b.id !== m.id || b.robando || b.llegando || b.abriendo || esSecreto(b.id) || esBloque(b.id) || red.meRoban) { mandar({ t: 'roboNo', bi: m.bi }); return; }
     b.robando = true; red.meRoban = { bi: m.bi, id: b.id, t: 0 };
     pintarBase(); mandarBase();
     mandar({ t: 'roboOk', bi: m.bi, id: b.id, mut: b.mut || null });
