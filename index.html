@@ -40,6 +40,9 @@ h1 .sub { display: block; font-size: .6em; font-weight: 500; color: var(--marker
 .mes:nth-child(odd) { transform: rotate(-.6deg); }
 .mes:nth-child(even) { transform: rotate(.6deg); }
 .foto { display: block; position: relative; background: #fff; padding: 6px 6px 18px; border: 1.5px solid #d9dce8; box-shadow: 0 3px 8px rgba(34, 38, 74, .16); transform: rotate(-3deg); }
+.numero { display: grid; place-items: center; aspect-ratio: 1 / 1; border-radius: 4px; background: radial-gradient(circle at 30% 25%, #ffffff 0 8%, transparent 9%), radial-gradient(circle at 75% 70%, rgba(255,255,255,.7) 0 5%, transparent 6%), linear-gradient(160deg, #d9ecff, #b9dbff 60%, #a9d0fb);
+  font: 700 96px/1 var(--font-hand); color: #ffb6cb; -webkit-text-stroke: 2.5px #fff; text-shadow: 0 3px 0 #f48fb1, 0 6px 14px rgba(244,143,177,.45); position: relative; overflow: hidden; padding-bottom: 14px; }
+.numero small { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; font: 800 10px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: #6f9fd8; -webkit-text-stroke: 0; text-shadow: none; }
 .foto img { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
 .foto::before { content: ''; position: absolute; top: -8px; left: 50%; width: 46px; height: 16px; margin-left: -23px; background: var(--tape); transform: rotate(-4deg); }
 .mes h2 { margin: 0; font: 700 38px/.95 var(--font-hand); }
@@ -138,10 +141,10 @@ html += `<li><a class="mes consola" href="juegos/">
   <span class="mini-consola"><svg viewBox="0 0 100 130" aria-hidden="true"><rect x="8" y="4" width="84" height="122" rx="12" fill="#ff8fab" stroke="#22264a" stroke-width="4"/><rect x="18" y="14" width="64" height="50" rx="5" fill="#22264a"/><rect x="23" y="19" width="54" height="40" rx="3" fill="#9be0c4"/><path d="M43 34 C38 28 30 34 43 46 C56 34 48 28 43 34 Z" transform="translate(7 0)" fill="#ff5f87"/><path d="M22 82 h8 v-8 h8 v8 h8 v8 h-8 v8 h-8 v-8 h-8 Z" fill="#22264a"/><circle cx="70" cy="80" r="6" fill="#ffd24a" stroke="#22264a" stroke-width="2.5"/><circle cx="82" cy="92" r="6" fill="#7fb2ec" stroke="#22264a" stroke-width="2.5"/><path d="M40 110 h8 M54 110 h8" stroke="#22264a" stroke-width="4" stroke-linecap="round"/></svg></span>
   <div><h2>Juegos</h2><p class="fecha">Consola Michi · 9 juegos</p><p>Todos los juegos de tu página de 4 meses, en tu propia consolita.</p><span class="entrar">Jugar 🎮</span></div></a></li>`;
 html += MESES.map(m => `<li><a class="mes ${m.color}" href="${m.carpeta}">
-  <span class="foto"><img src="${m.foto}" alt="${m.alt}" width="300" height="300"></span>
+  <span class="foto"><span class="numero" role="img" aria-label="${m.titulo}">${m.titulo.match(/\d+/)[0]}<small>meses</small></span></span>
   <div><h2>${m.titulo}</h2><p class="fecha">${m.fecha}</p><p>${m.texto}</p><span class="entrar">Entrar 💞</span></div></a></li>`).join('');
 html += `<li><a class="mes carta5" href="5-meses/">
-  <span class="mini-consola"><svg viewBox="0 0 100 130" aria-hidden="true"><rect x="6" y="30" width="88" height="62" rx="4" fill="#c9a873" stroke="#22264a" stroke-width="3"/><path d="M6 30 L50 66 L94 30" fill="#d6b885" stroke="#22264a" stroke-width="3" stroke-linejoin="round"/><path d="M6 92 L40 62 M94 92 L60 62" stroke="#8a6a3a" stroke-width="2"/><circle cx="50" cy="66" r="11" fill="#8e1f2c" stroke="#22264a" stroke-width="2.5"/><text x="50" y="71" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#f2c9c9">B</text><rect x="70" y="36" width="16" height="19" fill="#2f5d8a" stroke="#f6ecd6" stroke-width="2"/><path d="M78 52 C72 47 74 41 78 44 C82 41 84 47 78 52 Z" fill="#f6ecd6"/></svg></span>
+  <span class="foto"><span class="numero" role="img" aria-label="Felices 5 meses">5<small>meses</small></span></span>
   <div><h2>Felices ${n} meses</h2><p class="fecha">${prox.getDate()} de ${MESN[prox.getMonth()]} de ${prox.getFullYear()}</p><p>${faltan > 0 ? `Tienes un adelanto sorpresa 💌 Faltan ${faltan} ${faltan === 1 ? 'día' : 'días'} para tu cumpleaños y nuestros 5 meses.` : 'Tu Baile Real te espera, princesa 👑 Feliz cumpleaños y felices 5 meses.'}</p><span class="entrar">${faltan > 0 ? 'Abrir mi sorpresa 💌' : 'Entrar al baile 👑'}</span></div></a></li>`;
 document.getElementById('lista').innerHTML = html;
 
