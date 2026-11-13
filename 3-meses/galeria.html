@@ -1,105 +1,45 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💞 Un par de fotos para ti</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, #FFB6C1, #ADD8E6);
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            color: #4a4a4a;
-            min-height: 100vh;
-            margin: 0;
-            padding: 30px 15px;
-        }
-        h2 {
-            color: #d63384;
-            margin-bottom: 5px;
-            font-size: 2em;
-        }
-        p {
-            margin-bottom: 40px;
-            font-size: 1.1em;
-        }
-        .galeria {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        .polaroid {
-            background: white;
-            padding: 15px 15px 25px 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-            width: 250px;
-        }
-        .polaroid:hover {
-            transform: scale(1.05) rotate(-2deg);
-        }
-        .polaroid img {
-            width: 100%;
-            height: auto;
-            border-radius: 5px;
-        }
-        .descripcion {
-            margin-top: 15px;
-            font-size: 1em;
-            color: #d63384;
-            font-weight: bold;
-        }
-        .btn-regresar {
-            display: block;
-            width: 200px;
-            margin: 50px auto 0;
-            background-color: #87CEFA;
-            color: #ffffff;
-            padding: 12px;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            border: 2px solid #FFB6C1;
-        }
-        .btn-regresar:hover {
-            background-color: #FFC0CB;
-            transform: scale(1.05);
-            border-color: #87CEFA;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffe3ec">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@600;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Quicksand:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<title>Un par de fotos para ti 💞</title>
+<style>
+.fotos { display: flex; flex-direction: column; align-items: center; gap: 34px; margin-top: 10px; }
+.pola { appearance: none; border: 0; cursor: zoom-in; position: relative; width: min(300px, 82vw); background: #fff; padding: 14px 14px 18px; border-radius: 4px; box-shadow: 0 16px 34px rgba(74,61,85,.18); transform: rotate(var(--r)); transition: transform .25s ease; -webkit-tap-highlight-color: transparent; text-align: center; color: inherit; font: inherit; }
+.pola:active { transform: rotate(0) scale(1.02); }
+.pola::before { content: ''; position: absolute; top: -12px; left: 50%; width: 90px; height: 26px; margin-left: -45px; background: var(--cinta); transform: rotate(-3deg); }
+.pola img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 2px; }
+.pola span { display: block; margin-top: 12px; font: 700 23px/1.15 var(--t-mano); color: var(--rosa-f); }
+.visor { position: fixed; inset: 0; z-index: 10; background: rgba(40,28,52,.82); display: grid; place-items: center; padding: 20px; }
+.visor img { max-width: 100%; max-height: 78vh; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,.5); border: 8px solid #fff; }
+.visor p { color: #fff; font: 700 24px/1.2 var(--t-mano); text-align: center; margin: 12px 0 0; max-width: 30ch; }
+.visor button { position: absolute; top: 16px; right: 16px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #fff; font-size: 20px; cursor: pointer; }
+[hidden] { display: none !important; }
+</style>
 </head>
 <body>
-
-    <h2>💞 Un par de fotos para ti</h2>
-    <p>Fotos que me recuerdan a ti, hasta que llegue nuestra primera foto real.</p>
-
-    <div class="galeria">
-        <!-- Foto 1 -->
-        <div class="polaroid">
-            <img src="foto1.jpeg" alt="Tu muñequito">
-            <div class="descripcion">El segundo muñequito que te hice con un par de tuercas pero con mucho amor 💞</div>
-        </div>
-        
-        <!-- Foto 2 -->
-        <div class="polaroid">
-            <img src="foto2.jpeg" alt="Siempre seras mi camino">
-            <div class="descripcion">Tu eres mi camino y siempre seras mi camino 💞</div>
-        </div>
-
-        <!-- Foto 3 -->
-        <div class="polaroid">
-            <img src="foto3.jpeg" alt="Mi enojona">
-            <div class="descripcion">Tu eres mi niña enojona, a la que tanto amo, con todo mi corazon 💞</div>
-        </div>
-    </div>
-
-    <a href="index.html" class="btn-regresar">⬅ Regresar al Menú</a>
-
+<canvas id="fondo" aria-hidden="true"></canvas>
+<main class="pagina">
+  <a href="index.html" class="volver">⬅ Regresar al menú</a>
+  <header class="cabeza aparece"><span class="mini">Galería</span><h1>Un par de fotos para ti 💞</h1><p>Fotos que me recuerdan a ti, hasta que llegue nuestra primera foto real.</p></header>
+  <section class="fotos">
+    <button class="pola aparece" style="--r:-3deg;--cinta:rgba(255,182,203,.8)" data-i="0"><img src="foto1.jpeg" alt="Tu muñequito"><span>El segundo muñequito que te hice con un par de tuercas pero con mucho amor 💞</span></button>
+    <button class="pola aparece" style="--r:2.5deg;--cinta:rgba(169,208,251,.8);animation-delay:.1s" data-i="1"><img src="foto2.jpeg" alt="Siempre serás mi camino"><span>Tú eres mi camino y siempre serás mi camino 💞</span></button>
+    <button class="pola aparece" style="--r:-2deg;--cinta:rgba(245,200,107,.75);animation-delay:.2s" data-i="2"><img src="foto3.jpeg" alt="Mi enojona"><span>Tú eres mi niña enojona, a la que tanto amo, con todo mi corazón 💞</span></button>
+  </section>
+  <div class="pie"><a href="index.html" class="btn azul">⬅ Regresar al menú</a></div>
+</main>
+<div class="visor" id="visor" hidden><button type="button" aria-label="Cerrar" id="cerrar">✕</button><div><img id="vImg" alt=""><p id="vTxt"></p></div></div>
+<script src="fondo.js"></script>
+<script>
+  const v = document.getElementById('visor');
+  document.querySelectorAll('.pola').forEach(b => b.addEventListener('click', () => { document.getElementById('vImg').src = b.querySelector('img').src; document.getElementById('vTxt').textContent = b.querySelector('span').textContent; v.hidden = false; }));
+  v.addEventListener('click', e => { if (e.target === v || e.target.id === 'cerrar') v.hidden = true; });
+</script>
 </body>
 </html>

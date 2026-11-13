@@ -1,136 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Películas que te dedico 🍿</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, #FFB6C1, #ADD8E6);
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            color: #4a4a4a;
-            min-height: 100vh; margin: 0; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.9); 
-            padding: 40px; 
-            border-radius: 20px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
-            max-width: 600px; 
-            width: 90%;
-            margin: 20px 0;
-        }
-        h2 { 
-            color: #d63384; 
-            margin-bottom: 10px; 
-            font-size: 2em;
-        }
-        p.intro {
-            font-size: 1.1em;
-            margin-bottom: 30px;
-            font-weight: bold;
-            color: #555;
-        }
-        /* Diseño de cada tarjeta de película */
-        .peli-card {
-            background: #fff;
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            border: 2px dashed #87CEFA;
-            transition: transform 0.3s ease;
-        }
-        .peli-card:hover {
-            transform: scale(1.02);
-            border-color: #FFB6C1;
-        }
-        /* Recuadro para la portada */
-        .peli-portada {
-            width: 130px;
-            height: 190px;
-            background-color: #f0f0f0;
-            object-fit: cover;
-            border-right: 2px dashed #87CEFA;
-        }
-        .peli-info {
-            padding: 20px;
-            text-align: left;
-            flex: 1;
-        }
-        .peli-titulo {
-            color: #d63384;
-            font-size: 1.3em;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .peli-desc {
-            color: #666;
-            font-size: 0.95em;
-            line-height: 1.4;
-        }
-        .btn-regresar {
-            display: inline-block; margin-top: 20px; background-color: #87CEFA; color: #fff; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; border: 2px solid #FFB6C1; transition: 0.3s;
-        }
-        .btn-regresar:hover { background-color: #FFC0CB; border-color: #87CEFA; transform: scale(1.05); }
-        
-        /* Para celulares */
-        @media (max-width: 480px) {
-            .peli-card {
-                flex-direction: column;
-            }
-            .peli-portada {
-                width: 100%;
-                height: 250px;
-                border-right: none;
-                border-bottom: 2px dashed #87CEFA;
-            }
-            .peli-info {
-                text-align: center;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffe3ec">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@600;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Quicksand:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<title>Películas que te dedico 🍿</title>
+<style>
+.marquesina { position: relative; text-align: center; background: linear-gradient(180deg, #4a2a6b, #2e1d4a); color: #fff; border-radius: 22px; padding: 22px 16px 20px; margin: 18px 0 26px; box-shadow: 0 16px 34px rgba(46,29,74,.3); }
+.marquesina .focos { position: absolute; inset: 8px; border-radius: 16px; pointer-events: none; background-image: radial-gradient(circle, #ffe08a 0 3px, transparent 4px); background-size: 22px 22px; background-position: 0 0; -webkit-mask: linear-gradient(#000 0 0) top/100% 12px no-repeat, linear-gradient(#000 0 0) bottom/100% 12px no-repeat, linear-gradient(#000 0 0) left/12px 100% no-repeat, linear-gradient(#000 0 0) right/12px 100% no-repeat; animation: focos 1.2s steps(2) infinite; }
+@keyframes focos { 50% { opacity: .45; } }
+.marquesina h1 { margin: 6px 0 2px; font: 700 clamp(40px, 11vw, 56px)/1.05 var(--t-titulo); color: #ffe3ec; }
+.marquesina p { margin: 0 auto; max-width: 32ch; color: #e6dcff; font-size: 15.5px; }
+.boleto { display: grid; grid-template-columns: 112px 1fr; background: #fff; border-radius: 18px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 0 0 1.5px #eadcff, 0 14px 30px rgba(74,61,85,.12); position: relative; }
+.boleto img { width: 112px; height: 100%; min-height: 168px; object-fit: cover; display: block; }
+.boleto .info { padding: 14px 16px 16px 18px; border-left: 2px dashed #d9c8f5; position: relative; }
+.boleto .info::before, .boleto .info::after { content: ''; position: absolute; left: -11px; width: 20px; height: 20px; border-radius: 50%; background: #f6eefc; }
+.boleto .info::before { top: -10px; } .boleto .info::after { bottom: -10px; }
+.boleto .adm { font: 700 11px/1 var(--t-cuerpo); letter-spacing: .18em; color: #9b7fd0; text-transform: uppercase; }
+.boleto h2 { margin: 6px 0 6px; font: 700 21px/1.2 var(--t-cuerpo); color: var(--rosa-f); }
+.boleto p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink-s); }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h2>Películas que te dedico 🍿</h2>
-        <p class="intro">Cada una de estas historias me hace pensar en ti, en nosotros y en todo lo que siento. Las elegí especialmente para ti.</p>
-        
-        <!-- Película 1 -->
-        <div class="peli-card">
-            <!-- Sube una imagen que se llame portada1.jpg a GitHub -->
-            <img src="portada1.jpg" alt="A dos metros de ti" class="peli-portada" onerror="this.src='https://via.placeholder.com/130x190/f0f0f0/87CEFA?text=Foto+A+dos+metros+de+ti'">
-            <div class="peli-info">
-                <div class="peli-titulo">🎬 A dos metros de ti</div>
-                <div class="peli-desc">Porque aunque ahora la distancia nos separe un poquito, sé que nuestro amor es más fuerte que cualquier kilómetro.</div>
-            </div>
-        </div>
-
-        <!-- Película 2 -->
-        <div class="peli-card">
-            <!-- Sube una imagen que se llame portada2.jpg a GitHub -->
-            <img src="portada2.jpg" alt="Demon Slayer" class="peli-portada" onerror="this.src='https://via.placeholder.com/130x190/f0f0f0/87CEFA?text=Foto+Demon+Slayer'">
-            <div class="peli-info">
-                <div class="peli-titulo">🎬 Demon Slayer: Castillo Infinito</div>
-                <div class="peli-desc">Especialmente por la historia de Hakuji y Koyuki... un amor puro que trasciende todo y que siempre me hace pensar en lo mucho que quiero cuidarte.</div>
-            </div>
-        </div>
-
-        <!-- Película 3 -->
-        <div class="peli-card">
-            <!-- Sube una imagen que se llame portada3.jpg a GitHub -->
-            <img src="portada3.jpg" alt="Violet y Finch" class="peli-portada" onerror="this.src='https://via.placeholder.com/130x190/f0f0f0/87CEFA?text=Foto+Violet+y+Finch'">
-            <div class="peli-info">
-                <div class="peli-titulo">🎬 Violet y Finch</div>
-                <div class="peli-desc">Porque me has enseñado a ver los colores y los lugares más brillantes, incluso en los días difíciles.</div>
-            </div>
-        </div>
-
-        <a href="index.html" class="btn-regresar">⬅ Regresar al Menú</a>
-    </div>
+<canvas id="fondo" aria-hidden="true"></canvas>
+<main class="pagina">
+  <a href="index.html" class="volver">⬅ Regresar al menú</a>
+  <header class="marquesina aparece"><span class="focos"></span><span class="mini" style="background:#ffe3ec;color:#a8324f">🍿 Cine de nosotros</span><h1>Películas que te dedico</h1><p>Cada una de estas historias me hace pensar en ti, en nosotros y en todo lo que siento. Las elegí especialmente para ti.</p></header>
+  <article class="boleto aparece"><img src="portada1.jpg" alt="A dos metros de ti"><div class="info"><span class="adm">Admite: mi princesa 💞</span><h2>A dos metros de ti</h2><p>Porque aunque ahora la distancia nos separe un poquito, sé que nuestro amor es más fuerte que cualquier kilómetro.</p></div></article>
+  <article class="boleto aparece" style="animation-delay:.1s"><img src="portada2.jpg" alt="Demon Slayer: Castillo Infinito"><div class="info"><span class="adm">Admite: mi princesa 💞</span><h2>Demon Slayer: Castillo Infinito</h2><p>Especialmente por la historia de Hakuji y Koyuki… un amor puro que trasciende todo y que siempre me hace pensar en lo mucho que quiero cuidarte.</p></div></article>
+  <article class="boleto aparece" style="animation-delay:.2s"><img src="portada3.jpg" alt="Violet y Finch"><div class="info"><span class="adm">Admite: mi princesa 💞</span><h2>Violet y Finch</h2><p>Porque me has enseñado a ver los colores y los lugares más brillantes, incluso en los días difíciles.</p></div></article>
+  <div class="pie"><a href="index.html" class="btn azul">⬅ Regresar al menú</a></div>
+</main>
+<script src="fondo.js"></script>
 </body>
 </html>

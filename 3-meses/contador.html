@@ -1,37 +1,53 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuestro Tiempo ⏳</title>
-    <style>
-        body { background: linear-gradient(135deg, #FFB6C1, #ADD8E6); font-family: 'Arial', sans-serif; text-align: center; color: #4a4a4a; min-height: 100vh; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
-        .container { background: rgba(255, 255, 255, 0.9); padding: 40px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); max-width: 450px; width: 90%; }
-        h2 { color: #d63384; margin-bottom: 5px; }
-        #numero-dias { font-size: 4em; color: #87CEFA; font-weight: bold; margin: 10px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
-        .btn-regresar { display: inline-block; margin-top: 30px; background-color: #87CEFA; color: #fff; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; border: 2px solid #FFB6C1; transition: 0.3s; }
-        .btn-regresar:hover { background-color: #FFC0CB; border-color: #87CEFA; transform: scale(1.05); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffe3ec">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@600;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Quicksand:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<title>Nuestro tiempo juntos ⏳</title>
+<style>
+.reloj { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 6px 0 18px; }
+.reloj div { background: rgba(255,255,255,.92); border-radius: 18px; padding: 14px 4px 10px; text-align: center; box-shadow: 0 0 0 1.5px #ffd1df, 0 10px 20px rgba(224,86,127,.12); }
+.reloj b { display: block; font: 700 clamp(28px, 9vw, 40px)/1 var(--t-cuerpo); color: var(--rosa-f); font-variant-numeric: tabular-nums; }
+.reloj span { font: 700 11.5px/1 var(--t-cuerpo); letter-spacing: .12em; text-transform: uppercase; color: var(--azul-f); }
+.grande { text-align: center; margin: 0 0 10px; }
+.grande b { display: block; font: 700 clamp(84px, 26vw, 120px)/1 var(--t-titulo); color: var(--azul-f); text-shadow: 0 3px 0 #fff, 0 10px 24px rgba(79,134,216,.3); }
+.grande span { font: 700 26px/1 var(--t-mano); color: var(--rosa-f); }
+.hitos { list-style: none; margin: 0; padding: 0; }
+.hitos li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1.5px dashed #f6d5e0; }
+.hitos li:last-child { border-bottom: 0; }
+.hitos i { font-style: normal; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #ffe3ec; flex: none; }
+.hitos b { display: block; font-size: 16px; } .hitos small { color: var(--ink-s); }
+.extra { text-align: center; margin: 18px 0 0; color: var(--ink-s); }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h2>Nuestro tiempo juntos ⏳</h2>
-        <p>Juntos oficialmente desde el <b>14 de junio de 2026</b>.</p>
-        
-        <div id="numero-dias">0</div>
-        <p>Días llenos de amor, aventuras en los juegos y felicidad. <br><b>¡Felices 3 meses!</b></p>
-        <p style="margin-top:20px; font-size:0.9em; color:#6c757d;">Y contando los días para por fin vernos en persona...</p>
-
-        <a href="index.html" class="btn-regresar">⬅ Regresar al Menú</a>
-    </div>
-
-    <script>
-        // Calcula los días desde el 14 de junio 2026
-        const fechaInicio = new Date('2026-06-14T00:00:00');
-        const hoy = new Date();
-        const diferencia = hoy.getTime() - fechaInicio.getTime();
-        const dias = Math.floor(diferencia / (1000 * 3600 * 24));
-        document.getElementById('numero-dias').innerText = dias;
-    </script>
+<canvas id="fondo" aria-hidden="true"></canvas>
+<main class="pagina">
+  <a href="index.html" class="volver">⬅ Regresar al menú</a>
+  <header class="cabeza aparece"><span class="mini">Contador</span><h1>Nuestro tiempo juntos ⏳</h1><p>Juntos oficialmente desde el <b>14 de junio de 2026</b>.</p></header>
+  <div class="grande aparece"><b id="dias">0</b><span>días llenos de amor</span></div>
+  <div class="reloj aparece"><div><b id="d">0</b><span>días</span></div><div><b id="h">0</b><span>horas</span></div><div><b id="m">0</b><span>min</span></div><div><b id="s">0</b><span>seg</span></div></div>
+  <section class="tarjeta aparece">
+    <ul class="hitos">
+      <li><i>💞</i><div><b>14 de junio de 2026</b><small>Nos hicimos novios</small></div></li>
+      <li><i>🌙</i><div><b>14 de julio de 2026</b><small>Nuestro primer mes</small></div></li>
+      <li><i>⭐</i><div><b>14 de agosto de 2026</b><small>Dos meses juntos</small></div></li>
+      <li><i>🎉</i><div><b>14 de septiembre de 2026</b><small>¡Felices 3 meses!</small></div></li>
+    </ul>
+  </section>
+  <p class="extra aparece">Días llenos de amor, aventuras en los juegos y felicidad.<br>Y contando los días para por fin vernos en persona… 💞</p>
+  <div class="pie"><a href="index.html" class="btn azul">⬅ Regresar al menú</a></div>
+</main>
+<script src="fondo.js"></script>
+<script>
+  const INICIO = new Date(2026, 5, 14, 0, 0, 0);
+  function tic() { const ms = Math.max(0, Date.now() - INICIO), s = Math.floor(ms / 1000), d = Math.floor(s / 86400);
+    document.getElementById('dias').textContent = d; document.getElementById('d').textContent = d; document.getElementById('h').textContent = Math.floor(s / 3600) % 24; document.getElementById('m').textContent = Math.floor(s / 60) % 60; document.getElementById('s').textContent = s % 60; }
+  tic(); setInterval(tic, 1000);
+</script>
 </body>
 </html>
