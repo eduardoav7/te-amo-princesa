@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bienvenida a tu página 💙</title>
+<title>Tu página de cumpleaños 🎂</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@400;600;800&display=swap">
@@ -18,14 +18,14 @@
 }
 *, *::before, *::after { box-sizing: border-box; }
 body {
-  margin: 0; min-height: 100vh; color: var(--ink);
-  background-color: var(--paper);
-  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 26px 26px;
+  margin: 0; min-height: 100vh; color: var(--ink); overflow-x: hidden;
+  background-color: #fff3f6;
+  background-image: radial-gradient(circle at 20% 10%, rgba(255,214,102,.18) 0 120px, transparent 121px), radial-gradient(circle at 85% 40%, rgba(127,178,236,.16) 0 140px, transparent 141px), linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: auto, auto, 26px 26px, 26px 26px;
   font: 400 17px/1.6 var(--font-body);
   padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
 }
-main { max-width: 560px; margin: 0 auto; padding: 56px 18px 70px; display: flex; flex-direction: column; gap: 26px; }
+main { position: relative; z-index: 2; max-width: 560px; margin: 0 auto; padding: 92px 18px 70px; display: flex; flex-direction: column; gap: 26px; }
 .sello { align-self: flex-start; font: 800 12px/1.3 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--marker); border: 2px dashed var(--marker); border-radius: 6px; padding: 5px 10px; transform: rotate(-2deg); }
 h1 { margin: 0; font: 700 clamp(52px, 15vw, 72px)/.92 var(--font-hand); text-wrap: balance; }
 h1 .sub { display: block; font-size: .6em; font-weight: 500; color: var(--marker); margin-top: 8px; }
@@ -67,14 +67,51 @@ h1 .sub { display: block; font-size: .6em; font-weight: 500; color: var(--marker
 .firma { margin: 6px 0 0; text-align: center; font: 700 30px/1.1 var(--font-hand); color: var(--marker); }
 .corazon { display: inline-block; animation: late 1.4s ease-in-out infinite; }
 @keyframes late { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.25); } 30% { transform: scale(1); } 45% { transform: scale(1.15); } }
-@media (prefers-reduced-motion: reduce) { .corazon { animation: none; } }
+/* ---- Fiesta de cumpleaños: luces, globos, velitas y confeti ---- */
+html { overflow-x: clip; }
+#confeti { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.luces { position: absolute; top: 0; left: 0; right: 0; height: 90px; z-index: 3; pointer-events: none; overflow: hidden; }
+.luces svg { display: block; width: 100%; min-width: 560px; height: 90px; }
+.foco { animation: foco 1.8s ease-in-out infinite; }
+@keyframes foco { 0%, 100% { opacity: 1; filter: drop-shadow(0 0 6px currentColor); } 50% { opacity: .45; filter: none; } }
+.globos { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.globo { position: absolute; bottom: -180px; width: 54px; animation: sube linear infinite; opacity: .9; }
+.globo svg { display: block; width: 100%; height: auto; animation: mece 3.2s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes sube { to { transform: translateY(calc(-100vh - 260px)); } }
+@keyframes mece { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+.encabezado { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 10px; }
+.pastelito { width: 96px; margin-bottom: 4px; }
+.pastelito svg { display: block; width: 100%; height: auto; }
+.llama { transform-origin: 50% 100%; animation: llama .5s ease-in-out infinite alternate; }
+@keyframes llama { from { transform: scale(1, 1) rotate(-3deg); } to { transform: scale(.88, 1.12) rotate(3deg); } }
+.velitas { display: flex; justify-content: center; gap: 14px; margin: 4px 0 -6px; }
+.velitas svg { width: 18px; height: auto; }
+.banderines { display: flex; justify-content: center; gap: 4px; margin: -4px 0 0; }
+.banderines i { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 22px solid var(--c); }
+@media (prefers-reduced-motion: reduce) { .corazon, .foco, .globo, .globo svg, .llama { animation: none; } .globo { display: none; } }
 </style>
 </head>
 <body>
+<canvas id="confeti" aria-hidden="true"></canvas>
+<div class="globos" id="globos" aria-hidden="true"></div>
+<div class="luces" aria-hidden="true"><svg id="luces" viewBox="0 0 560 90" preserveAspectRatio="xMidYMin slice"></svg></div>
 <main>
-  <span class="sello">Para: Brittany · De: Eduardo</span>
-  <h1>Bienvenida a tu página<span class="sub">mi princesita hermosa 💙</span></h1>
-  <p class="intro">Aquí guardo todos los regalos que te he hecho. Escoge qué quieres abrir; puedes volver a esta página cuando quieras.</p>
+  <span class="sello">Para: Brittani · De: Eduardo</span>
+  <div class="banderines" aria-hidden="true"><i style="--c:#ff8fab"></i><i style="--c:#ffd24a"></i><i style="--c:#7fb2ec"></i><i style="--c:#9be0c4"></i><i style="--c:#c9a8ff"></i><i style="--c:#ff8fab"></i><i style="--c:#ffd24a"></i><i style="--c:#7fb2ec"></i><i style="--c:#9be0c4"></i><i style="--c:#c9a8ff"></i></div>
+  <div class="encabezado">
+    <h1>Bienvenida a tu página<span class="sub">¡Feliz cumpleaños, mi princesita! 🎂</span></h1>
+    <div class="pastelito" aria-hidden="true"><svg viewBox="0 0 100 110">
+      <ellipse cx="50" cy="100" rx="46" ry="7" fill="#e3e9f6"/>
+      <rect x="14" y="62" width="72" height="36" rx="8" fill="#ff8fab" stroke="#22264a" stroke-width="2.6"/>
+      <path d="M14 72 q6 8 12 0 q6 8 12 0 q6 8 12 0 q6 8 12 0 q6 8 12 0 q6 8 12 0" fill="#fff" stroke="#22264a" stroke-width="2.2"/>
+      <rect x="22" y="42" width="56" height="22" rx="6" fill="#fde3ea" stroke="#22264a" stroke-width="2.4"/>
+      <circle cx="34" cy="84" r="2.6" fill="#ffd24a"/><circle cx="50" cy="88" r="2.6" fill="#7fb2ec"/><circle cx="66" cy="84" r="2.6" fill="#9be0c4"/>
+      <g><rect x="33" y="22" width="6" height="20" rx="2" fill="#7fb2ec" stroke="#22264a" stroke-width="1.6"/><path class="llama" d="M36 6 q6 8 0 14 q-6 -6 0 -14 Z" fill="#ffb238"/></g>
+      <g><rect x="47" y="18" width="6" height="24" rx="2" fill="#ffd24a" stroke="#22264a" stroke-width="1.6"/><path class="llama" style="animation-delay:.2s" d="M50 2 q6 8 0 14 q-6 -6 0 -14 Z" fill="#ffb238"/></g>
+      <g><rect x="61" y="22" width="6" height="20" rx="2" fill="#ff8fab" stroke="#22264a" stroke-width="1.6"/><path class="llama" style="animation-delay:.35s" d="M64 6 q6 8 0 14 q-6 -6 0 -14 Z" fill="#ffb238"/></g>
+    </svg></div>
+  </div>
+  <p class="intro">Hoy celebramos tu vida 🎉 Aquí guardo todos los regalos que te he hecho. Escoge qué quieres abrir; puedes volver a esta página cuando quieras.</p>
   <div class="dias" aria-live="off"><b id="dias">0</b><span>días juntos<br>y contando <span class="corazon">💗</span></span></div>
 
   <ul class="lista" id="lista"></ul>
@@ -85,7 +122,7 @@ h1 .sub { display: block; font-size: .6em; font-weight: 500; color: var(--marker
 // Para agregar un mes nuevo: copia una línea, cambia la carpeta, la foto, la fecha y el texto.
 const MESES = [
   { carpeta: '3-meses/', foto: 'portadas/3-meses.jpg', alt: 'Ramo de flores rosas con un listón de felices 3 meses', titulo: 'Felices 3 meses', fecha: '14 de septiembre de 2026', texto: 'Tu carta, nuestras fotos, películas, canciones, el contador y el juego de adivinar.', color: '' },
-  { carpeta: '4-meses/', foto: 'portadas/4-meses.jpg', alt: 'Dibujo que dice Te amo, Brittany', titulo: 'Felices 4 meses', fecha: '14 de octubre de 2026', texto: 'El camino, nuestro cielo, las cartas, los juegos, tu vitrina de trofeos y el altar para tu abuelito.', color: 'azul' },
+  { carpeta: '4-meses/', foto: 'portadas/4-meses.jpg', alt: 'Dibujo que dice Te amo, Brittani', titulo: 'Felices 4 meses', fecha: '14 de octubre de 2026', texto: 'El camino, nuestro cielo, las cartas, los juegos, tu vitrina de trofeos y el altar para tu abuelito.', color: 'azul' },
 ];
 const INICIO = new Date(2026, 5, 14);
 const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
@@ -93,19 +130,42 @@ document.getElementById('dias').textContent = Math.round((hoy - INICIO) / 864e5)
 // El siguiente mes (bloqueado hasta su día 14)
 const n = MESES.length + 3, prox = new Date(2026, 5 + n, 14), faltan = Math.ceil((prox - hoy) / 864e5);
 const MESN = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-let html = MESES.map(m => `<li><a class="mes ${m.color}" href="${m.carpeta}">
-  <span class="foto"><img src="${m.foto}" alt="${m.alt}" width="300" height="300"></span>
-  <div><h2>${m.titulo}</h2><p class="fecha">${m.fecha}</p><p>${m.texto}</p><span class="entrar">Entrar 💞</span></div></a></li>`).join('');
-html += `<li><a class="mes consola" href="juegos/">
-  <span class="mini-consola"><svg viewBox="0 0 100 130" aria-hidden="true"><rect x="8" y="4" width="84" height="122" rx="12" fill="#ff8fab" stroke="#22264a" stroke-width="4"/><rect x="18" y="14" width="64" height="50" rx="5" fill="#22264a"/><rect x="23" y="19" width="54" height="40" rx="3" fill="#9be0c4"/><path d="M43 34 C38 28 30 34 43 46 C56 34 48 28 43 34 Z" transform="translate(7 0)" fill="#ff5f87"/><path d="M22 82 h8 v-8 h8 v8 h8 v8 h-8 v8 h-8 v-8 h-8 Z" fill="#22264a"/><circle cx="70" cy="80" r="6" fill="#ffd24a" stroke="#22264a" stroke-width="2.5"/><circle cx="82" cy="92" r="6" fill="#7fb2ec" stroke="#22264a" stroke-width="2.5"/><path d="M40 110 h8 M54 110 h8" stroke="#22264a" stroke-width="4" stroke-linecap="round"/></svg></span>
-  <div><h2>Juegos</h2><p class="fecha">Consola Michi · 9 juegos</p><p>Todos los juegos de tu página de 4 meses, en tu propia consolita.</p><span class="entrar">Jugar 🎮</span></div></a></li>`;
+let html = '';
 html += `<li><a class="mes historia" href="historia/">
   <span class="mini-consola"><svg viewBox="0 0 100 130" aria-hidden="true"><rect x="10" y="6" width="80" height="118" rx="16" fill="#22264a"/><rect x="16" y="14" width="68" height="100" rx="10" fill="#1b2050"/><circle cx="68" cy="34" r="9" fill="#fff3c4"/><circle cx="72" cy="31" r="8" fill="#1b2050"/><circle cx="28" cy="26" r="1.6" fill="#fff"/><circle cx="44" cy="40" r="1.2" fill="#fff"/><circle cx="76" cy="58" r="1.4" fill="#fff"/><rect x="22" y="62" width="40" height="12" rx="6" fill="#ffffff"/><rect x="38" y="80" width="40" height="12" rx="6" fill="#7fb2ec"/><path d="M50 108 C44 102 38 108 50 116 C62 108 56 102 50 108 Z" fill="#ff5f87"/></svg></span>
   <div><h2>Cómo nos conocimos</h2><p class="fecha">10:48 pm · una animación</p><p>Desde aquel «hola» en un juego en línea hasta nuestra boda en 2030 💕. Con nuestra canción 🎶</p><span class="entrar">Ver 🎬</span></div></a></li>`;
+html += `<li><a class="mes consola" href="juegos/">
+  <span class="mini-consola"><svg viewBox="0 0 100 130" aria-hidden="true"><rect x="8" y="4" width="84" height="122" rx="12" fill="#ff8fab" stroke="#22264a" stroke-width="4"/><rect x="18" y="14" width="64" height="50" rx="5" fill="#22264a"/><rect x="23" y="19" width="54" height="40" rx="3" fill="#9be0c4"/><path d="M43 34 C38 28 30 34 43 46 C56 34 48 28 43 34 Z" transform="translate(7 0)" fill="#ff5f87"/><path d="M22 82 h8 v-8 h8 v8 h8 v8 h-8 v8 h-8 v-8 h-8 Z" fill="#22264a"/><circle cx="70" cy="80" r="6" fill="#ffd24a" stroke="#22264a" stroke-width="2.5"/><circle cx="82" cy="92" r="6" fill="#7fb2ec" stroke="#22264a" stroke-width="2.5"/><path d="M40 110 h8 M54 110 h8" stroke="#22264a" stroke-width="4" stroke-linecap="round"/></svg></span>
+  <div><h2>Juegos</h2><p class="fecha">Consola Michi · 9 juegos</p><p>Todos los juegos de tu página de 4 meses, en tu propia consolita.</p><span class="entrar">Jugar 🎮</span></div></a></li>`;
+html += MESES.map(m => `<li><a class="mes ${m.color}" href="${m.carpeta}">
+  <span class="foto"><img src="${m.foto}" alt="${m.alt}" width="300" height="300"></span>
+  <div><h2>${m.titulo}</h2><p class="fecha">${m.fecha}</p><p>${m.texto}</p><span class="entrar">Entrar 💞</span></div></a></li>`).join('');
 html += `<li><a class="mes carta5" href="5-meses/">
   <span class="mini-consola"><svg viewBox="0 0 100 130" aria-hidden="true"><rect x="6" y="30" width="88" height="62" rx="4" fill="#c9a873" stroke="#22264a" stroke-width="3"/><path d="M6 30 L50 66 L94 30" fill="#d6b885" stroke="#22264a" stroke-width="3" stroke-linejoin="round"/><path d="M6 92 L40 62 M94 92 L60 62" stroke="#8a6a3a" stroke-width="2"/><circle cx="50" cy="66" r="11" fill="#8e1f2c" stroke="#22264a" stroke-width="2.5"/><text x="50" y="71" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#f2c9c9">B</text><rect x="70" y="36" width="16" height="19" fill="#2f5d8a" stroke="#f6ecd6" stroke-width="2"/><path d="M78 52 C72 47 74 41 78 44 C82 41 84 47 78 52 Z" fill="#f6ecd6"/></svg></span>
   <div><h2>Felices ${n} meses</h2><p class="fecha">${prox.getDate()} de ${MESN[prox.getMonth()]} de ${prox.getFullYear()}</p><p>${faltan > 0 ? `Tienes un adelanto sorpresa 💌 Faltan ${faltan} ${faltan === 1 ? 'día' : 'días'} para tu cumpleaños y nuestros 5 meses.` : 'Tu Baile Real te espera, princesa 👑 Feliz cumpleaños y felices 5 meses.'}</p><span class="entrar">${faltan > 0 ? 'Abrir mi sorpresa 💌' : 'Entrar al baile 👑'}</span></div></a></li>`;
 document.getElementById('lista').innerHTML = html;
+
+// ---- Fiesta: luces, globos y confeti ----
+const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+(() => {
+  const C = ['#ff5f87', '#ffd24a', '#7fb2ec', '#9be0c4', '#c9a8ff'];
+  let s = '<path d="M-10 18 Q60 52 140 26 T290 30 T440 24 T570 20" fill="none" stroke="#22264a" stroke-width="2"/>';
+  for (let i = 0; i < 16; i++) { const x = 6 + i * 36, y = 24 + Math.sin(i * 1.3) * 10 + (i % 2 ? 10 : 4); const c = C[i % C.length];
+    s += `<path d="M${x} ${y - 10} v6" stroke="#22264a" stroke-width="2"/><rect x="${x - 4}" y="${y - 6}" width="8" height="6" rx="1.5" fill="#5d6186"/><ellipse class="foco" style="color:${c};animation-delay:${(i % 4) * .45}s" cx="${x}" cy="${y + 8}" rx="7" ry="10" fill="${c}" stroke="#22264a" stroke-width="1.6"/>`; }
+  document.getElementById('luces').innerHTML = s;
+  const G = document.getElementById('globos');
+  for (let i = 0; i < 8; i++) { const c = C[i % C.length], izq = i % 2 === 0, x = izq ? 1 + (i * 7) % 14 : 78 + (i * 5) % 8;
+    G.insertAdjacentHTML('beforeend', `<div class="globo" style="left:${x}%;animation-duration:${16 + (i * 3) % 9}s;animation-delay:-${i * 2.6}s;width:${44 + (i % 3) * 10}px"><svg viewBox="0 0 60 130"><path d="M30 76 q-8 18 4 30 q8 10 -2 24" fill="none" stroke="#5d6186" stroke-width="1.4"/><ellipse cx="30" cy="38" rx="26" ry="34" fill="${c}" stroke="#22264a" stroke-width="2"/><path d="M26 72 l4 6 l4 -6 Z" fill="${c}" stroke="#22264a" stroke-width="1.6"/><path d="M16 22 q6 -10 16 -10" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".7"/></svg></div>`); }
+  if (quieto) return;
+  const cv = document.getElementById('confeti'), x = cv.getContext('2d'); let W, H, P = [];
+  function tam() { const r = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = W * r; cv.height = H * r; x.setTransform(r, 0, 0, r, 0, 0); }
+  tam(); addEventListener('resize', tam);
+  for (let i = 0; i < 60; i++) P.push({ x: Math.random() * W, y: Math.random() * H, v: .4 + Math.random() * .9, a: Math.random() * 6, g: (Math.random() - .5) * .08, w: 5 + Math.random() * 5, h: 8 + Math.random() * 6, c: C[i % C.length], o: Math.random() * 6 });
+  (function f() { x.clearRect(0, 0, W, H);
+    for (const p of P) { p.y += p.v; p.a += p.g; p.o += .03; const px = p.x + Math.sin(p.o) * 18; if (p.y > H + 20) { p.y = -20; p.x = Math.random() * W; }
+      x.save(); x.translate(px, p.y); x.rotate(p.a); x.scale(1, Math.cos(p.o * 2)); x.fillStyle = p.c; x.globalAlpha = .85; x.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); x.restore(); }
+    requestAnimationFrame(f); })();
+})();
 </script>
 </body>
 </html>

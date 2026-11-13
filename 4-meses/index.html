@@ -1029,7 +1029,7 @@ body.velada .btn { box-shadow: 3px 4px 0 #ffb84d; }
       <button class="btn ghost" type="button" id="btnOtraVez" hidden>Empezar desde el principio</button>
       <button class="btn ghost" type="button" id="btnJuegosPortada" data-go="juegos" hidden>Nuestros juegos 🎮</button>
     </div>
-    <p class="para" id="paraDe">Para: Brittany · De: Eduardo</p>
+    <p class="para" id="paraDe">Para: Brittani · De: Eduardo</p>
   </section>
 
   <!-- 1. EL CAMINO -->
@@ -1150,7 +1150,7 @@ body.velada .btn { box-shadow: 3px 4px 0 #ffb84d; }
       <g transform="rotate(-5 64 108)">
         <rect class="f-white s-ink" x="40" y="88" width="50" height="40" rx="2" stroke-width="1.6"/>
         <text class="ff-font-hand f-ink-soft" x="45" y="101" font-size="10">Para:</text>
-        <text class="ff-font-hand f-ink" x="45" y="116" font-size="13" font-weight="700" id="pkgName">Brittany</text>
+        <text class="ff-font-hand f-ink" x="45" y="116" font-size="13" font-weight="700" id="pkgName">Brittani</text>
         <line class="s-grid" x1="45" y1="121" x2="84" y2="121" stroke-width="1.2"/>
       </g>
       <g transform="rotate(-9 140 116)">
@@ -1175,7 +1175,7 @@ body.velada .btn { box-shadow: 3px 4px 0 #ffb84d; }
   <section class="scene" id="final" hidden>
     <div class="head">
       <p class="eyebrow">Una última carta</p>
-      <h2><span class="mark" id="finalTitle">Felices 4 meses, Brittany</span></h2>
+      <h2><span class="mark" id="finalTitle">Felices 4 meses, Brittani</span></h2>
     </div>
     <figure class="polaroid" style="max-width:340px">
       <span class="tape"></span>
@@ -1274,7 +1274,7 @@ body.velada .btn { box-shadow: 3px 4px 0 #ffb84d; }
       </div>
       <p class="tr-cuenta" id="trCuenta" aria-live="polite"></p>
       <div class="tr-vitrina">
-        <div class="tr-letrero">🏆 Salón de la Fama de Brittany 🏆</div>
+        <div class="tr-letrero">🏆 Salón de la Fama de Brittani 🏆</div>
         <div class="tr-repisas" id="trRepisas"></div>
       </div>
       <div class="btn-row">
@@ -1391,7 +1391,7 @@ body.velada .btn { box-shadow: 3px 4px 0 #ffb84d; }
         <h2><span class="mark">El laberinto de los kilómetros</span></h2>
         <p class="lead">Lleva a Mishi hasta el corazón. Usa las flechas o desliza el dedo sobre el laberinto.</p>
       </div>
-      <div class="hud"><span>🏠 Sale de: <b id="mzFrom">Eduardo</b></span><span>💞 Llega a: <b id="mzTo">Brittany</b></span></div>
+      <div class="hud"><span>🏠 Sale de: <b id="mzFrom">Eduardo</b></span><span>💞 Llega a: <b id="mzTo">Brittani</b></span></div>
       <div class="game-box"><canvas id="mzCanvas" aria-label="Laberinto"></canvas></div>
       <div class="dpad" aria-label="Flechas">
         <button type="button" data-dir="up" aria-label="Arriba">▲</button>
@@ -1603,7 +1603,7 @@ body.velada .btn { box-shadow: 3px 4px 0 #ffb84d; }
 /* ==========================================================
    TEXTOS: aquí puedes cambiar todo lo que dice la página.
    ========================================================== */
-const NOMBRE = 'Brittany';
+const NOMBRE = 'Brittani';
 const FIRMA = 'Eduardo';
 const INICIO = new Date(2026, 5, 14); // 14 de junio de 2026 (los meses empiezan en 0)
 
@@ -1621,7 +1621,7 @@ const PARADAS = [
     texto: 'Un cocodrilo y una delfincita no deberían combinar… y aun así combinan perfecto. Así somos tú y yo: diferentes, pero hechos el uno para el otro.' },
   { fecha: '14 sep', titulo: 'Tres meses', foto: '3-meses.jpg', alt: 'Ramo de flores rosas con un osito y un listón de 3 meses',
     texto: 'Flores, un osito y una página hecha con todo mi corazón. Tres meses, y yo cada día más enamorado de ti.' },
-  { fecha: '14 oct', titulo: '¡Hoy, cuatro meses!', foto: 'te-amo-brittany.jpg', alt: 'Dibujo que dice Te amo, Brittany',
+  { fecha: '14 oct', titulo: '¡Hoy, cuatro meses!', foto: 'te-amo-brittany.jpg', alt: 'Dibujo que dice Te amo, Brittani',
     texto: 'Y aquí estamos: cuatro meses después, con kilómetros de por medio y con más amor que nunca. Pero esto apenas empieza, porque todavía tengo mucho que mostrarte…' },
 ];
 
@@ -7181,7 +7181,7 @@ const trofeos = (() => {
     const i = +b.dataset.tr, x = TROFEOS[i], v = vistos(), nuevo = !v.includes(i);
     if (nuevo) { v.push(i); save(); }
     openModal(`<div class="tr-hoja"><div class="tr-grande">${trofeo(x.tipo, x.metal)}</div>
-      <p class="tr-otorgado">Otorgado a Brittany · ${new Date().getFullYear()}</p>
+      <p class="tr-otorgado">Otorgado a Brittani · ${new Date().getFullYear()}</p>
       <h3>${esc(x.t)}</h3><p class="tr-por">${esc(x.por)}</p>
       <button class="btn" type="button" data-close>Guardarlo en la vitrina ✨</button></div>`, { onClose: pintarVitrina });
     if (nuevo && v.length === TROFEOS.length) setTimeout(() => confetti(1800, 90), 300);
@@ -7572,7 +7572,7 @@ const dulces = (() => {
     texto('<b>Lalito:</b> Y esta cartita… léela con calma. 💌');
     mostrarRegalo(`<p class="tit">Una cartita para ti 💌</p>
       <article class="card letter">
-        <p class="saludo">Mi Brittany:</p>
+        <p class="saludo">Mi Brittani:</p>
         <p>Esta noche tocaste muchas puertas y en todas te dieron dulces, pero en esta te estaba esperando yo.</p>
         <p>Este anillo es una promesa: que te voy a seguir eligiendo todos los días, que voy a cuidarte, respetarte y hacerte reír aunque estemos lejos, y que un día voy a acortar todos estos kilómetros para quedarme contigo.</p>
         <p>Y cuando llegue el momento, <b>me voy a casar contigo</b>. Ya lo decidí, y no hay truco en eso. 💍</p>
@@ -7760,7 +7760,7 @@ const boda = (() => {
       <g id="bdNovia" style="transform: translate(180px, 470px) scale(1.25)"><g class="bd-inclina-i"><g class="bd-paso">${novia(L)}</g></g></g>
       <path class="bd-corazon" d="M180 170 C166 152 146 166 180 196 C214 166 194 152 180 170 Z" fill="#ff5f87" stroke="${INK}" stroke-width="2"/>
       ${palomas}
-      <g class="bd-letrero" id="bdLetrero"><rect x="80" y="70" width="200" height="54" rx="12" fill="#ffffff" stroke="${INK}" stroke-width="2"/><text x="180" y="96" text-anchor="middle" font-family="Caveat, cursive" font-weight="700" font-size="21" fill="#e23d52">Brittany &amp; Lalito</text><text x="180" y="114" text-anchor="middle" font-family="Nunito, sans-serif" font-weight="800" font-size="9" letter-spacing="1.5" fill="#5d6186">FELICES PARA SIEMPRE 💍</text></g>
+      <g class="bd-letrero" id="bdLetrero"><rect x="80" y="70" width="200" height="54" rx="12" fill="#ffffff" stroke="${INK}" stroke-width="2"/><text x="180" y="96" text-anchor="middle" font-family="Caveat, cursive" font-weight="700" font-size="21" fill="#e23d52">Brittani &amp; Lalito</text><text x="180" y="114" text-anchor="middle" font-family="Nunito, sans-serif" font-weight="800" font-size="9" letter-spacing="1.5" fill="#5d6186">FELICES PARA SIEMPRE 💍</text></g>
       ${petalos}
     </svg>`;
   }
@@ -7774,9 +7774,9 @@ const boda = (() => {
     if (REDUCED) { nv.style.transform = 'translate(198px, 264px) scale(.68)'; svg.classList.add('bd-beso', 'bd-vuelan'); $('#bdAnillos').classList.add('ve'); $('#bdLetrero').classList.add('ve'); fin(); return; }
     despues(() => { svg.classList.add('bd-camina'); nv.style.transform = 'translate(212px, 264px) scale(.68)'; texto('La novia más hermosa del mundo camina hacia el altar… 👰‍♀️'); }, 900);
     despues(() => texto('Lalito la espera bajo el arco de flores, nervioso y feliz. 🤵'), 3600);
-    despues(() => { svg.classList.remove('bd-camina'); texto('—Brittany, ¿aceptas a Lalito como tu esposo?'); }, 6400);
+    despues(() => { svg.classList.remove('bd-camina'); texto('—Brittani, ¿aceptas a Lalito como tu esposo?'); }, 6400);
     despues(() => texto('—¡Sí, acepto! 💍'), 8600);
-    despues(() => texto('—Lalito, ¿aceptas a Brittany como tu esposa?'), 10400);
+    despues(() => texto('—Lalito, ¿aceptas a Brittani como tu esposa?'), 10400);
     despues(() => { texto('—¡Sí, acepto! Hoy, mañana y toda la vida. 💙'); $('#bdAnillos').classList.add('ve'); }, 12600);
     despues(() => { texto('Los declaro… ¡marido y mujer! Puede besar a la novia. 💋'); nv.classList.add('cerca'); nv.style.transform = 'translate(198px, 264px) scale(.68)'; $('#bdAnillos').classList.remove('ve'); }, 15200);
     despues(() => svg.classList.add('bd-beso'), 16300);

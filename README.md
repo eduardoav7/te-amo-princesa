@@ -1,6 +1,6 @@
 # te-amo-princesa
 
-Todos los regalos para Brittany en un solo lugar:
+Todos los regalos para Brittani en un solo lugar:
 
 - `3-meses/` — la página de los 3 meses
 - `4-meses/` — la página de los 4 meses (con todos sus juegos, el altar y la vitrina de trofeos)
