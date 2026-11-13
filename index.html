@@ -55,6 +55,8 @@ h1 .sub { display: block; font-size: .6em; font-weight: 500; color: var(--marker
 .candado { font-size: 34px; line-height: 1; }
 .mes.consola { background: #2b2f5e; color: #fff; }
 .mes.brilla { background-color: #fff; background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='120'><path d='M18 14 Q19.08 18.92 24 20 Q19.08 21.08 18 26 Q16.92 21.08 12 20 Q16.92 18.92 18 14 Z' fill='%23f5c86b'/><path d='M70 8 Q70.72 11.28 74 12 Q70.72 12.72 70 16 Q69.28 12.72 66 12 Q69.28 11.28 70 8 Z' fill='%23ffb6cb'/><path d='M130 23 Q131.26 28.74 137 30 Q131.26 31.26 130 37 Q128.74 31.26 123 30 Q128.74 28.74 130 23 Z' fill='%239fc8f5'/><path d='M40 66 Q40.72 69.28 44 70 Q40.72 70.72 40 74 Q39.28 70.72 36 70 Q39.28 69.28 40 66 Z' fill='%239fc8f5'/><path d='M100 74 Q101.08 78.92 106 80 Q101.08 81.08 100 86 Q98.92 81.08 94 80 Q98.92 78.92 100 74 Z' fill='%23f5c86b'/><path d='M150 96 Q150.72 99.28 154 100 Q150.72 100.72 150 104 Q149.28 100.72 146 100 Q149.28 99.28 150 96 Z' fill='%23ffb6cb'/><path d='M12 103 Q12.9 107.1 17 108 Q12.9 108.9 12 113 Q11.1 108.9 7 108 Q11.1 107.1 12 103 Z' fill='%23ffb6cb'/><circle cx='58' cy='42' r='1.6' fill='%23f5c86b'/><circle cx='118' cy='56' r='1.4' fill='%23ffb6cb'/><circle cx='80' cy='112' r='1.5' fill='%239fc8f5'/></svg>"); background-size: 160px 120px; }
+.mes.brilla h2 { font-size: 44px; }
+.mes.brilla .fecha { color: #f48fb1 !important; font-size: 12.5px; margin-top: 8px; }
 .mes.brilla::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='120'><path d='M46 25 Q46.9 29.1 51 30 Q46.9 30.9 46 35 Q45.1 30.9 41 30 Q45.1 29.1 46 25 Z' fill='%23f5c86b'/><path d='M110 9 Q110.9 13.1 115 14 Q110.9 14.9 110 19 Q109.1 14.9 105 14 Q109.1 13.1 110 9 Z' fill='%239fc8f5'/><path d='M140 65 Q140.9 69.1 145 70 Q140.9 70.9 140 75 Q139.1 70.9 135 70 Q139.1 69.1 140 65 Z' fill='%23ffb6cb'/><path d='M26 84 Q27.08 88.92 32 90 Q27.08 91.08 26 96 Q24.92 91.08 20 90 Q24.92 88.92 26 84 Z' fill='%23f5c86b'/><path d='M84 54 Q84.72 57.28 88 58 Q84.72 58.72 84 62 Q83.28 58.72 80 58 Q83.28 57.28 84 54 Z' fill='%23ffb6cb'/></svg>"); background-size: 160px 120px; animation: titila 2.4s ease-in-out infinite; }
 .mes.brilla > * { position: relative; z-index: 1; }
 @keyframes titila { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
@@ -145,10 +147,10 @@ html += `<li><a class="mes consola" href="juegos/">
   <div><h2>Juegos</h2><p class="fecha">Consola Michi · 9 juegos</p><p>Todos los juegos de tu página de 4 meses, en tu propia consolita.</p><span class="entrar">Jugar 🎮</span></div></a></li>`;
 html += MESES.map(m => `<li><a class="mes brilla ${m.color}" href="${m.carpeta}">
   <span class="foto"><span class="numero" role="img" aria-label="${m.titulo}">${m.titulo.match(/\d+/)[0]}<small>meses</small></span></span>
-  <div><h2>${m.titulo}</h2><p class="fecha">${m.fecha}</p><p>${m.texto}</p><span class="entrar">Entrar 💞</span></div></a></li>`).join('');
+  <div><h2>${m.titulo}</h2><p class="fecha">${m.fecha}</p></div></a></li>`).join('');
 html += `<li><a class="mes brilla carta5" href="5-meses/">
   <span class="foto"><span class="numero" role="img" aria-label="Felices 5 meses">5<small>meses</small></span></span>
-  <div><h2>Felices ${n} meses</h2><p class="fecha">${prox.getDate()} de ${MESN[prox.getMonth()]} de ${prox.getFullYear()}</p><p>${faltan > 0 ? `Tienes un adelanto sorpresa 💌 Faltan ${faltan} ${faltan === 1 ? 'día' : 'días'} para tu cumpleaños y nuestros 5 meses.` : 'Tu Baile Real te espera, princesa 👑 Feliz cumpleaños y felices 5 meses.'}</p><span class="entrar">${faltan > 0 ? 'Abrir mi sorpresa 💌' : 'Entrar al baile 👑'}</span></div></a></li>`;
+  <div><h2>Felices ${n} meses</h2><p class="fecha">${prox.getDate()} de ${MESN[prox.getMonth()]} de ${prox.getFullYear()}</p></div></a></li>`;
 document.getElementById('lista').innerHTML = html;
 
 // ---- Fiesta: luces, globos y confeti ----
