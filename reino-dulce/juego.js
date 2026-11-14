@@ -587,7 +587,8 @@ window.iniciarReino = function () {
   });
   addEventListener('keyup', (e) => { teclas[e.key.toLowerCase()] = false; });
   addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); });
-  const bloqueado = () => panelAbierto || !!cine || !!jug.accion || $('nota').classList.contains('on');
+  const bloqueado = () => panelAbierto || !!cine || !!jug.accion || $('nota').classList.contains('on') || tutoAbierto;
+  let tutoAbierto = false;
 
   /* =========================================================
      MOVIMIENTO Y CÁMARA
@@ -634,6 +635,7 @@ window.iniciarReino = function () {
       const f = V3(Math.sin(jug.ry), 0, Math.cos(jug.ry));
       objetivo = jug.pos.clone().add(V3(0, .35, 0));
       pos = jug.pos.clone().addScaledVector(f, 5.2).add(V3(0, 1.6, 0));
+      if (innerWidth > innerHeight) { const der = V3(Math.cos(jug.ry), 0, -Math.sin(jug.ry)); objetivo.add(V3(0, .9, 0)).addScaledVector(der, 1.6); pos.add(V3(0, -.6, 0)).addScaledVector(der, 1.6); }
     } else {
       const alt = modo === 'dentro' ? clamp(cam.pitch, .7, 1) : cam.pitch;
       const dist = modo === 'dentro' ? clamp(cam.dist, 10, 14) : cam.dist;
@@ -1396,10 +1398,10 @@ window.iniciarReino = function () {
       const dx = dg[0] - jug.pos.x, dz = dg[1] - jug.pos.z, d = Math.hypot(dx, dz);
       if (d > 4.5) {
         flecha.visible = true;
-        const off = 2.3 + Math.sin(reloj * 5) * .25;
+        const off = 2.9 + Math.sin(reloj * 5) * .35;
         flecha.position.set(jug.pos.x + dx / d * off, .12 + (jug.veh ? .1 : 0), jug.pos.z + dz / d * off);
         flecha.rotation.y = Math.atan2(dx, dz);
-        flecha.scale.setScalar(.9 + Math.sin(reloj * 5) * .06);
+        flecha.scale.setScalar(1.35 + Math.sin(reloj * 5) * .08);
       } else flecha.visible = false;
     } else flecha.visible = false;
     actualizarCamara(dt);
@@ -1433,11 +1435,33 @@ window.iniciarReino = function () {
   ['hud', 'reloj', 'metaMini'].forEach(id => $(id).hidden = false);
   if (matchMedia('(pointer: coarse)').matches) $('joyPista').hidden = false;
   requestAnimationFrame(cuadro);
-  if (E.nuevo) {
+  // Tutorial de cómo empezar a jugar
+  const TUTO = [
+    ['🍭', '¡Bienvenida a tu reino, Brittybee!', 'Aquí vas a juntar dulces, construir tu casa (¡hasta un castillo!), cocinar, decorar y pasear. Te enseño cómo se juega 💞'],
+    ['🕹️', 'Para caminar', 'Pon tu dedo en el <b>lado izquierdo</b> de la pantalla y deslízalo hacia donde quieras ir.'],
+    ['👆', 'Para mirar alrededor', 'Desliza tu dedo en el <b>lado derecho</b> para girar la cámara. Con <b>dos dedos</b> te acercas o te alejas.'],
+    ['✋', 'El botón rosa', 'Cuando estés junto a algo (un árbol de galletas, una tienda, tu terreno, la cocinita…) aparece un <b>botón rosa</b> abajo a la derecha. Tócalo para recoger, construir, cocinar o entrar.'],
+    ['🎒', 'Tu mochila y tus metas', 'Arriba está tu <b>mochila 🎒</b> con todo lo que juntas y compras, y tus <b>metas 📜</b>. Cada meta trae una notita mía 💌'],
+    ['👉', '¡A jugar!', 'Sigue la <b>flecha rosa</b> en el piso y las instrucciones de abajo. Tu primera meta: juntar galletas en el Bosque de Galleta 🍪, para que te construya tu primera casita.'],
+  ];
+  function mostrarTutorial() {
+    let i = 0; tutoAbierto = true; const el = $('tuto');
+    const pinta = () => {
+      const [ic, t, p] = TUTO[i];
+      el.querySelector('.ic').textContent = ic; el.querySelector('h3').textContent = t; el.querySelector('p').innerHTML = p;
+      el.querySelector('.puntos').innerHTML = TUTO.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('');
+      $('tutoSig').textContent = i === TUTO.length - 1 ? '¡Empezar! 🍪' : 'Siguiente ➜';
+      $('tutoSaltar').hidden = i === TUTO.length - 1;
+      el.querySelector('.tarjeta').classList.remove('nueva'); void el.offsetWidth; el.querySelector('.tarjeta').classList.add('nueva');
+    };
+    const cerrar = () => { el.classList.remove('on'); tutoAbierto = false; E.tuto = true; guardar(); sonar('meta'); burbuja(jug.raiz, '¡Vamos por galletas! 🍪', 2400); };
+    $('tutoSig').onclick = () => { asegurarAudio(); sonar('pop'); if (i < TUTO.length - 1) { i++; pinta(); } else cerrar(); };
+    $('tutoSaltar').onclick = cerrar;
+    pinta(); el.classList.add('on');
+  }
+  if (E.nuevo || !E.tuto) {
     E.nuevo = false; guardar();
-    setTimeout(() => burbuja(jug.raiz, '¡Hola! Bienvenida a tu reino, Brittybee 💞', 3200), 900);
-    setTimeout(() => burbuja(jug.raiz, 'Sigue el diamante rosa para tu primera meta 💎', 3400), 4400);
-    setTimeout(() => aviso('Desliza a la izquierda para caminar y a la derecha para girar la cámara 🍭', 4200), 1200);
+    setTimeout(mostrarTutorial, 900);
   } else setTimeout(() => burbuja(jug.raiz, '¡Volví a mi reino! 💞', 2400), 900);
   document.addEventListener('visibilitychange', () => { if (document.hidden) guardar(); });
   addEventListener('pagehide', guardar);
@@ -1448,7 +1472,7 @@ window.iniciarReino = function () {
       render: (c) => {
         fila(c, { ic: '🎵', tit: 'Música', sub: E.musica ? 'Encendida' : 'Apagada', botones: [[E.musica ? 'Apagar' : 'Encender', () => { $('bMusica').click(); repintar(); }, 'sec']] });
         fila(c, { ic: '🔔', tit: 'Efectos de sonido', sub: E.efectos ? 'Encendidos' : 'Apagados', botones: [[E.efectos ? 'Apagar' : 'Encender', () => { E.efectos = !E.efectos; if (sfxGain) sfxGain.gain.value = E.efectos ? .7 : 0; guardar(); repintar(); }, 'sec']] });
-        fila(c, { ic: '🕹️', tit: 'Cómo se juega', sub: 'Izquierda: caminar · Derecha: girar la cámara · Dos dedos: zoom · Botón rosa: hacer cosas' });
+        fila(c, { ic: '🕹️', tit: 'Cómo se juega', sub: 'Ver otra vez el tutorial', botones: [['Ver', () => { cerrarPanel(); setTimeout(mostrarTutorial, 300); }, 'sec']] });
         fila(c, { ic: '🏠', tit: 'Volver al menú', sub: 'Tu avance se guarda solito 💞', botones: [['Salir', () => { guardar(); location.href = '../'; }, 'sec']] });
       },
     });
