@@ -384,6 +384,54 @@ window.iniciarReino = function () {
     }
   });
 
+  /* ---------- Lalito chiquito paseando por el reino ---------- */
+  const bebe = { p: null, dest: null, espera: 2, estado: 'quieta', t: 0, saludo: -99, abrazo: 0 };
+  bebe.p = crearBebe(); bebe.p.g.position.set(4, 0, -18); mundo.add(bebe.p.g);
+  const FRASES_BEBE = ['¡Hola, princesa! 👶', 'Te amo demasiado 💞', 'Estoy muy orgulloso de ti 💞', '¡Qué bonita casa tienes! 🏡', '¿Me das un abrazo? 🤗', '¡Eres la mejor, Brittybee! ✨', '¡Vamos a jugar! 🍭', 'Cuando sea grande me voy a casar contigo 💍', '¡Hoy te ves preciosa! 💞'];
+  const interBebe = { x: 0, z: 0, r: 2.2, ic: '🤗', txt: () => 'Abrazar a Lalito chiquito', activo: () => bebe.p.g.visible && modo === 'fuera', fn: () => abrazarBebe() };
+  interactivos.push(interBebe);
+  function abrazarBebe() {
+    const g = bebe.p.g;
+    mirarA(g.position.x, g.position.z);
+    g.rotation.y = Math.atan2(jug.pos.x - g.position.x, jug.pos.z - g.position.z);
+    jug.accion = { estado: 'abraza', hasta: reloj + 2.4 };
+    bebe.estado = 'abraza'; bebe.espera = 2.6; bebe.dest = null;
+    particulas('corazon', g.position.clone().setY(1.6), 8); sonar('meta');
+    burbuja(g, ['¡Te amo demasiado! 💞', '¡Qué rico abrazo! 🤗💞', '¡Eres mi persona favorita! 💞', '¡No me sueltes! 💞'][bebe.abrazo++ % 4], 2400, 2);
+    stat('abrazosBebe');
+  }
+  animados.push((t, dt) => {
+    const g = bebe.p.g;
+    g.visible = (!!E.vistoBebe || E.casas.some(Boolean)) && !cine;
+    if (!g.visible || modo !== 'fuera') return;
+    bebe.t += dt;
+    interBebe.x = g.position.x; interBebe.z = g.position.z;
+    const dj = Math.hypot(jug.pos.x - g.position.x, jug.pos.z - g.position.z);
+    if (dj < 5 && reloj - bebe.saludo > 12 && bebe.estado !== 'abraza') {
+      bebe.saludo = reloj; bebe.estado = 'saluda'; bebe.dest = null; bebe.espera = 2.4;
+      g.rotation.y = Math.atan2(jug.pos.x - g.position.x, jug.pos.z - g.position.z);
+      burbuja(g, FRASES_BEBE[Math.floor(Math.random() * FRASES_BEBE.length)], 2800, 2);
+    }
+    if (bebe.estado === 'camina' && bebe.dest) {
+      const dx = bebe.dest[0] - g.position.x, dz = bebe.dest[1] - g.position.z, L = Math.hypot(dx, dz);
+      if (L < .3) { bebe.dest = null; bebe.estado = Math.random() < .25 ? 'baila' : 'quieta'; bebe.espera = azar(2, 5); }
+      else { g.position.x += dx / L * 2.2 * dt; g.position.z += dz / L * 2.2 * dt; g.rotation.y = Math.atan2(dx, dz); }
+    } else {
+      bebe.espera -= dt;
+      if (bebe.espera <= 0) {
+        // pasea cerca de ella si está lejos de casa; si no, por la plaza y los terrenos
+        const cerca = dj > 30 ? [jug.pos.x, jug.pos.z] : [0, -22];
+        for (let k = 0; k < 10; k++) { const a = azar(0, 6.28), r = azar(2, dj > 30 ? 6 : 14), x = cerca[0] + Math.cos(a) * r, z = cerca[1] + Math.sin(a) * r; if (Math.hypot(x, z) < RADIO - 4 && !enRio(x, z) && !colisiones.some(c => Math.hypot(c.x - x, c.z - z) < c.r + .6)) { bebe.dest = [x, z]; bebe.estado = 'camina'; break; } }
+        if (!bebe.dest) bebe.espera = 1;
+        if (bebe.estado === 'abraza' || bebe.estado === 'saluda') bebe.estado = 'quieta';
+      }
+    }
+    // si ella se fue muy lejos, Lalito chiquito aparece cerca de ella
+    if (dj > 60) { const a = jug.ry + Math.PI * .75; g.position.set(jug.pos.x + Math.sin(a) * 6, 0, jug.pos.z + Math.cos(a) * 6); if (enRio(g.position.x, g.position.z) || Math.hypot(g.position.x, g.position.z) > RADIO - 4) g.position.set(jug.pos.x, 0, jug.pos.z + 3); particulas('chispa', g.position.clone().setY(.8), 10); }
+    const est = bebe.estado === 'quieta' ? 'quieta' : bebe.estado;
+    animarPersona(bebe.p, est === 'abraza' ? 'abraza' : est, bebe.t * (est === 'camina' ? 11 : 3));
+  });
+
   /* =========================================================
      PERSONAJE
      ========================================================= */
