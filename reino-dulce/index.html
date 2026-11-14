@@ -52,6 +52,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 #reloj { position: fixed; z-index: 10; top: calc(64px + env(safe-area-inset-top)); left: 12px; font-size: 12.5px; padding: 4px 10px; border-radius: 999px; background: rgba(255, 255, 255, .7); color: var(--ink-2); pointer-events: none; }
 #metaMini { position: fixed; z-index: 10; top: calc(64px + env(safe-area-inset-top)); right: 12px; max-width: min(58vw, 260px); font-size: 12.5px; padding: 6px 11px; border-radius: 14px; background: rgba(255, 255, 255, .78); color: var(--ink); pointer-events: auto; text-align: right; }
 #metaMini b { color: #e2457f; }
+#paso { position: fixed; z-index: 11; left: 50%; bottom: calc(140px + env(safe-area-inset-bottom)); transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px); padding: 9px 16px; border-radius: 18px; background: rgba(255, 95, 154, .94); color: #fff; font-size: 14.5px; font-weight: 900; text-align: center; box-shadow: 0 4px 0 #d63f7a, 0 8px 18px rgba(160, 50, 100, .25); pointer-events: none; }
+#paso::before { content: '👉 '; }
+#paso.nuevo { animation: pasoNuevo .5s ease-out; }
+@keyframes pasoNuevo { 0% { transform: translateX(-50%) scale(.7); opacity: 0; } 60% { transform: translateX(-50%) scale(1.06); } }
+body.cinema #paso { opacity: 0; }
 
 /* ---------- Controles táctiles ---------- */
 #joy { position: fixed; z-index: 9; width: 124px; height: 124px; margin: -62px 0 0 -62px; border-radius: 50%; background: rgba(255, 255, 255, .28); border: 3px solid rgba(255, 255, 255, .7); pointer-events: none; opacity: 0; transition: opacity .15s; }
@@ -183,6 +188,7 @@ body.cinema #saltar { display: block; }
 </div>
 <div id="reloj" hidden>☀️ Día</div>
 <div id="metaMini" hidden></div>
+<div id="paso" hidden></div>
 <div id="joy"><i></i></div>
 <div id="joyPista" hidden>Desliza aquí<br>para caminar</div>
 <div id="accionCaja" hidden>

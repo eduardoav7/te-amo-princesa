@@ -1289,6 +1289,33 @@ window.iniciarReino = function () {
     return null;
   }
 
+  // Pasos de tutorial (las primeras veces): texto + flecha en el piso
+  function pasoTutorial() {
+    const m = metaSiguiente(); if (!m || modo !== 'fuera') return null;
+    if (!['m1', 'm2', 'm3', 'm4', 'm5'].includes(m.id)) return null;
+    const falta = (pide) => Object.keys(pide).find(k => cuenta(k) < pide[k]);
+    const donde = (k) => ITEMS[k].precio ? 'en el Mercado 🧺' : k === 'huevo' ? 'en el gallinero del huerto' : ['galleta', 'gomita'].includes(k) ? 'en el Bosque de Galleta' : k === 'azucar' ? 'en los Cristales de Azúcar' : k === 'caramelo' ? 'en la Cantera de Caramelo' : k === 'chocolate' ? 'en el Río de Chocolate' : 'en el huerto 🌽';
+    const consigue = (k, n) => `Consigue ${ITEMS[k].n.toLowerCase()} ${ITEMS[k].e} ${donde(k)} (${cuenta(k)}/${n})`;
+    switch (m.id) {
+      case 'm1': return `Sigue la flecha al Bosque de Galleta 🍪 (${Math.min(E.stats.galletas || 0, 6)}/6)`;
+      case 'm2': { const f = falta(CASAS[0].pide); return f ? consigue(f, CASAS[0].pide[f]) + ' para tu primera casita' : '¡Ya tienes todo! Ve a tu terreno y toca 🔨 Construir'; }
+      case 'm3': { const f = falta(RECETAS[0].pide); return f ? consigue(f, RECETAS[0].pide[f]) + ' para tu spaghetti 🍝' : 'Ve a la cocinita 🍳 y prepara tu spaghetti'; }
+      case 'm4': return RECETAS.some(r => cuenta(r.id)) ? 'Lleva tu comida al Mercado y véndela 🧺' : 'Cocina algo rico en la cocinita 🍳';
+      case 'm5': return E.flores.length ? 'Riega tu flor 💧' : FLORES.some(f => cuenta('sem_' + f.id)) ? 'Abre tu mochila 🎒 → Cosas → Plantar aquí' : 'Compra una semilla en la Florería 🌷';
+    }
+    return null;
+  }
+  const flecha = new THREE.Group();
+  {
+    const sh = new THREE.Shape();
+    sh.moveTo(0, 1.1); sh.lineTo(.8, .2); sh.lineTo(.32, .2); sh.lineTo(.32, -.7); sh.lineTo(-.32, -.7); sh.lineTo(-.32, .2); sh.lineTo(-.8, .2); sh.closePath();
+    const g = new THREE.ExtrudeGeometry(sh, { depth: .14, bevelEnabled: true, bevelThickness: .05, bevelSize: .06, bevelSegments: 2 });
+    const m = new THREE.Mesh(g, matLuz('#ff5f9a', .55)); m.rotation.x = -Math.PI / 2; m.castShadow = true;
+    const borde = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xffffff })); borde.rotation.x = -Math.PI / 2; borde.scale.set(1.18, 1.18, .5); borde.position.y = -.04;
+    flecha.add(borde, m);
+  }
+  flecha.visible = false; scene.add(flecha);
+  let pasoPrev = '';
   /* =========================================================
      DÍA Y NOCHE
      ========================================================= */
@@ -1361,6 +1388,20 @@ window.iniciarReino = function () {
     if (dg && !cine) { guia.visible = true; guia.position.set(dg[0], 4.6 + Math.sin(reloj * 3) * .35, dg[1]); guia.rotation.y += dt * 2; const d = Math.hypot(dg[0] - jug.pos.x, dg[1] - jug.pos.z); guia.scale.setScalar(d < 6 ? .6 : 1); }
     else guia.visible = false;
     if (!cine) buscarInteractivo();
+    // flecha y texto del tutorial
+    let pt = !cine && !panelAbierto ? pasoTutorial() : null;
+    if (pt && interActual) pt = `Toca el botón rosa: ${interActual.txt()} ${interActual.ic}`;
+    if (pt !== pasoPrev) { pasoPrev = pt; const el = $('paso'); el.hidden = !pt; if (pt) { el.textContent = pt; el.classList.remove('nuevo'); void el.offsetWidth; el.classList.add('nuevo'); } }
+    if (pt && dg && !jug.accion) {
+      const dx = dg[0] - jug.pos.x, dz = dg[1] - jug.pos.z, d = Math.hypot(dx, dz);
+      if (d > 4.5) {
+        flecha.visible = true;
+        const off = 2.3 + Math.sin(reloj * 5) * .25;
+        flecha.position.set(jug.pos.x + dx / d * off, .12 + (jug.veh ? .1 : 0), jug.pos.z + dz / d * off);
+        flecha.rotation.y = Math.atan2(dx, dz);
+        flecha.scale.setScalar(.9 + Math.sin(reloj * 5) * .06);
+      } else flecha.visible = false;
+    } else flecha.visible = false;
     actualizarCamara(dt);
     // burbujas encima de las cabezas
     const ta = performance.now();
