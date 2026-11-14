@@ -900,18 +900,18 @@ window.iniciarReino = function () {
       B.g.position.copy(bp); B.g.rotation.y = Math.atan2(jug.pos.x - bp.x, jug.pos.z - bp.z); scene.add(B.g);
       B.g.scale.setScalar(.01); tween(.5, (k) => B.g.scale.setScalar(Math.max(.01, easeBack(k)) * .95));
       particulas('chispa', bp.clone().setY(.8), 20); particulas('corazon', bp.clone().setY(1.4), 6); sonar('puf');
+      mirarA(bp.x, bp.z);
+      { const fr = V3(Math.cos(jug.ry), 0, -Math.sin(jug.ry)); cine = { centro: bp.clone().lerp(jug.pos, .5).setY(.95), ang: Math.atan2(fr.x, fr.z) + .3, dist: 4.4, alto: 1.4, vel: .03 }; }
       const peques = [];
       ['#ff7eb6', '#9b7bff', '#7bd389', '#ffd23f', '#7fc8ff'].forEach((c, k) => {
-        const d = crearDulcecito(c); const a = k / 5 * Math.PI * 2;
-        d.g.position.set(bp.x + Math.cos(a) * 1.9, 0, bp.z + Math.sin(a) * 1.9); d.g.rotation.y = Math.atan2(bp.x - d.g.position.x, bp.z - d.g.position.z) + Math.PI;
+        const d = crearDulcecito(c); const a0 = Math.atan2(-Math.cos(cine.ang), -Math.sin(cine.ang)); const a = a0 + (k - 2) * .55;
+        d.g.position.set(bp.x + Math.cos(a) * 1.7, 0, bp.z + Math.sin(a) * 1.7); d.g.rotation.y = Math.atan2(bp.x - d.g.position.x, bp.z - d.g.position.z) + Math.PI;
         d.g.scale.setScalar(.01); scene.add(d.g); peques.push(d);
         espera(.3 + k * .15).then(() => { tween(.4, (q) => d.g.scale.setScalar(Math.max(.01, easeBack(q)))); particulas('chispa', d.g.position.clone().setY(.6), 5); sonar('pop'); });
       });
       let tB = 0, estB = 'saluda';
       const animB = (t, dt) => { tB += dt * 3; animarPersona(B, estB, tB); peques.forEach((d, k) => animarDulcecito(d, 'baila', tB + k)); };
       animados.push(animB);
-      mirarA(bp.x, bp.z);
-      { const fr = V3(Math.cos(jug.ry), 0, -Math.sin(jug.ry)); cine = { centro: bp.clone().lerp(jug.pos, .5).setY(.95), ang: Math.atan2(fr.x, fr.z) + .3, dist: 4.4, alto: 1.4, vel: .03 }; }
       jug.accion = { estado: 'quieta', hasta: reloj + 16 };
       await espera(1);
       burbuja(B.g, '¡Hola, Brittybee! Soy Lalito chiquito 👶', 2800, 2);
