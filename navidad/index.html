@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14213d">
+<title>Calendario de adviento 🎄</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Great+Vibes&family=Mountains+of+Christmas:wght@700&family=Quicksand:wght@500;600;700&family=Lora:ital@0;1&display=swap">
+<style>
+:root {
+  --noche: #14213d; --noche2: #1d2f5c; --rojo: #d64550; --rojo-f: #a8323b; --verde: #2f8f5b; --verde-f: #1f6b42; --oro: #f2c35b; --crema: #fff7ea; --rosa: #f48fb1; --rosa-f: #e0567f;
+  --ink: #3d2b41; --t-titulo: 'Great Vibes', cursive; --t-num: 'Mountains of Christmas', 'Caveat', cursive; --t-cuerpo: 'Quicksand', system-ui, sans-serif; --t-mano: 'Caveat', cursive; --t-carta: 'Lora', Georgia, serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { overflow-x: clip; }
+body { margin: 0; min-height: 100vh; color: #fff; font: 500 16px/1.55 var(--t-cuerpo); background: radial-gradient(120% 70% at 50% 0%, #2c4a8a 0%, var(--noche2) 40%, var(--noche) 80%) fixed; }
+#nieve { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+main { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding: 18px 14px 50px; }
+.volver { display: inline-flex; gap: 6px; font: 700 14px/1 var(--t-cuerpo); color: #fff; text-decoration: none; border: 1.5px solid rgba(255,255,255,.4); border-radius: 999px; padding: 9px 14px; background: rgba(255,255,255,.08); }
+.cabeza { text-align: center; margin: 18px 0 14px; }
+.cabeza small { font: 700 12px/1 var(--t-cuerpo); letter-spacing: .22em; text-transform: uppercase; color: var(--oro); }
+.cabeza h1 { margin: 6px 0 2px; font: 400 clamp(50px, 14vw, 70px)/1 var(--t-titulo); color: #fff; text-shadow: 0 0 18px rgba(242,195,91,.55); }
+.cabeza p { margin: 4px auto 0; max-width: 32ch; color: #d8e2ff; }
+.aviso { text-align: center; margin: 0 auto 16px; padding: 10px 14px; border-radius: 16px; background: rgba(255,255,255,.08); border: 1px dashed rgba(242,195,91,.6); max-width: 360px; font-size: 15px; }
+.aviso b { color: var(--oro); }
+/* La casita del calendario */
+.casa { position: relative; margin-top: 70px; background: linear-gradient(180deg, #8a4b2e, #6e3a22); border-radius: 0 0 22px 22px; padding: 18px 14px 18px; box-shadow: 0 0 0 4px #5a2e1a, 0 24px 50px rgba(0,0,0,.45); }
+.casa::before { content: ''; position: absolute; left: -18px; right: -18px; top: -66px; height: 70px; background: #a8323b; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.casa::after { content: ''; position: absolute; left: -18px; right: -18px; top: -14px; height: 22px; border-radius: 12px; background: #fff; box-shadow: inset 0 -4px 0 #e6edf8; }
+.foquitos { position: absolute; left: 6px; right: 6px; top: 10px; height: 16px; z-index: 2; display: flex; justify-content: space-between; }
+.foquitos i { width: 10px; height: 14px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: var(--c); box-shadow: 0 0 10px var(--c); animation: foco 1.6s ease-in-out infinite; }
+@keyframes foco { 50% { opacity: .35; box-shadow: none; } }
+.puertas { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+.puerta { position: relative; aspect-ratio: 3 / 4; perspective: 600px; border: 0; padding: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; font: inherit; color: inherit; }
+.puerta .dentro { position: absolute; inset: 0; border-radius: 10px; background: radial-gradient(circle at 50% 40%, #fff7ea, #f3dcc0); display: grid; place-items: center; font-size: 30px; box-shadow: inset 0 0 0 3px rgba(0,0,0,.12); }
+.puerta .dentro .n { position: absolute; top: 4px; left: 7px; font: 700 13px/1 var(--t-cuerpo); color: #a8323b; }
+.puerta .hoja { position: absolute; inset: 0; border-radius: 10px; transform-origin: 0 50%; transition: transform .9s cubic-bezier(.3,.7,.2,1); background: var(--c); box-shadow: inset 0 0 0 3px rgba(255,255,255,.25), inset 0 0 0 7px rgba(0,0,0,.08), 0 4px 0 rgba(0,0,0,.25); display: grid; place-items: center; backface-visibility: hidden; }
+.puerta .hoja b { font: 700 34px/1 var(--t-num); color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+.puerta .hoja::after { content: ''; position: absolute; right: 9px; top: 50%; width: 7px; height: 7px; border-radius: 50%; background: var(--oro); box-shadow: 0 0 0 2px rgba(0,0,0,.15); }
+.puerta .hoja .mono { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); font-size: 18px; }
+.puerta.abierta .hoja { transform: rotateY(-112deg); }
+.puerta.cerrada .hoja { filter: saturate(.75) brightness(.92); }
+.puerta.hoy .hoja { animation: brilla 1.6s ease-in-out infinite; }
+@keyframes brilla { 50% { box-shadow: inset 0 0 0 3px rgba(255,255,255,.5), 0 0 22px 4px rgba(242,195,91,.8); } }
+.puerta.tiembla { animation: tiembla .4s; }
+@keyframes tiembla { 25%, 75% { transform: translateX(-4px); } 50% { transform: translateX(4px); } }
+.nota { text-align: center; color: #d8e2ff; font-size: 14px; margin: 14px 0 0; min-height: 22px; }
+.firma { text-align: center; margin: 26px 0 0; font: 400 40px/1 var(--t-titulo); color: #ffd6e0; }
+/* Modal */
+.modal { position: fixed; inset: 0; z-index: 20; background: rgba(8,12,30,.78); display: grid; place-items: center; padding: 16px; overflow-y: auto; }
+.caja { position: relative; width: min(100%, 460px); background: var(--crema); color: var(--ink); border-radius: 22px; padding: 22px 18px 20px; box-shadow: 0 0 0 4px var(--rojo), 0 0 0 8px #fff, 0 30px 60px rgba(0,0,0,.5); animation: entra .45s cubic-bezier(.2,.8,.2,1); margin: auto; }
+@keyframes entra { from { transform: scale(.85); opacity: 0; } }
+.cerrar { position: absolute; top: -16px; right: -10px; width: 42px; height: 42px; border-radius: 50%; border: 0; background: #fff; color: var(--ink); font-size: 18px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+.caja .dia { display: block; text-align: center; font: 700 12px/1 var(--t-cuerpo); letter-spacing: .2em; text-transform: uppercase; color: var(--verde); }
+.caja h2 { margin: 6px 0 12px; text-align: center; font: 400 42px/1.05 var(--t-titulo); color: var(--rojo-f); }
+.caja p { margin: 0 0 12px; }
+.carta p { font: 400 16.5px/1.7 var(--t-carta); }
+.carta .firma2 { text-align: right; font: 400 32px/1 var(--t-titulo); color: var(--rojo-f); margin-top: 6px; }
+.escena { width: 100%; border-radius: 14px; overflow: hidden; background: #1d2f5c; }
+.escena svg, .escena canvas { display: block; width: 100%; height: auto; }
+.pie-escena { text-align: center; font: 700 22px/1.25 var(--t-mano); color: var(--rojo-f); margin: 12px 0 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: 700 15.5px/1 var(--t-cuerpo); color: #fff; text-decoration: none; border: 0; cursor: pointer; border-radius: 999px; padding: 13px 20px; background: linear-gradient(180deg, #e8606b, var(--rojo-f)); box-shadow: 0 5px 0 #7d232b; -webkit-tap-highlight-color: transparent; }
+.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #7d232b; }
+.btn.verde { background: linear-gradient(180deg, #3fae70, var(--verde-f)); box-shadow: 0 5px 0 #144a2e; }
+.fila { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 14px; }
+/* Vale */
+.vale { position: relative; border-radius: 16px; background: repeating-linear-gradient(45deg, #fff 0 12px, #fff3f5 12px 24px); border: 2.5px dashed var(--rojo); padding: 20px 18px; text-align: center; }
+.vale .tit { font: 700 13px/1 var(--t-cuerpo); letter-spacing: .25em; color: var(--verde); }
+.vale h3 { margin: 8px 0 6px; font: 700 34px/1.1 var(--t-mano); color: var(--rojo-f); }
+.vale p { margin: 0; color: #6a5872; }
+.vale .sello { position: absolute; right: 10px; bottom: 8px; transform: rotate(-12deg); font: 700 14px/1 var(--t-cuerpo); color: var(--verde); border: 2px solid var(--verde); border-radius: 8px; padding: 5px 8px; background: #fff; }
+/* Juegos */
+.marcador { display: flex; justify-content: space-between; font: 700 15px/1 var(--t-cuerpo); margin-bottom: 8px; color: var(--verde-f); }
+.puzzle { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; background: #1d2f5c; padding: 3px; border-radius: 12px; touch-action: manipulation; }
+.puzzle button { aspect-ratio: 1; border: 0; padding: 0; cursor: pointer; background-repeat: no-repeat; background-size: 300% 300%; border-radius: 6px; outline: 3px solid transparent; outline-offset: -3px; }
+.puzzle button.sel { outline-color: var(--oro); }
+.paleta { display: flex; justify-content: center; gap: 8px; margin: 10px 0 0; flex-wrap: wrap; }
+.paleta button { width: 44px; height: 44px; border-radius: 50%; border: 2.5px solid #e6dccd; background: #fff; font-size: 22px; cursor: pointer; display: grid; place-items: center; }
+.paleta button.sel { border-color: var(--rojo); box-shadow: 0 0 0 3px rgba(214,69,80,.25); }
+.trivia .op { display: block; width: 100%; text-align: left; font: 600 15.5px/1.35 var(--t-cuerpo); color: var(--ink); background: #fff; border: 2px solid #e6dccd; border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; cursor: pointer; }
+.trivia .op.bien { background: #e3f6ea; border-color: var(--verde); color: var(--verde-f); }
+.trivia .op.mal { background: #fde8ea; border-color: var(--rojo); color: var(--rojo-f); }
+.deseos { list-style: none; margin: 0 0 12px; padding: 0; }
+.deseos li { padding: 8px 4px 8px 32px; position: relative; border-bottom: 1.5px dashed #ead9c4; font: 700 22px/1.2 var(--t-mano); }
+.deseos li::before { content: '⭐'; position: absolute; left: 2px; top: 8px; font-size: 16px; }
+.deseos li.suyo { color: var(--rojo-f); }
+textarea { width: 100%; font: 500 16px/1.4 var(--t-cuerpo); border: 2px solid #e6dccd; border-radius: 12px; padding: 10px 12px; resize: vertical; min-height: 64px; color: var(--ink); }
+.cuenta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 8px 0; }
+.cuenta div { background: #fff; border-radius: 14px; padding: 10px 2px; text-align: center; box-shadow: inset 0 0 0 2px #f1e3cf; }
+.cuenta b { display: block; font: 700 32px/1 var(--t-num); color: var(--rojo-f); }
+.cuenta span { font: 700 11px/1 var(--t-cuerpo); letter-spacing: .1em; text-transform: uppercase; color: var(--verde); }
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { .foquitos i, .puerta.hoy .hoja { animation: none; } .puerta .hoja { transition: none; } }
+</style>
+</head>
+<body>
+<canvas id="nieve" aria-hidden="true"></canvas>
+<main>
+  <a href="../" class="volver">🏠 Volver a tu página</a>
+  <header class="cabeza">
+    <small>Navidad 2026 · para Brittani</small>
+    <h1>Calendario de adviento</h1>
+    <p>Del 1 al 24 de diciembre, cada día se abre una puertita con una sorpresa para ti 🎄</p>
+  </header>
+  <p class="aviso" id="aviso"></p>
+  <section class="casa">
+    <div class="foquitos" aria-hidden="true" id="foquitos"></div>
+    <div class="puertas" id="puertas"></div>
+  </section>
+  <p class="nota" id="nota"></p>
+  <p class="firma">Te amo, Lalito 💞</p>
+</main>
+<div class="modal" id="modal" hidden><div class="caja" id="caja" role="dialog" aria-modal="true"></div></div>
+<script src="personajes.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const lee = (k, d) => { try { const v = localStorage.getItem('adviento-' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+  const guarda = (k, v) => { try { localStorage.setItem('adviento-' + k, JSON.stringify(v)); } catch (e) {} };
+  const LALITO = /[?&]vista=lalito\b/.test(location.search);   // vista previa para Lalito: abre todas
+  const INK = PJ.INK;
+  const g = (x, y, s, c, extra = '') => `<g transform="translate(${x} ${y}) scale(${s}) ${extra}">${c}</g>`;
+  const ELLA = (gesto = 'feliz', op) => PJ.ella('casual', gesto, '#5b8fd6', op);
+  const EL = (gesto = 'feliz', op) => PJ.el('casual', gesto, op);
+  const brazo = PJ.brazo;
+  const cora = (x, y, s, c = '#ff7aa2', op = 1) => `<path opacity="${op}" d="M${x} ${y + 6 * s} C${x - 9 * s} ${y - s} ${x - 9 * s} ${y - 10 * s} ${x} ${y - 5 * s} C${x + 9 * s} ${y - 10 * s} ${x + 9 * s} ${y - s} ${x} ${y + 6 * s} Z" fill="${c}" stroke="${INK}" stroke-width="1"/>`;
+  const brillo = (x, y, s, op = 1, c = '#fff8e1') => `<path opacity="${op}" d="M${x} ${y - 6 * s} Q${x + s} ${y - s} ${x + 6 * s} ${y} Q${x + s} ${y + s} ${x} ${y + 6 * s} Q${x - s} ${y + s} ${x - 6 * s} ${y} Q${x - s} ${y - s} ${x} ${y - 6 * s} Z" fill="${c}"/>`;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function deLaMano(cx, y, s, ge = 'feliz', ga = 'feliz') {
+    const xe = cx - 50 * s, xa = cx + 50 * s;
+    return g(xe, y, s, EL(ge, { sinBrazos: true })) + g(xa, y, s, ELLA(ga, { sinBrazos: true }))
+      + g(xe, y, s, brazo('M-32 -96 Q-44 -74 -38 -52', '#1f1f27', -38, -50) + brazo('M32 -96 Q60 -70 50 -56', '#1f1f27', 50, -56))
+      + g(xa, y, s, brazo('M20 -76 Q24 -60 30 -50', '#2f5d95', 30, -50) + brazo('M-20 -76 Q-50 -64 -52 -56', '#2f5d95', -52, -56));
+  }
+  function abrazo(xa, xe, y, s) {
+    const hx = (xa - xe) / s - 14;
+    return g(xe, y, s, brazo(`M-32 -96 Q-70 -80 ${hx} -62`, '#1f1f27', hx, -62) + brazo('M32 -96 Q44 -74 38 -52', '#1f1f27', 38, -50)) + g(xe, y, s, EL('feliz', { sinBrazos: true })) + g(xa, y, s, ELLA('feliz'), 'rotate(-5 0 -40)');
+  }
+  const gato = (x, y, s, c = '#f7f7f7', flip = 1, moño = false) => `<g transform="translate(${x} ${y}) scale(${s * flip} ${s})"><path d="M30 -10 Q56 -20 50 -46" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="M30 -10 Q56 -20 50 -46" fill="none" stroke="${c}" stroke-width="4" stroke-linecap="round"/><ellipse cx="6" cy="-18" rx="30" ry="20" fill="${c}" stroke="${INK}" stroke-width="2"/><path d="M-30 -46 L-26 -66 L-14 -54 Z M2 -54 L12 -66 L14 -46 Z" fill="${c}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><ellipse cx="-8" cy="-42" rx="24" ry="20" fill="${c}" stroke="${INK}" stroke-width="2"/><path d="M-18 -44 q3 -4 6 0 M-2 -44 q3 -4 6 0" fill="none" stroke="${c === '#2b2b33' ? '#fff' : INK}" stroke-width="2" stroke-linecap="round"/><ellipse cx="-22" cy="-36" rx="4" ry="2.4" fill="#ffb3c6"/><ellipse cx="6" cy="-36" rx="4" ry="2.4" fill="#ffb3c6"/>${moño ? '<path d="M-30 -58 l-8 -6 v12 Z M-30 -58 l8 -6 v12 Z" fill="#d7263d" stroke="#3d2b41" stroke-width="1.4"/>' : ''}</g>`;
+  const arbol = (x, y, s, t = 0) => g(x, y, s, `<rect x="-8" y="-6" width="16" height="22" fill="#7a4a2a" stroke="${INK}" stroke-width="2"/><path d="M0 -150 L52 -84 H30 L66 -30 H40 L80 14 H-80 L-40 -30 H-66 L-30 -84 H-52 Z" fill="#2f8f5b" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>${[[-30, -6, '#d64550'], [24, -16, '#f2c35b'], [-12, -50, '#f48fb1'], [20, -62, '#d64550'], [-22, -90, '#f2c35b'], [8, -104, '#f48fb1'], [40, 4, '#8cc0f2'], [-48, 2, '#f2c35b']].map(([a, b, c], i) => `<circle cx="${a}" cy="${b}" r="6" fill="${c}" stroke="${INK}" stroke-width="1.4" opacity="${.75 + .25 * Math.sin(t * 3 + i)}"/>`).join('')}<path d="M0 -170 l5 11 l12 1 l-9 8 l3 12 l-11 -6 l-11 6 l3 -12 l-9 -8 l12 -1 Z" fill="#f2c35b" stroke="${INK}" stroke-width="1.6"/>`);
+  const copos = (t, n, w = 400, h = 260) => { let s = ''; for (let i = 0; i < n; i++) { const ph = (t * (.05 + (i % 3) * .02) + i / n) % 1; s += `<circle cx="${(i * 53 + Math.sin(t + i) * 10) % w}" cy="${ph * (h + 10) - 5}" r="${1.2 + (i % 3) * .7}" fill="#fff" opacity=".9"/>`; } return s; };
+  const regalo = (x, y, s, c, c2 = '#f2c35b') => g(x, y, s, `<rect x="-20" y="-30" width="40" height="30" fill="${c}" stroke="${INK}" stroke-width="2"/><rect x="-24" y="-38" width="48" height="10" fill="${c}" stroke="${INK}" stroke-width="2"/><rect x="-4" y="-38" width="8" height="38" fill="${c2}"/><path d="M0 -38 q-14 -14 -16 -2 q2 4 16 2 q14 -14 16 -2 q-2 4 -16 2" fill="${c2}" stroke="${INK}" stroke-width="1.6"/>`);
+  const fondoNoche = t => `<rect width="400" height="260" fill="#1d2f5c"/><rect width="400" height="260" fill="url(#cieloN)"/><defs><linearGradient id="cieloN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14213d"/><stop offset="1" stop-color="#3b5a9a"/></linearGradient></defs>${[...Array(18)].map((_, i) => brillo((i * 71) % 400, (i * 37) % 120, .5, .4 + .6 * Math.abs(Math.sin(t + i)))).join('')}`;
+
+  /* ---------- Escenas animadas (viewBox 400 x 260) ---------- */
+  const ESCENAS = {
+    muneco: t => { const k = Math.min(1, t / 6), b1 = Math.min(1, t / 2), b2 = Math.max(0, Math.min(1, (t - 2) / 2)), b3 = Math.max(0, Math.min(1, (t - 4) / 2));
+      return fondoNoche(t) + `<path d="M0 205 Q200 180 400 205 V260 H0 Z" fill="#eef3fb"/>` + `<g transform="translate(200 220)"><circle cy="-22" r="${30 * b1}" fill="#fff" stroke="${INK}" stroke-width="2"/><circle cy="-70" r="${22 * b2}" fill="#fff" stroke="${INK}" stroke-width="2"/><circle cy="-104" r="${16 * b3}" fill="#fff" stroke="${INK}" stroke-width="2"/>
+        <g opacity="${k >= 1 ? 1 : 0}"><circle cx="-5" cy="-108" r="2" fill="${INK}"/><circle cx="5" cy="-108" r="2" fill="${INK}"/><path d="M0 -102 l14 3 l-14 3 Z" fill="#f28c38"/><path d="M-18 -90 h36 v6 h-36 Z" fill="#d64550"/><path d="M8 -86 v16 h6 v-16 Z" fill="#d64550"/><path d="M-12 -122 h24 v-16 h-24 Z M-18 -122 h36 v4 h-36 Z" fill="#2b2b33"/><circle cy="-70" r="2" fill="${INK}"/><circle cy="-60" r="2" fill="${INK}"/><path d="M-20 -72 l-24 -14 M20 -72 l24 -14" stroke="#7a4a2a" stroke-width="3" stroke-linecap="round"/></g></g>`
+        + g(95, 236, .72, EL('feliz')) + g(305, 236, .72, ELLA('feliz')) + (k >= 1 ? cora(200, 60 - 4 * Math.sin(t * 2), 1.6) : '') + copos(t, 40); },
+    chimenea: t => { const fl = Math.sin(t * 12) * 3;
+      return `<rect width="400" height="260" fill="#6e3a2e"/><rect y="200" width="400" height="60" fill="#8a5a3b"/>${[...Array(8)].map((_, i) => `<path d="M${i * 50} 0 V200" stroke="#5e3026" stroke-width="2"/>`).join('')}
+        <g transform="translate(110 200)"><rect x="-70" y="-110" width="140" height="110" fill="#b07a5a" stroke="${INK}" stroke-width="2.4"/><rect x="-80" y="-120" width="160" height="14" fill="#8a5a3b" stroke="${INK}" stroke-width="2.4"/><rect x="-42" y="-74" width="84" height="74" rx="6" fill="#2a1a14"/><path d="M-26 0 Q-20 ${-40 + fl} 0 ${-56 - fl} Q18 ${-36 + fl} 26 0 Z" fill="#ff9a3c"/><path d="M-12 0 Q-6 ${-26 - fl} 4 ${-36 + fl} Q12 -20 14 0 Z" fill="#ffd166"/><circle cx="0" cy="-30" r="${54 + fl}" fill="#ffb347" opacity=".12"/>${[-50, -25, 0, 25, 50].map((x, i) => `<path d="M${x - 8} -106 h16 v14 l-8 6 l-8 -6 Z" fill="${['#d64550', '#2f8f5b', '#f2c35b', '#d64550', '#2f8f5b'][i]}" stroke="${INK}" stroke-width="1.4"/>`).join('')}</g>`
+        + arbol(345, 200, .62, t) + deLaMano(250, 236, .68)
+        + [0, 1].map(i => `<g transform="translate(${226 + i * 48} 150)"><rect x="-8" y="-10" width="16" height="16" rx="3" fill="${i ? '#f48fb1' : '#d64550'}" stroke="${INK}" stroke-width="1.6"/>${[0, 1, 2].map(j => `<path d="M${-4 + j * 4} -14 q-3 -6 0 -12" stroke="#fff" stroke-width="1.6" fill="none" opacity="${.3 + .5 * Math.abs(Math.sin(t * 2 + j))}" transform="translate(0 ${-((t * 8 + j * 5) % 8)})"/>`).join('')}</g>`).join('') + cora(250, 70 - 4 * Math.sin(t * 2), 1.4); },
+    patinaje: t => { const x = 200 + Math.sin(t * .9) * 90;
+      return fondoNoche(t) + `<path d="M0 150 Q100 130 200 145 T400 140 V170 H0 Z" fill="#dbe7f7"/>${[30, 360].map(a => arbol(a, 168, .45, t)).join('')}<ellipse cx="200" cy="215" rx="230" ry="60" fill="#bcd7f2"/><ellipse cx="200" cy="215" rx="230" ry="60" fill="#fff" opacity="${.12 + .06 * Math.sin(t * 2)}"/>`
+        + [0, 1, 2].map(i => `<path d="M${x - 120 + i * 30} ${222 + i * 4} q30 -6 60 0" stroke="#fff" stroke-width="2" fill="none" opacity=".5"/>`).join('')
+        + `<g transform="translate(${x} 228) rotate(${Math.cos(t * .9) * -6})">${deLaMano(0, 0, .66)}</g>` + copos(t, 30); },
+    regalos: t => { const ab = Math.max(0, Math.min(1, (t - 1.5) / 1.5)), salta = Math.max(0, Math.min(1, (t - 3) / 1));
+      return `<rect width="400" height="260" fill="#f7e6d2"/><rect y="210" width="400" height="50" fill="#c9a07a"/>` + arbol(80, 212, .8, t)
+        + regalo(160, 222, 1, '#2f8f5b') + regalo(330, 222, .8, '#f48fb1')
+        + `<g transform="translate(240 222)"><rect x="-26" y="-36" width="52" height="36" fill="#d64550" stroke="${INK}" stroke-width="2"/><rect x="-5" y="-36" width="10" height="36" fill="#f2c35b"/><g transform="translate(${-40 * ab} ${-46 * ab}) rotate(${-40 * ab})"><rect x="-30" y="-46" width="60" height="12" fill="#d64550" stroke="${INK}" stroke-width="2"/></g></g>`
+        + gato(232, 214 - 30 * Math.sin(salta * Math.PI) - 10 * salta, .5 * salta + .01, '#f7f7f7', 1, true) + gato(262, 218 - 26 * Math.sin(Math.max(0, salta - .2) * Math.PI), .48 * Math.max(0, salta - .1) + .01, '#2b2b33', -1)
+        + g(150, 250, .62, EL('feliz')) + g(330, 250, .62, ELLA('feliz')) + (salta > .9 ? [0, 1, 2, 3].map(i => cora(220 + i * 18, 110 - ((t * 20 + i * 10) % 40), .9, '#ff7aa2', .9)).join('') : ''); },
+    galletas: t => { const n = Math.min(6, Math.floor(t / 1.2) + 1);
+      const formas = [['estrella', '#f2c35b'], ['corazon', '#f48fb1'], ['arbol', '#2f8f5b'], ['estrella', '#fff'], ['corazon', '#d64550'], ['arbol', '#8cc0f2']];
+      const forma = (k, c) => k === 'corazon' ? cora(0, 0, 2.2, c) : k === 'estrella' ? `<path d="M0 -16 l5 10 l11 1 l-8 8 l2 11 l-10 -5 l-10 5 l2 -11 l-8 -8 l11 -1 Z" fill="${c}" stroke="${INK}" stroke-width="1.6"/>` : `<path d="M0 -18 L14 6 H-14 Z" fill="${c}" stroke="${INK}" stroke-width="1.6"/><rect x="-3" y="6" width="6" height="6" fill="#7a4a2a"/>`;
+      return `<rect width="400" height="260" fill="#fdeedd"/>${[...Array(8)].map((_, i) => `<rect x="${i * 50}" y="0" width="25" height="150" fill="#f7dcc7"/>`).join('')}<rect y="150" width="400" height="110" fill="#e9c9a8"/><ellipse cx="200" cy="190" rx="130" ry="26" fill="#fff" stroke="${INK}" stroke-width="2"/>`
+        + formas.slice(0, n).map(([k, c], i) => g(110 + i * 36, 186 + (i % 2) * 6, 1, `<circle r="15" fill="#d9a066" stroke="${INK}" stroke-width="1.4"/>` + g(0, 0, .6, forma(k, c)))).join('')
+        + g(70, 250, .62, EL('feliz')) + g(330, 250, .62, ELLA('feliz')) + `<path d="M318 172 l18 -24" stroke="#d64550" stroke-width="5" stroke-linecap="round"/>`; },
+    luces: t => { let foc = ''; for (let f = 0; f < 3; f++) for (let i = 0; i < 14; i++) { const x = 10 + i * 29, y = 40 + f * 30 + Math.sin(i * .8) * 8; foc += `<circle cx="${x}" cy="${y}" r="3.5" fill="${['#ffd166', '#ff7aa2', '#9be0c4', '#fff'][(i + f) % 4]}" opacity="${.35 + .65 * Math.abs(Math.sin(t * 2 + i + f))}"/>`; }
+      return fondoNoche(t) + `<path d="M0 40 Q200 70 400 40 M0 70 Q200 100 400 70 M0 100 Q200 130 400 100" stroke="#2b2b33" stroke-width="1.4" fill="none"/>` + foc + `<rect y="200" width="400" height="60" fill="#dbe7f7"/>` + arbol(200, 205, .9, t) + abrazo(300, 350, 240, .6) + g(80, 240, .6, '') + copos(t, 30); },
+    navidad: t => fondoNoche(t) + `<path d="M0 200 Q200 170 400 200 V260 H0 Z" fill="#eef3fb"/>` + arbol(200, 200, .95, t) + regalo(150, 214, .8, '#d64550') + regalo(250, 216, .7, '#2f8f5b') + regalo(280, 220, .5, '#f48fb1')
+      + g(80, 244, .66, EL('feliz')) + g(330, 244, .66, ELLA('feliz')) + gato(120, 236, .4, '#f7f7f7', 1, true) + gato(290, 238, .38, '#2b2b33', -1) + copos(t, 40)
+      + `<text x="200" y="40" text-anchor="middle" font-family="Great Vibes, cursive" font-size="34" fill="#fff" opacity="${Math.min(1, t / 2)}">Feliz Navidad, mi princesa</text>`,
+  };
+
+  /* ---------- Las 24 sorpresas ---------- */
+  const DIAS = {
+    1: { ico: '🎬', tipo: 'vale', t: 'Vale por una película juntos', d: 'Por llamada, la que tú escojas… y yo no me quejo 😂' },
+    2: { ico: '💌', tipo: 'carta', t: 'Lo que pensé la primera vez que hablamos', p: ['Aquella noche del 20 de abril, a las 10:48, yo solo estaba jugando… y de repente apareciste tú.', 'No sé explicarlo, pero desde ese primer «hola» sentí algo distinto, como si alguien hubiera prendido una lucecita en un cuarto que ni sabía que estaba oscuro. Pensé: «qué bonita forma de hablar tiene». Y luego pensé: «ojalá mañana también me escriba».', 'Y me escribiste. Y al otro día también. Hoy, tantos meses después, sigo sintiendo esa misma emoción cada vez que veo tu nombre en mi pantalla.', 'Esa noche no lo sabía, princesa, pero estaba conociendo al amor de mi vida 💞'] },
+    3: { ico: '⛄', tipo: 'escena', esc: 'muneco', t: 'Nuestro muñeco de nieve', pie: 'Algún día lo vamos a hacer de verdad, con las manos heladas y riéndonos 💞' },
+    4: { ico: '🛷', tipo: 'atrapar', t: 'Atrapa los regalos', pie: 'Mueve el trineo con tu dedo y atrapa todos los regalos que puedas en 30 segundos' },
+    5: { ico: '🏆', tipo: 'vale', t: 'Vale por ganar una discusión', d: 'Úsalo cuando quieras: automáticamente tienes la razón. Válido una sola vez 😂' },
+    6: { ico: '✨', tipo: 'texto', t: 'Una razón navideña', p: ['Te amo porque haces que diciembre se sienta tibio aunque haga frío.', 'Porque contigo hasta las luces de Navidad brillan más bonito, porque cada canción navideña ahora me recuerda a ti, y porque el mejor regalo que me ha dado este año no venía envuelto: eras tú 💞'] },
+    7: { ico: '💌', tipo: 'carta', t: 'Lo que más me gusta de ti', p: ['Me gusta tu risa, esa que me contagia aunque esté cansado. Me gusta cómo te emocionas cuando me cuentas algo, y cómo me cuidas desde lejos como si estuvieras aquí a mi lado.', 'Me gustan tus «te amo», tus apodos, tus ocurrencias y hasta cuando te pones enojona. Me gusta que me hagas sentir en casa aunque estemos lejos.', 'Pero lo que más me gusta de ti es que eres tú. Así, completita, como eres. No te cambiaría nada, princesa 💞'] },
+    8: { ico: '☕', tipo: 'escena', esc: 'chimenea', t: 'Chocolate junto a la chimenea', pie: 'Una cobija, dos tazas de chocolate y tú recargada en mí: así me imagino las noches de diciembre 💞' },
+    9: { ico: '🧩', tipo: 'puzzle', t: 'Arma nuestro rompecabezas', pie: 'Toca dos piezas para cambiarlas de lugar hasta que se vea nuestra Navidad' },
+    10: { ico: '🍝', tipo: 'vale', t: 'Vale por una cita virtual', d: 'Cenamos lo mismo, cada quien en su casa, por videollamada y bien arreglados 💞' },
+    11: { ico: '🎶', tipo: 'cancion', t: 'Una canción navideña', cancion: 'All I Want for Christmas Is You', artista: 'Mariah Carey', p: ['Porque esta Navidad no quiero nada debajo del árbol: lo único que quiero eres tú.', 'Cada vez que la escuche este diciembre voy a pensar en ti, y en el día en que por fin podamos cantarla juntos 💞'] },
+    12: { ico: '⛸️', tipo: 'escena', esc: 'patinaje', t: 'Patinando juntos', pie: 'Seguro me voy a caer… pero mientras me sostengas de la mano, todo bien 😂💞' },
+    13: { ico: '🎄', tipo: 'arbol', t: 'Decora nuestro árbol', pie: 'Escoge un adorno y toca el árbol para ponerlo. Se queda guardado para que lo veas cuando quieras' },
+    14: { ico: '💞', tipo: 'carta', t: 'Felices 6 meses', p: ['Hoy cumplimos seis meses, mi amor. Medio año de nosotros.', 'Seis meses de mensajes de buenos días, de llamadas que se alargan, de extrañarnos y de elegirnos todos los días. Seis meses en los que me has enseñado que el amor de verdad no se mide en kilómetros.', 'Hace un mes celebramos tu cumpleaños, y hoy celebro algo que me hace igual de feliz: que sigas aquí, conmigo. Gracias por estos seis meses tan bonitos.', 'Que vengan muchísimos más, hasta el 2030 y después también. Te amo con todo mi corazón 💞'] },
+    15: { ico: '🎤', tipo: 'vale', t: 'Vale por una canción cantada por mí', d: 'La que tú quieras, cuando quieras… aunque desafine 😅' },
+    16: { ico: '❓', tipo: 'trivia', t: 'Trivia de nosotros' },
+    17: { ico: '💌', tipo: 'carta', t: 'Nuestra primera Navidad juntos', p: ['Así me la imagino: tú y yo poniendo el árbol, peleándonos de broma por dónde va cada esfera, y nuestros gatitos tumbando los adornos.', 'Chocolate caliente, una cobija, villancicos de fondo y tu cabeza recargada en mi hombro. A las doce, un abrazo largo, larguísimo, de esos que no te he podido dar todavía.', 'Mientras llega ese día, esta Navidad te abrazo desde aquí con todo mi corazón. Falta menos, princesa 💞'] },
+    18: { ico: '🎁', tipo: 'escena', esc: 'regalos', t: 'Abriendo regalos', pie: '¡Sorpresa! Los mejores regalos son nuestros gatitos 🐱💞' },
+    19: { ico: '🖼️', tipo: 'tarjeta', t: 'Tu tarjeta navideña', pie: 'Descárgala y guárdala, o mándamela de regreso 💞' },
+    20: { ico: '🍪', tipo: 'escena', esc: 'galletas', t: 'Galletas navideñas', pie: 'Tú las decoras bonitas y yo me como las que se rompen 😂💞' },
+    21: { ico: '⭐', tipo: 'deseos', t: 'Nuestros deseos para el 2027' },
+    22: { ico: '🌟', tipo: 'escena', esc: 'luces', t: 'Una noche de luces', pie: 'Caminar contigo entre las luces de Navidad: uno de mis sueños para nosotros 💞' },
+    23: { ico: '⏳', tipo: 'cuenta', t: 'Ya casi es Nochebuena' },
+    24: { ico: '🎅', tipo: 'navidad', t: '¡Feliz Nochebuena, mi princesa!', video: null, p: ['Esta es nuestra primera Navidad como novios, y aunque todavía estemos lejos, quiero que sepas que esta noche mi corazón está contigo.', 'Gracias por este año tan bonito. Eres mi regalo favorito, el que le pedí a la vida sin saberlo. Feliz Navidad, mi amor. Te amo hoy, mañana y siempre 💞'] },
+  };
+  const ORDEN = [7, 14, 3, 20, 11, 1, 18, 9, 23, 5, 16, 12, 2, 21, 8, 15, 10, 24, 4, 19, 13, 6, 22, 17];   // como en los calendarios de verdad: revueltas
+  const COLORES = ['#d64550', '#2f8f5b', '#c99a2e', '#b8456b'];
+
+  const fecha = d => new Date(2026, 11, d);
+  const disponible = d => LALITO || new Date() >= fecha(d);
+  let abiertas = new Set(lee('abiertas', []));
+
+  function pintar() {
+    const hoy = new Date();
+    $('puertas').innerHTML = ORDEN.map((d, i) => {
+      const ok = disponible(d), ab = abiertas.has(d), esHoy = hoy.getFullYear() === 2026 && hoy.getMonth() === 11 && hoy.getDate() === d;
+      return `<button class="puerta${ab ? ' abierta' : ''}${ok ? '' : ' cerrada'}${esHoy && !ab ? ' hoy' : ''}" type="button" data-d="${d}" style="--c:${COLORES[i % 4]}" aria-label="Día ${d}${ok ? '' : ', todavía cerrada'}">
+        <span class="dentro">${DIAS[d].ico}<small class="n">${d}</small></span><span class="hoja"><span class="mono">${i % 3 === 0 ? '🎀' : i % 3 === 1 ? '❄️' : '⭐'}</span><b>${d}</b></span></button>`;
+    }).join('');
+    const ini = fecha(1), faltan = Math.ceil((ini - new Date().setHours(0, 0, 0, 0)) / 864e5);
+    $('aviso').innerHTML = LALITO ? '👀 Vista de Lalito: todas las puertitas están abiertas' : faltan > 0 ? `La primera puertita se abre el <b>1 de diciembre</b>. Faltan <b>${faltan}</b> ${faltan === 1 ? 'día' : 'días'} 🎄` : new Date() < fecha(25) ? `Hoy puedes abrir la puertita del <b>${Math.min(24, new Date().getDate())}</b> 🎁` : '¡Feliz Navidad, mi princesa! Todas tus puertitas ya están abiertas 🎄';
+    $('aviso').hidden = false;
+  }
+  $('foquitos').innerHTML = [...Array(14)].map((_, i) => `<i style="--c:${['#ffd166', '#ff7aa2', '#9be0c4', '#fff4c4'][i % 4]};animation-delay:${(i % 4) * .4}s"></i>`).join('');
+
+  $('puertas').addEventListener('click', e => {
+    const b = e.target.closest('.puerta'); if (!b) return; const d = +b.dataset.d;
+    if (!disponible(d)) { const f = Math.ceil((fecha(d) - new Date()) / 864e5); $('nota').textContent = `Todavía no, princesa… la puertita ${d} se abre en ${f} ${f === 1 ? 'día' : 'días'} 🎄`; b.classList.remove('tiembla'); void b.offsetWidth; b.classList.add('tiembla'); return; }
+    const nueva = !abiertas.has(d);
+    abiertas.add(d); guarda('abiertas', [...abiertas]); b.classList.add('abierta'); b.classList.remove('hoy');
+    setTimeout(() => abrir(d), nueva ? 650 : 0);
+  });
+
+  /* ---------- Modal ---------- */
+  let raf = 0, alCerrar = null;
+  function cerrar() { cancelAnimationFrame(raf); if (alCerrar) alCerrar(); alCerrar = null; $('modal').hidden = true; $('caja').innerHTML = ''; document.body.style.overflow = ''; }
+  $('modal').addEventListener('click', e => { if (e.target === $('modal') || e.target.closest('.cerrar')) cerrar(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !$('modal').hidden) cerrar(); });
+  function animar(el, fn) { const t0 = performance.now(); (function f() { el.innerHTML = fn((performance.now() - t0) / 1000); raf = requestAnimationFrame(f); })(); }
+
+  function abrir(d) {
+    const s = DIAS[d], c = $('caja'); let h = `<button class="cerrar" type="button" aria-label="Cerrar">✕</button><span class="dia">${d} de diciembre</span><h2>${esc(s.t)}</h2>`;
+    if (s.tipo === 'vale') { const canj = lee('vale-' + d, false);
+      h += `<div class="vale"><div class="tit">VALE POR</div><h3>${esc(s.t.replace('Vale por ', ''))}</h3><p>${esc(s.d)}</p>${canj ? '<span class="sello">Canjeado ✓</span>' : ''}</div><div class="fila"><a class="btn" id="canjear" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('Lalito, quiero canjear mi vale: ' + s.t + ' 🎟️💞')}">🎟️ Canjear mi vale</a></div><p style="text-align:center;font-size:13.5px;color:#7a6884;margin-top:10px">Al tocarlo se abre WhatsApp para que me avises 💞</p>`; }
+    else if (s.tipo === 'carta' || s.tipo === 'texto') h += `<div class="carta">${s.p.map(x => `<p>${esc(x)}</p>`).join('')}<p class="firma2">Lalito</p></div>`;
+    else if (s.tipo === 'escena') h += `<div class="escena"><svg viewBox="0 0 400 260" id="esc"></svg></div><p class="pie-escena">${esc(s.pie)}</p>`;
+    else if (s.tipo === 'cancion') h += `<div class="vale" style="border-color:#2f8f5b"><div class="tit">🎶 ESTA NAVIDAD ME RECUERDA A TI</div><h3>${esc(s.cancion)}</h3><p>${esc(s.artista)}</p></div><div class="carta" style="margin-top:14px">${s.p.map(x => `<p>${esc(x)}</p>`).join('')}</div><div class="fila"><a class="btn verde" target="_blank" rel="noopener" href="https://open.spotify.com/search/${encodeURIComponent(s.cancion + ' ' + s.artista)}">🎧 Escucharla</a></div>`;
+    else if (s.tipo === 'atrapar') h += `<div class="marcador"><span id="pts">🎁 0</span><span id="tiempo">⏱ 30</span></div><div class="escena"><canvas id="cv" width="360" height="440" style="touch-action:none"></canvas></div><p class="pie-escena" id="pieJ">${esc(s.pie)}</p><div class="fila"><button class="btn verde" type="button" id="jugar">▶ Jugar</button></div>`;
+    else if (s.tipo === 'puzzle') h += `<div class="puzzle" id="pz"></div><p class="pie-escena" id="piePz">${esc(s.pie)}</p>`;
+    else if (s.tipo === 'arbol') h += `<div class="escena" style="background:#fdf3e4"><svg viewBox="0 0 400 300" id="arb" style="touch-action:manipulation"></svg></div><div class="paleta" id="paleta"></div><p class="pie-escena">${esc(s.pie)}</p><div class="fila"><button class="btn" type="button" id="limpiar" style="background:linear-gradient(180deg,#b9a8c4,#8a7799);box-shadow:0 5px 0 #5e4f6b">Quitar todos</button></div>`;
+    else if (s.tipo === 'trivia') h += `<div class="trivia" id="tv"></div>`;
+    else if (s.tipo === 'tarjeta') h += `<div class="escena" style="background:#fff"><img id="tarj" alt="Tarjeta navideña de Brittani y Lalito" style="display:block;width:100%"></div><p class="pie-escena">${esc(s.pie)}</p><div class="fila"><a class="btn verde" id="bajar" download="tarjeta-navidad-brittani.png">⬇ Descargar</a></div>`;
+    else if (s.tipo === 'deseos') h += `<p style="text-align:center;color:#6a5872">Los míos ya están aquí. Agrega los tuyos y hagamos la lista juntos ⭐</p><ul class="deseos" id="ds"></ul><textarea id="nuevo" placeholder="Escribe un deseo para el 2027…" maxlength="140"></textarea><div class="fila"><button class="btn" type="button" id="agregar">⭐ Agregar mi deseo</button><a class="btn verde" id="mandar" target="_blank" rel="noopener">💬 Mandarme la lista</a></div>`;
+    else if (s.tipo === 'cuenta') h += `<p style="text-align:center">Faltan para la cena de Nochebuena (24 de diciembre, 9:00 de la noche)</p><div class="cuenta"><div><b id="cd">0</b><span>días</span></div><div><b id="ch">0</b><span>horas</span></div><div><b id="cm">0</b><span>min</span></div><div><b id="cs">0</b><span>seg</span></div></div><div class="escena" style="margin-top:8px"><svg viewBox="0 0 400 260" id="esc"></svg></div><p class="pie-escena">Mañana se abre la última puertita… la más especial 🎁</p>`;
+    else if (s.tipo === 'navidad') h += (s.video ? `<div class="escena"><video src="${s.video}" controls playsinline style="display:block;width:100%"></video></div>` : `<div class="escena"><svg viewBox="0 0 400 260" id="esc"></svg></div>`) + `<div class="carta" style="margin-top:14px">${s.p.map(x => `<p>${esc(x)}</p>`).join('')}<p class="firma2">Lalito</p></div>`;
+    c.innerHTML = h; $('modal').hidden = false; document.body.style.overflow = 'hidden'; $('modal').scrollTop = 0;
+    if (s.tipo === 'escena') animar($('esc'), ESCENAS[s.esc]);
+    if (s.tipo === 'navidad' && !s.video) animar($('esc'), ESCENAS.navidad);
+    if (s.tipo === 'vale') $('canjear').addEventListener('click', () => guarda('vale-' + d, true));
+    if (s.tipo === 'atrapar') juegoAtrapar();
+    if (s.tipo === 'puzzle') juegoPuzzle();
+    if (s.tipo === 'arbol') juegoArbol();
+    if (s.tipo === 'trivia') juegoTrivia();
+    if (s.tipo === 'tarjeta') tarjeta();
+    if (s.tipo === 'deseos') deseos();
+    if (s.tipo === 'cuenta') { const fin = new Date(2026, 11, 24, 21, 0, 0); const tic = () => { const ms = Math.max(0, fin - new Date()), x = Math.floor(ms / 1000); $('cd').textContent = Math.floor(x / 86400); $('ch').textContent = Math.floor(x / 3600) % 24; $('cm').textContent = Math.floor(x / 60) % 60; $('cs').textContent = x % 60; }; tic(); const iv = setInterval(tic, 1000); alCerrar = () => clearInterval(iv); animar($('esc'), ESCENAS.chimenea); }
+  }
+
+  /* ---------- Juego: atrapa los regalos ---------- */
+  function juegoAtrapar() {
+    const cv = $('cv'), x = cv.getContext('2d'), W = 360, H = 440; let tx = W / 2, sx = W / 2, cosas = [], pts = 0, fin = 0, jugando = false, ult = 0, sig = 0;
+    const mejor = () => lee('record', 0);
+    function dibFondo() { const gr = x.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#14213d'); gr.addColorStop(1, '#3b5a9a'); x.fillStyle = gr; x.fillRect(0, 0, W, H); x.fillStyle = '#eef3fb'; x.fillRect(0, H - 40, W, 40); }
+    function regaloC(px, py, c) { x.fillStyle = c; x.strokeStyle = INK; x.lineWidth = 2; x.fillRect(px - 14, py - 12, 28, 24); x.strokeRect(px - 14, py - 12, 28, 24); x.fillStyle = '#f2c35b'; x.fillRect(px - 3, py - 12, 6, 24); x.fillRect(px - 14, py - 3, 28, 6); }
+    function trineo(px) { const py = H - 52; x.fillStyle = '#d64550'; x.strokeStyle = INK; x.lineWidth = 2.4; x.beginPath(); x.moveTo(px - 40, py - 20); x.lineTo(px + 34, py - 20); x.quadraticCurveTo(px + 46, py - 20, px + 44, py); x.lineTo(px - 40, py); x.closePath(); x.fill(); x.stroke(); x.strokeStyle = '#f2c35b'; x.lineWidth = 4; x.beginPath(); x.moveTo(px - 46, py + 10); x.lineTo(px + 40, py + 10); x.quadraticCurveTo(px + 54, py + 10, px + 52, py - 2); x.stroke(); }
+    function paso(now) {
+      const dt = Math.min(.05, (now - ult) / 1000); ult = now; sx += (tx - sx) * Math.min(1, dt * 14);
+      if (now > sig) { sig = now + 380 + Math.random() * 260; cosas.push({ x: 20 + Math.random() * (W - 40), y: -20, v: 120 + Math.random() * 110 + pts * 3, c: ['#d64550', '#2f8f5b', '#f48fb1', '#8cc0f2'][Math.floor(Math.random() * 4)], cor: Math.random() < .18 }); }
+      dibFondo();
+      for (const o of cosas) { o.y += o.v * dt; if (o.cor) { x.font = '24px serif'; x.textAlign = 'center'; x.fillText('💞', o.x, o.y + 8); } else regaloC(o.x, o.y, o.c); if (!o.hit && o.y > H - 80 && o.y < H - 50 && Math.abs(o.x - sx) < 46) { o.hit = true; pts += o.cor ? 3 : 1; $('pts').textContent = '🎁 ' + pts; } }
+      cosas = cosas.filter(o => !o.hit && o.y < H + 30);
+      trineo(sx);
+      const r = Math.max(0, Math.ceil((fin - now) / 1000)); $('tiempo').textContent = '⏱ ' + r;
+      if (r <= 0) { jugando = false; const rec = Math.max(mejor(), pts); guarda('record', rec); $('pieJ').textContent = `¡Atrapaste ${pts} regalos! 🎁 Tu récord: ${rec}. ${pts >= 25 ? '¡Eres la mejor ayudante de Santa! 💞' : 'Todos esos regalos son para ti 💞'}`; $('jugar').hidden = false; $('jugar').textContent = '↺ Otra vez'; return; }
+      raf = requestAnimationFrame(paso);
+    }
+    const mover = e => { const r = cv.getBoundingClientRect(); tx = Math.max(40, Math.min(W - 40, (e.clientX - r.left) / r.width * W)); };
+    cv.addEventListener('pointerdown', mover); cv.addEventListener('pointermove', mover);
+    dibFondo(); trineo(sx);
+    $('jugar').addEventListener('click', () => { if (jugando) return; jugando = true; pts = 0; cosas = []; $('pts').textContent = '🎁 0'; $('jugar').hidden = true; ult = performance.now(); fin = ult + 30000; sig = ult; raf = requestAnimationFrame(paso); });
+  }
+
+  /* ---------- Juego: rompecabezas ---------- */
+  function juegoPuzzle() {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="600" height="600"><g transform="translate(-50 20)">${ESCENAS.navidad(3).replace(/<text[\s\S]*?<\/text>/, '')}</g><rect x="0" y="0" width="300" height="300" fill="none"/></svg>`;
+    const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.replace('viewBox="0 0 300 300"', 'viewBox="0 0 300 300"').replace('<g transform="translate(-50 20)">', '<rect width="300" height="300" fill="#1d2f5c"/><g transform="translate(-50 20)">'));
+    let orden = [...Array(9).keys()]; do { orden.sort(() => Math.random() - .5); } while (orden.every((v, i) => v === i));
+    let sel = null;
+    function pinta() {
+      $('pz').innerHTML = orden.map((p, i) => `<button type="button" data-i="${i}" class="${sel === i ? 'sel' : ''}" style="background-image:url('${url}');background-position:${(p % 3) * 50}% ${Math.floor(p / 3) * 50}%" aria-label="Pieza"></button>`).join('');
+    }
+    pinta();
+    $('pz').addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (!b) return; const i = +b.dataset.i;
+      if (sel === null) { sel = i; pinta(); return; }
+      [orden[sel], orden[i]] = [orden[i], orden[sel]]; sel = null; pinta();
+      if (orden.every((v, k) => v === k)) { $('piePz').textContent = '¡Lo lograste! Así va a ser nuestra Navidad juntos 🎄💞'; $('pz').style.gap = '0'; $('pz').style.padding = '0'; }
+    });
+  }
+
+  /* ---------- Juego: decora el árbol ---------- */
+  function juegoArbol() {
+    const AD = [['🔴', '#d64550'], ['🟡', '#f2c35b'], ['🌸', '#f48fb1'], ['💞', 'cora'], ['⭐', 'estrella'], ['❄️', 'copo']];
+    let tipo = 0, puestos = lee('arbol', []);
+    $('paleta').innerHTML = AD.map(([e], i) => `<button type="button" data-t="${i}" class="${i === 0 ? 'sel' : ''}" aria-label="Adorno ${e}">${e}</button>`).join('');
+    $('paleta').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; tipo = +b.dataset.t; $('paleta').querySelectorAll('button').forEach(x => x.classList.toggle('sel', x === b)); });
+    const dentro = (px, py) => py > 40 && py < 262 && Math.abs(px - 200) < (py - 40) * .62 + 6;
+    function adorno([px, py, t]) { const c = AD[t][1]; if (c === 'cora') return cora(px, py, 1.3, '#ff7aa2'); if (c === 'estrella') return `<path d="M${px} ${py - 9} l3 6 l7 1 l-5 5 l1 7 l-6 -3 l-6 3 l1 -7 l-5 -5 l7 -1 Z" fill="#f2c35b" stroke="${INK}" stroke-width="1.2"/>`; if (c === 'copo') return `<g stroke="#8cc0f2" stroke-width="2" stroke-linecap="round"><path d="M${px - 7} ${py} h14 M${px} ${py - 7} v14 M${px - 5} ${py - 5} l10 10 M${px + 5} ${py - 5} l-10 10"/></g>`; return `<circle cx="${px}" cy="${py}" r="7" fill="${c}" stroke="${INK}" stroke-width="1.4"/><circle cx="${px - 2}" cy="${py - 2}" r="2" fill="#fff" opacity=".7"/>`; }
+    function pinta() { $('arb').innerHTML = `<rect width="400" height="300" fill="#fdf3e4"/><rect x="186" y="262" width="28" height="30" fill="#7a4a2a" stroke="${INK}" stroke-width="2"/><path d="M200 34 L280 140 H246 L306 210 H262 L346 268 H54 L138 210 H94 L154 140 H120 Z" fill="#2f8f5b" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/><path d="M200 14 l7 14 l15 2 l-11 10 l3 15 l-14 -8 l-14 8 l3 -15 l-11 -10 l15 -2 Z" fill="#f2c35b" stroke="${INK}" stroke-width="1.8"/>` + puestos.map(adorno).join('') + (puestos.length ? '' : `<text x="200" y="160" text-anchor="middle" font-family="Caveat, cursive" font-size="24" fill="#fff">¡Toca para decorar!</text>`); }
+    pinta();
+    $('arb').addEventListener('click', e => { const r = $('arb').getBoundingClientRect(), px = (e.clientX - r.left) / r.width * 400, py = (e.clientY - r.top) / r.height * 300; if (!dentro(px, py)) return; puestos.push([Math.round(px), Math.round(py), tipo]); if (puestos.length > 80) puestos.shift(); guarda('arbol', puestos); pinta(); });
+    $('limpiar').addEventListener('click', () => { puestos = []; guarda('arbol', puestos); pinta(); });
+  }
+
+  /* ---------- Trivia ---------- */
+  function juegoTrivia() {
+    const P = [
+      ['¿A qué hora nos conocimos aquella noche?', ['10:48 de la noche', '11:11 de la noche', '9:30 de la noche'], 0],
+      ['¿En qué juego nos conocimos?', ['Free Fire', 'Minecraft', 'Roblox'], 0],
+      ['¿Qué día nos hicimos novios?', ['20 de abril', '14 de junio', '14 de julio'], 1],
+      ['¿En qué año nos vamos a casar?', ['2028', '2030', '2035'], 1],
+      ['¿Cuál es nuestra canción?', ['Mirando las estrellas', 'Neo Romeo', 'Bby Romeo'], 0],
+      ['¿Qué princesa fuiste en tu Baile Real?', ['Rapunzel', 'Bella', 'Cenicienta'], 2],
+      ['¿Qué tenía el anillo de tu cumpleaños?', ['Un corazón rosa', 'Un carruaje y una piedra azul', 'Una estrella'], 1],
+    ];
+    let i = 0, bien = 0;
+    function pinta() {
+      if (i >= P.length) { $('tv').innerHTML = `<p style="text-align:center;font:700 54px/1 'Mountains of Christmas',cursive;color:#a8323b;margin:6px 0">${bien}/${P.length}</p><p style="text-align:center;font:700 26px/1.2 Caveat,cursive;color:#1f6b42">${bien === P.length ? '¡Me conoces perfecto, mi princesa! 🎄💞' : bien >= 5 ? '¡Casi perfecto! Te amo igual 💞' : '¡Igual te amo con todo mi corazón! 💞'}</p><div class="fila"><button class="btn verde" type="button" id="otra">↺ Jugar otra vez</button></div>`; $('otra').onclick = () => { i = 0; bien = 0; pinta(); }; return; }
+      const [q, ops, ok] = P[i];
+      $('tv').innerHTML = `<p style="text-align:center;font-size:13px;letter-spacing:.15em;color:#1f6b42;font-weight:700">PREGUNTA ${i + 1} DE ${P.length}</p><p style="font:700 18px/1.35 Quicksand,sans-serif;text-align:center">${q}</p>` + ops.map((o, k) => `<button class="op" type="button" data-k="${k}">${o}</button>`).join('');
+      $('tv').querySelectorAll('.op').forEach(b => b.onclick = () => { const k = +b.dataset.k; $('tv').querySelectorAll('.op').forEach(x => x.disabled = true); if (k === ok) { b.classList.add('bien'); bien++; } else { b.classList.add('mal'); $('tv').querySelectorAll('.op')[ok].classList.add('bien'); } setTimeout(() => { i++; pinta(); }, 1100); });
+    }
+    pinta();
+  }
+
+  /* ---------- Tarjeta navideña descargable ---------- */
+  function tarjeta() {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 400 500"><defs><linearGradient id="tf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8323b"/><stop offset="1" stop-color="#6e1f27"/></linearGradient></defs><rect width="400" height="500" fill="url(#tf)"/><rect x="14" y="14" width="372" height="472" rx="18" fill="#fff7ea"/><rect x="24" y="24" width="352" height="452" rx="12" fill="none" stroke="#2f8f5b" stroke-width="3" stroke-dasharray="8 6"/>
+      <g transform="translate(0 70)">${ESCENAS.navidad(2).replace(/<text[\s\S]*?<\/text>/, '').replace('<rect width="400" height="260" fill="#1d2f5c"/>', '<rect x="30" y="0" width="340" height="260" rx="14" fill="#1d2f5c"/>')}</g>
+      <text x="200" y="64" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="38" fill="#a8323b">Feliz Navidad</text>
+      <text x="200" y="380" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="22" fill="#3d2b41">Para mi princesa Brittani</text>
+      <text x="200" y="414" text-anchor="middle" font-family="Georgia, serif" font-size="15" fill="#6a5872">Nuestra primera Navidad como novios</text>
+      <text x="200" y="456" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="20" fill="#2f8f5b">Con todo mi amor, Lalito · 2026</text></svg>`;
+    const img = new Image(); img.onload = () => { const cv = document.createElement('canvas'); cv.width = 1080; cv.height = 1350; const x = cv.getContext('2d'); x.drawImage(img, 0, 0, 1080, 1350); try { const u = cv.toDataURL('image/png'); $('tarj').src = u; $('bajar').href = u; } catch (e) { $('tarj').src = img.src; $('bajar').href = img.src; } };
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
+
+  /* ---------- Deseos 2027 ---------- */
+  function deseos() {
+    const MIOS = ['Vernos en persona por primera vez y darte ese abrazo que te debo', 'Celebrar nuestro primer año juntos el 14 de junio', 'Seguir eligiéndonos todos los días', 'Que te vaya increíble en todo lo que te propongas', 'Estar un año más cerquita de nuestro 2030'];
+    let suyos = lee('deseos', []);
+    function pinta() {
+      $('ds').innerHTML = MIOS.map(x => `<li>${esc(x)}</li>`).join('') + suyos.map(x => `<li class="suyo">${esc(x)}</li>`).join('');
+      $('mandar').href = 'https://wa.me/?text=' + encodeURIComponent('Nuestros deseos para el 2027 ⭐\n\nLos de Lalito:\n' + MIOS.map(x => '• ' + x).join('\n') + (suyos.length ? '\n\nLos míos:\n' + suyos.map(x => '• ' + x).join('\n') : '') + '\n\n💞');
+    }
+    pinta();
+    $('agregar').addEventListener('click', () => { const v = $('nuevo').value.trim(); if (!v) return; suyos.push(v); guarda('deseos', suyos); $('nuevo').value = ''; pinta(); });
+  }
+
+  /* ---------- Nieve de fondo ---------- */
+  (() => {
+    const c = $('nieve'); if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const x = c.getContext('2d'); let W, H; const P = [];
+    function tam() { const r = devicePixelRatio || 1; W = innerWidth; H = innerHeight; c.width = W * r; c.height = H * r; x.setTransform(r, 0, 0, r, 0, 0); }
+    tam(); addEventListener('resize', tam);
+    for (let i = 0; i < 70; i++) P.push({ x: Math.random() * W, y: Math.random() * H, r: 1 + Math.random() * 2.6, v: .3 + Math.random() * .8, f: Math.random() * 6 });
+    let t = 0; (function f() { t += .016; x.clearRect(0, 0, W, H); x.fillStyle = '#fff';
+      for (const p of P) { p.y += p.v; if (p.y > H + 5) { p.y = -5; p.x = Math.random() * W; } x.globalAlpha = .75; x.beginPath(); x.arc(p.x + Math.sin(t + p.f) * 12, p.y, p.r, 0, 7); x.fill(); }
+      requestAnimationFrame(f); })();
+  })();
+
+  pintar();
+  setInterval(() => { if ($('modal').hidden) pintar(); }, 60000);
+})();
+</script>
+</body>
+</html>
