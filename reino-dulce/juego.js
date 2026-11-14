@@ -352,10 +352,42 @@ window.iniciarReino = function () {
   });
   const tiendaPos = (id) => { const t = TIENDAS.find(s => s.id === id); return { x: t.x, z: t.z }; };
 
+  /* ---------- Dulcecitos que viven en el reino ---------- */
+  const DULCECITOS = [];
+  const SALUDOS = ['¡Hola, Brittybee! 🍬', '¡Bienvenida, princesa! ✨', '¡Las galletas están en el bosque! 🍪', '¡Qué bonita te ves hoy! 💞', '¡Lalito te quiere muchísimo! 💞', '¡El huerto tiene fresas! 🍓', '¡Vamos a bailar! 🎶', '¡Cuida tus flores! 🌷', '¡Me encanta el chocolate! 🍫'];
+  [['#ff7eb6', 0, 6, 9], ['#9b7bff', -50, -14, 8], ['#7bd389', 52, 16, 7], ['#ffb347', 54, -22, 7], ['#7fc8ff', 0, 36, 10], ['#ff6b6b', -56, 30, 7], ['#ffd23f', -10, -40, 9], ['#c9a7ff', 22, -10, 9]].forEach(([c, x, z, rad], i) => {
+    const d = crearDulcecito(c); d.g.position.set(x + azar(-2, 2), 0, z + azar(-2, 2)); mundo.add(d.g);
+    DULCECITOS.push({ p: d, cx: x, cz: z, rad, dest: null, espera: azar(0, 3), estado: 'quieto', t: azar(0, 9), saludo: 0 });
+  });
+  animados.push((t, dt) => {
+    if (modo !== 'fuera') return;
+    for (const d of DULCECITOS) {
+      const g = d.p.g; d.t += dt;
+      const dj = Math.hypot(jug.pos.x - g.position.x, jug.pos.z - g.position.z);
+      if (dj < 4 && reloj - d.saludo > 14 && !cine) {
+        d.saludo = reloj; d.estado = 'saluda'; d.dest = null; d.espera = 2.2;
+        g.rotation.y = Math.atan2(jug.pos.x - g.position.x, jug.pos.z - g.position.z);
+        burbuja(g, SALUDOS[Math.floor(Math.random() * SALUDOS.length)], 2400, 1.5);
+      }
+      if (d.estado === 'camina' && d.dest) {
+        const dx = d.dest[0] - g.position.x, dz = d.dest[1] - g.position.z, L = Math.hypot(dx, dz);
+        if (L < .3) { d.dest = null; d.estado = Math.random() < .3 ? 'baila' : 'quieto'; d.espera = azar(1.5, 4); }
+        else { g.position.x += dx / L * 1.8 * dt; g.position.z += dz / L * 1.8 * dt; g.rotation.y = Math.atan2(dx, dz); }
+      } else {
+        d.espera -= dt;
+        if (d.espera <= 0) {
+          for (let k = 0; k < 8; k++) { const a = azar(0, 6.28), r = azar(1, d.rad), x = d.cx + Math.cos(a) * r, z = d.cz + Math.sin(a) * r; if (!enRio(x, z) && !colisiones.some(c => Math.hypot(c.x - x, c.z - z) < c.r + .5)) { d.dest = [x, z]; d.estado = 'camina'; break; } }
+          if (!d.dest) d.espera = 1;
+        }
+      }
+      animarDulcecito(d.p, d.estado, d.t * (d.estado === 'camina' ? 9 : 2));
+    }
+  });
+
   /* =========================================================
      PERSONAJE
      ========================================================= */
-  const jug = { raiz: new THREE.Group(), p: null, pos: V3(E.pos.x, 0, E.pos.z), ry: E.pos.ry, estado: 'quieta', t: 0, vel: 0, accion: null, veh: null, sentada: null };
+  const jug = { y: 0, vy: 0, raiz: new THREE.Group(), p: null, pos: V3(E.pos.x, 0, E.pos.z), ry: E.pos.ry, estado: 'quieta', t: 0, vel: 0, accion: null, veh: null, sentada: null };
   scene.add(jug.raiz);
   function vestir(ropa) {
     if (jug.p) jug.raiz.remove(jug.p.g);
@@ -515,9 +547,12 @@ window.iniciarReino = function () {
     else if (tipo === 'error') { nota(64, t, .2, .08, 'square', sfxGain); nota(60, t + .1, .3, .08, 'square', sfxGain); }
     else if (tipo === 'abrir') { nota(79, t, .3, .07, 'sine', sfxGain); nota(84, t + .05, .4, .07, 'sine', sfxGain); }
   }
-  setInterval(programarMusica, 120);
+  const musica = window.__musica || new Audio('musica/fondo.mp3?v=1');
+  musica.loop = true; musica.volume = .45;
+  function tocarMusica() { if (E.musica) { const p = musica.play(); if (p && p.catch) p.catch(() => {}); } else musica.pause(); }
+  document.addEventListener('visibilitychange', () => { if (document.hidden) musica.pause(); else tocarMusica(); });
   $('bMusica').onclick = () => {
-    E.musica = !E.musica; if (musGain) musGain.gain.value = E.musica ? .55 : 0;
+    E.musica = !E.musica; tocarMusica();
     $('bMusica').textContent = E.musica ? '🎵' : '🔇'; aviso(E.musica ? 'Música encendida 🎵' : 'Música apagada 🔇', 1400); guardar();
   };
   $('bMusica').textContent = E.musica ? '🎵' : '🔇';
@@ -581,7 +616,8 @@ window.iniciarReino = function () {
   addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT') return;
     teclas[e.key.toLowerCase()] = true;
-    if ((e.key === 'e' || e.key === ' ' || e.key === 'Enter') && !bloqueado() && interActual) { e.preventDefault(); interActual.fn(); }
+    if ((e.key === 'e' || e.key === 'Enter') && !bloqueado() && interActual) { e.preventDefault(); interActual.fn(); }
+    if (e.key === ' ') { e.preventDefault(); brincar(); }
     if (e.key === 'q' && !bloqueado() && interActual?.fn2) interActual.fn2();
     if (e.key === 'Escape') cerrarPanel();
   });
@@ -670,7 +706,16 @@ window.iniciarReino = function () {
     }
     if (mejor) { const tx = mejor.txt(); if ($('accionTxt').textContent !== tx) $('accionTxt').textContent = tx; $('accion2').hidden = !mejor.fn2; if (mejor.fn2) $('accion2').textContent = mejor.ic2 || '🎒'; }
     $('accionCaja').style.visibility = bloqueado() ? 'hidden' : '';
+    $('brincar').style.visibility = bloqueado() ? 'hidden' : '';
   }
+  function brincar() {
+    if (bloqueado() || jug.y > 0 || jug.sentada) return;
+    if (jug.veh && !jug.veh.patines) { sonar('pop'); burbuja(jug.raiz, jug.veh.id === 'carruaje' ? '¡Arre, ponicito! 🐴' : '¡Wiii! ✨', 1200); return; }
+    asegurarAudio(); jug.vy = 9.5; jug.y = .001;
+    if (actx && E.efectos) { const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain(); o.frequency.setValueAtTime(380, t); o.frequency.exponentialRampToValueAtTime(900, t + .18); g.gain.setValueAtTime(.14, t); g.gain.exponentialRampToValueAtTime(.001, t + .22); o.connect(g); g.connect(sfxGain); o.start(t); o.stop(t + .25); }
+    particulas('chispa', jug.pos.clone().setY(.3), 5);
+  }
+  $('brincar').onclick = brincar;
   $('accion').onclick = () => { if (!bloqueado() && interActual) { asegurarAudio(); interActual.fn(); } };
   $('accion2').onclick = () => { if (!bloqueado() && interActual?.fn2) interActual.fn2(); };
   const mirarA = (x, z) => { jug.ry = Math.atan2(x - jug.pos.x, z - jug.pos.z); };
@@ -894,13 +939,83 @@ window.iniciarReino = function () {
     else burbuja(jug.raiz, '¡Me quedó delicioso! ✨', 2000);
     revisarMetas(); guardar();
   }
-  function comer(r) {
-    E.inv[r.id]--; stat('comido');
-    jug.accion = { estado: 'come', hasta: reloj + 2.4 };
-    sonar('pop');
-    const frases = { spaghetti: 'Mmm… ¡lo mejor del mundo! 💞', pizza: '¡Qué rica pizza! 🍕', cheetos: '*crunch crunch* 😋', dulces: '¡Dulcecitos! 🍬', pastel: '¡Qué rico pastelito! 🍰', galletas: '¡Recién horneadas! 🍪', chocolatito: 'Calientito… ☕', elote: '¡Con mucho chile! 🌽' };
-    burbuja(jug.raiz, frases[r.id] || '¡Delicioso!', 2400);
-    let n = 0; const iv = setInterval(() => { particulas('corazon', jug.pos.clone().setY(2.4), 2); if (++n > 4) clearInterval(iv); }, 380);
+  async function comer(r) {
+    if (cuenta(r.id) < 1 || cine) return;
+    E.inv[r.id]--; stat('comido'); guardar();
+    bajar(true); pintarBajar(); levantarse && jug.sentada && levantarse();
+    modoCine(true); saltando = false;
+    const f = V3(Math.sin(jug.ry), 0, Math.cos(jug.ry));
+    const C = jug.pos.clone().addScaledVector(f, 1.4);
+    if (modo === 'dentro') { C.x = clamp(C.x, INT.x - cuarto.w / 2 + 2, INT.x + cuarto.w / 2 - 2); C.z = clamp(C.z, INT.z - cuarto.d / 2 + 2, INT.z + cuarto.d / 2 - 2); }
+    const ry = jug.ry;
+    const mesa = crearObjeto('mesa'); mesa.position.copy(C); mesa.rotation.y = ry - Math.PI / 2; scene.add(mesa);
+    mesa.scale.setScalar(.01); tween(.4, (k) => mesa.scale.setScalar(Math.max(.01, easeBack(k))));
+    particulas('chispa', C.clone().setY(1), 10); sonar('puf');
+    const silla = (s) => C.clone().addScaledVector(f, s * 1.25);
+    // ella se sienta
+    const pos0 = jug.pos.clone();
+    jug.pos.copy(silla(-1)); jug.ry = ry;
+    jug.sentada = { o: { ref: { ry } }, alto: .48, t: 0, comiendo: false };
+    // Lalito llega con los platos
+    const L = crearChico(); L.casco.visible = false; L.martillo.visible = false;
+    const lejos = C.clone().addScaledVector(V3(Math.cos(ry), 0, -Math.sin(ry)), 5).addScaledVector(f, 2);
+    L.g.position.copy(lejos); scene.add(L.g);
+    particulas('chispa', lejos.clone().setY(1.2), 16); particulas('corazon', lejos.clone().setY(2), 4);
+    const plato1 = crearPlato(r.id), plato2 = crearPlato(r.id);
+    plato1.position.set(-.2, 1.08, .5); plato2.position.set(.2, 1.12, .5);
+    L.g.add(plato1, plato2);
+    let estL = 'lleva', tL = 0;
+    const anim = (t, dt) => { tL += dt * (estL === 'lleva' ? 8 : 3); animarPersona(L, estL, tL); };
+    animados.push(anim);
+    cine = { centro: C.clone().setY(1), ang: Math.atan2(-Math.cos(ry), Math.sin(ry)) + .35, dist: 5, alto: 1.9, vel: -.04 };
+    burbuja(L.g, '¡Te traigo de comer, princesa! 💞', 2400, 2.9);
+    await espera(1.2);
+    // camina a la mesa (lado de ella)
+    const junto = C.clone().addScaledVector(V3(Math.cos(ry), 0, -Math.sin(ry)), .95).addScaledVector(f, -.55);
+    let a = L.g.position.clone();
+    L.g.rotation.y = Math.atan2(junto.x - a.x, junto.z - a.z);
+    await tween(1.6, (k) => L.g.position.lerpVectors(a, junto, k));
+    estL = 'quieta'; L.g.rotation.y = Math.atan2(-Math.cos(ry), Math.sin(ry));
+    // le sirve su plato
+    L.g.remove(plato1); plato1.position.copy(C).addScaledVector(f, -.42).setY(.9); plato1.rotation.y = ry; scene.add(plato1);
+    plato1.scale.setScalar(.5); tween(.35, (k) => plato1.scale.setScalar(lerp(.5, 1, easeBack(k))));
+    particulas('chispa', plato1.position, 8); sonar('pop');
+    burbuja(L.g, 'Para ti, mi amor. Hecho con mucho amor 💞', 2600, 2.9);
+    await espera(1.4);
+    burbuja(jug.raiz, '¡Gracias, amor! 🥹💞', 2000);
+    await espera(1);
+    // él se sienta enfrente con su plato
+    a = L.g.position.clone(); const suSilla = silla(1);
+    estL = 'lleva'; L.g.rotation.y = Math.atan2(suSilla.x - a.x, suSilla.z - a.z);
+    await tween(1, (k) => L.g.position.lerpVectors(a, suSilla, k));
+    L.g.remove(plato2); plato2.position.copy(C).addScaledVector(f, .42).setY(.9); plato2.rotation.y = ry + Math.PI; scene.add(plato2);
+    L.g.rotation.y = ry + Math.PI; estL = 'sentado';
+    L.cuerpo.position.y = 0; L.g.position.y = -.1;
+    const animL2 = () => { if (estL === 'come') animarPersona(L, 'comeSentada', tL); else if (estL === 'sentado') animarPersona(L, 'sentada', tL); };
+    animados.push(animL2);
+    // ¡a comer juntos!
+    estL = 'come'; jug.sentada.comiendo = true;
+    sonar('meta');
+    const frases = { spaghetti: '¡Mmm! Mi spaghetti en salsa verde con milanesa 🤤', pizza: '¡Qué rica pizza! 🍕', cheetos: '*crunch crunch* ¡Mis Cheetos! 😋', dulces: '¡Dulcecitos de fresa! 🍬', pastel: '¡Qué rico pastelito! 🍰', galletas: '¡Recién horneadas! 🍪', chocolatito: 'Calientito… ☕', elote: '¡Con mucho chile! 🌽' };
+    burbuja(jug.raiz, frases[r.id] || '¡Delicioso!', 2600);
+    const iv = setInterval(() => { particulas('corazon', C.clone().setY(2.2), 2); }, 450);
+    await espera(2.8);
+    burbuja(L.g, 'Lo más rico es comer contigo 💞', 2600, 2.6);
+    await espera(2.8);
+    clearInterval(iv);
+    // se acaba
+    tween(.5, (k) => { const e = Math.max(.01, 1 - k); plato1.children.slice(2).forEach(c => c.scale.multiplyScalar(.9)); plato2.children.slice(2).forEach(c => c.scale.multiplyScalar(.9)); });
+    await espera(.6);
+    jug.sentada.comiendo = false;
+    estL = 'saluda'; L.g.position.y = 0;
+    burbuja(L.g, '¡Te amo! 💞', 1800, 2.9);
+    await espera(1.8);
+    particulas('chispa', L.g.position.clone().setY(1.2), 18); particulas('corazon', L.g.position.clone().setY(2), 6); sonar('puf');
+    scene.remove(L.g, mesa, plato1, plato2);
+    animados.splice(animados.indexOf(anim), 1); animados.splice(animados.indexOf(animL2), 1);
+    jug.sentada = null; acomodarVehiculo();
+    jug.pos.copy(pos0);
+    modoCine(false);
     guardar();
   }
 
@@ -1364,9 +1479,10 @@ window.iniciarReino = function () {
     const moviendo = moverJugadora(dt);
     if (jug.accion && reloj > jug.accion.hasta) jug.accion = null;
     let estado = jug.accion ? jug.accion.estado : moviendo && jug.vel > .5 ? (jug.veh ? jug.veh.pose : 'camina') : jug.veh ? (jug.veh.patines ? 'quieta' : jug.veh.pose === 'pedalea' ? 'maneja' : jug.veh.pose) : 'quieta';
-    if (jug.sentada) estado = 'sentada';
+    if (jug.sentada) estado = jug.sentada.comiendo ? 'comeSentada' : 'sentada';
     if (vistaBoutique) estado = 'quieta';
     const vk = jug.veh && !jug.veh.patines ? 1 : clamp(jug.vel / 6, .6, 1.4);
+    if (jug.sentada && jug.sentada.comiendo) jug.t += dt * 2;
     jug.t += dt * (estado === 'camina' ? 7 * vk : estado === 'pedalea' ? 9 : estado === 'patina' ? 4 : 3);
     animarPersona(jug.p, estado, jug.t, 1);
     if (jug.sentada) {
@@ -1374,7 +1490,10 @@ window.iniciarReino = function () {
       jug.p.g.position.y = s.alto - .6 + .02;
       if (s.columpio) { const m = objColocados.get(s.o.ref); const sw = m?.userData.columpio; const a = Math.sin(s.t * 2.2) * .5; if (sw) sw.rotation.x = a; jug.p.g.position.y = 2.6 - Math.cos(a) * 2 - .6 + .05; jug.p.g.position.z = Math.sin(a) * 2; }
     }
-    jug.raiz.position.copy(jug.pos); jug.raiz.rotation.y = jug.ry;
+    if (jug.y > 0 || jug.vy > 0) { jug.vy -= 26 * dt; jug.y += jug.vy * dt; if (jug.y <= 0) { jug.y = 0; jug.vy = 0; particulas('polvo', jug.pos.clone().setY(.2), 4); } }
+    if (jug.y > .05 && !jug.veh) estado = 'brinca';
+    if (estado === 'brinca') animarPersona(jug.p, 'brinca', jug.t);
+    jug.raiz.position.copy(jug.pos); jug.raiz.position.y = jug.y; jug.raiz.rotation.y = jug.ry;
     if (jug.veh) {
       const u = jug.veh, w = jug.vel * dt;
       u.ruedas.forEach(r => { r.rotation.x += w / .45; });
@@ -1436,7 +1555,7 @@ window.iniciarReino = function () {
      ARRANQUE
      ========================================================= */
   document.addEventListener('pointerdown', () => asegurarAudio(), { passive: true });
-  function asegurarAudio() { if (!actx) iniciarAudio(); if (actx && actx.state === 'suspended') actx.resume(); }
+  function asegurarAudio() { if (E.musica && musica.paused && !document.hidden) tocarMusica(); if (!actx) iniciarAudio(); if (actx && actx.state === 'suspended') actx.resume(); }
   for (const o of E.colocados) if (o.dentro === -1) pintarColocado(o);
   for (const f of E.flores) pintarFlor(f);
   reconstruirInterColocados();
@@ -1447,7 +1566,7 @@ window.iniciarReino = function () {
   asegurarAudio();
   $('intro').style.transition = 'opacity .7s'; $('intro').style.opacity = 0;
   setTimeout(() => $('intro').remove(), 750);
-  ['hud', 'reloj', 'metaMini'].forEach(id => $(id).hidden = false);
+  ['hud', 'reloj', 'metaMini', 'brincar'].forEach(id => $(id).hidden = false);
   if (matchMedia('(pointer: coarse)').matches) $('joyPista').hidden = false;
   requestAnimationFrame(cuadro);
   // Tutorial de cómo empezar a jugar

@@ -390,6 +390,24 @@ function animarPersona(p, estado, t, k = 1) {
       base.rotation.y = Math.sin(t * .5) * .5; base.position.y = Math.abs(s) * .12;
       break;
     }
+    case 'lleva': {
+      r(p.piernaI, s * .5); r(p.piernaD, -s * .5);
+      r(p.brazoI, -1.25, 0, -.25); r(p.brazoD, -1.25, 0, .25);
+      base.position.y = Math.abs(Math.cos(t)) * .05;
+      break;
+    }
+    case 'comeSentada': {
+      r(p.piernaI, -1.4); r(p.piernaD, -1.4);
+      const f = (Math.sin(t * 2) + 1) / 2;
+      r(p.brazoD, -1.3 - f * 1.1, 0, -.35); r(p.brazoI, -1, 0, .2);
+      if (p.cabeza) p.cabeza.rotation.x = .12 - f * .1;
+      break;
+    }
+    case 'brinca': {
+      r(p.piernaI, -.5); r(p.piernaD, .2);
+      r(p.brazoI, 0, 0, 2.3); r(p.brazoD, 0, 0, -2.3);
+      break;
+    }
     case 'abraza': {
       r(p.piernaI, 0); r(p.piernaD, 0);
       r(p.brazoI, -1.2, 0, -.5); r(p.brazoD, -1.2, 0, .5);
@@ -593,7 +611,7 @@ function crearObjeto(id, extra = {}) {
     case 'mesa': {
       malla(geo('cil', .8, .8, .08, 24), madera, 0, .85, 0, g); malla(geo('cil', .08, .14, .85, 10), madera, 0, .42, 0, g);
       malla(geo('cil', .15, .15, .05, 12), '#ffffff', 0, .92, 0, g);
-      for (const s of [-1, 1]) { const si = grupo(g, s * 1.2, 0, 0); si.rotation.y = s * Math.PI / 2; malla(geo('caja', .55, .08, .55), rosa, 0, .5, 0, si); malla(geo('caja', .55, .6, .08), rosa, 0, .8, -.26, si); for (const a of [-.22, .22]) for (const b of [-.22, .22]) malla(geo('cil', .03, .03, .5, 6), madera, a, .25, b, si); }
+      for (const s of [-1, 1]) { const si = grupo(g, s * 1.2, 0, 0); si.rotation.y = -s * Math.PI / 2; malla(geo('caja', .55, .08, .55), rosa, 0, .5, 0, si); malla(geo('caja', .55, .6, .08), rosa, 0, .8, -.26, si); for (const a of [-.22, .22]) for (const b of [-.22, .22]) malla(geo('cil', .03, .03, .5, 6), madera, a, .25, b, si); }
       break;
     }
     case 'lampara': {
@@ -974,4 +992,66 @@ function cocinita() {
   const so = malla(geo('cono', 1.8, .7, 12), new THREE.MeshLambertMaterial({ map: texRayas('#ffffff', '#ff8fb8', 6) }), 1.5, 3.1, .5, g);
   g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   return g;
+}
+
+/* ---------- Platos de comida ---------- */
+function crearPlato(id) {
+  const g = new THREE.Group();
+  malla(geo('cil', .34, .26, .05, 24), '#ffffff', 0, .025, 0, g);
+  malla(geo('toro', .3, .025, 6, 24), '#ffd1e4', 0, .05, 0, g).rotation.x = Math.PI / 2;
+  const B = (c) => mat(c, { brillo: 60 });
+  if (id === 'spaghetti') {
+    for (let i = 0; i < 9; i++) { const t = malla(geo('toro', .07, .025, 6, 14), '#f4e2a1', Math.sin(i * 2.3) * .1, .08 + (i % 3) * .03, Math.cos(i * 2.3) * .1 - .05, g); t.rotation.set(Math.random() * 3, Math.random() * 3, 0); }
+    malla(geo('esf', .14, 12, 8), B('#5fb04a'), 0, .1, -.05, g).scale.y = .4;
+    const mi = malla(geo('esf', 1, 14, 8), '#c98a3c', .12, .07, .12, g); mi.scale.set(.15, .03, .11); mi.rotation.y = .5;
+  } else if (id === 'pizza') {
+    const p = malla(new THREE.CylinderGeometry(.28, .28, .04, 3, 1, false, 0, Math.PI / 2.6), '#f5c45a', 0, .07, 0, g);
+    for (let i = 0; i < 3; i++) malla(geo('cil', .035, .035, .02, 10), '#d9333f', .08 + i * .05, .1, .05 + (i % 2) * .05, g);
+  } else if (id === 'cheetos') {
+    for (let i = 0; i < 10; i++) { const c = malla(geo('esf', 1, 8, 6), '#ff8a1e', Math.sin(i * 1.9) * .14, .08 + (i % 3) * .025, Math.cos(i * 1.9) * .14, g); c.scale.set(.03, .03, .07); c.rotation.set(Math.random() * 3, Math.random() * 3, 0); }
+  } else if (id === 'dulces') {
+    for (let i = 0; i < 7; i++) malla(geo('esf', .045, 8, 6), B(['#ff6fa3', '#ff3b5c', '#ffd1e4'][i % 3]), Math.sin(i * 1.7) * .15, .08, Math.cos(i * 1.7) * .15, g);
+  } else if (id === 'pastel') {
+    malla(geo('caja', .2, .12, .16), '#ffe9c7', 0, .11, 0, g); malla(geo('caja', .21, .03, .17), '#ffffff', 0, .18, 0, g); malla(geo('esf', .04, 8, 6), B('#ff3b5c'), 0, .22, 0, g);
+  } else if (id === 'galletas') {
+    for (let i = 0; i < 4; i++) malla(geo('cil', .08, .08, .025, 14), '#c98a4b', Math.sin(i * 1.6) * .1, .07 + i * .01, Math.cos(i * 1.6) * .1, g);
+  } else if (id === 'chocolatito') {
+    malla(geo('cil', .09, .08, .16, 14), '#ff8fb8', 0, .13, 0, g); malla(geo('cil', .08, .08, .01, 14), '#6b3e26', 0, .21, 0, g);
+  } else {
+    const e = malla(geo('cil', .05, .05, .26, 10), '#ffd23f', 0, .1, 0, g); e.rotation.z = Math.PI / 2;
+  }
+  return g;
+}
+
+/* ---------- Dulcecitos: ayudantes del reino (diseño original) ---------- */
+function crearDulcecito(color) {
+  const g = new THREE.Group(), p = { g };
+  const cuerpo = grupo(g); p.cuerpo = cuerpo;
+  const goma = mat(color, { brillo: 90, op: .95 });
+  const b = malla(geo('esf', .42, 20, 14, 0, Math.PI * 2, 0, Math.PI * .62), goma, 0, .32, 0, cuerpo); b.scale.y = 1.25;
+  malla(geo('cil', .39, .42, .14, 20), goma, 0, .25, 0, cuerpo);
+  for (let i = 0; i < 10; i++) { const a = i * 2.4, h = .35 + (i % 4) * .1; malla(geo('esf', .018, 5, 4), '#ffffff', Math.sin(a) * .4 * (1 - (h - .35)), h, Math.cos(a) * .4 * (1 - (h - .35)), cuerpo, false); }
+  const c = new THREE.Vector3(0, .5, 0);
+  for (const s of [-1, 1]) {
+    const o = malla(geo('esf', 1, 10, 8), '#2b1f33', 0, 0, 0, null, false); o.scale.set(.045, .06, .03); sobre(cuerpo, c, .4, [s * .3, .05, .95], o);
+    const br = malla(geo('esf', .015, 6, 4), '#ffffff', 0, 0, 0, null, false); sobre(cuerpo, c, .42, [s * .3 + .05, .12, .95], br);
+    const m = new THREE.Mesh(geo('circ', 1, 14), mat('#ff9fb2', { op: .7 })); m.scale.set(.05, .03, 1); sobre(cuerpo, c, .41, [s * .55, -.18, .82], m);
+    const pi = grupo(cuerpo, s * .16, .12, 0); malla(geo('esf', 1, 10, 8), '#ffffff', 0, -.08, .05, pi).scale.set(.09, .07, .13); p[s < 0 ? 'piernaI' : 'piernaD'] = pi;
+    const bz = grupo(cuerpo, s * .4, .4, 0); malla(geo('cil', .035, .03, .2, 6), goma, 0, -.1, 0, bz); malla(geo('esf', .05, 8, 6), '#ffffff', 0, -.21, 0, bz); bz.rotation.z = s * .5; p[s < 0 ? 'brazoI' : 'brazoD'] = bz;
+  }
+  const boca = new THREE.Mesh(geo('toro', .05, .012, 6, 12, Math.PI), mat('#c4505f')); sobre(cuerpo, c, .41, [0, -.12, .99], boca); boca.rotateZ(Math.PI);
+  // gorrito de paleta
+  const go = grupo(cuerpo, 0, .82, 0); go.rotation.z = .15;
+  malla(geo('cil', .02, .02, .3, 6), '#ffffff', 0, .12, 0, go);
+  const d = malla(geo('cil', .13, .13, .05, 20), new THREE.MeshLambertMaterial({ map: texEspiral(['#ff6fa3', '#9b7bff', '#7bd389', '#ffb347'][Math.floor(Math.random() * 4)], '#ffffff') }), 0, .32, 0, go); d.rotation.x = Math.PI / 2;
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  return p;
+}
+function animarDulcecito(p, estado, t) {
+  p.cuerpo.position.y = 0; p.cuerpo.rotation.set(0, 0, 0);
+  if (estado === 'camina') { p.piernaI.rotation.x = Math.sin(t) * .7; p.piernaD.rotation.x = -Math.sin(t) * .7; p.cuerpo.position.y = Math.abs(Math.cos(t)) * .08; p.brazoI.rotation.x = -Math.sin(t) * .6; p.brazoD.rotation.x = Math.sin(t) * .6; }
+  else if (estado === 'baila') { p.cuerpo.position.y = Math.abs(Math.sin(t * 2)) * .2; p.cuerpo.rotation.y = Math.sin(t) * .6; p.brazoI.rotation.z = -2.2 + Math.sin(t * 4) * .3; p.brazoD.rotation.z = 2.2 - Math.sin(t * 4) * .3; return; }
+  else if (estado === 'saluda') { p.brazoD.rotation.z = 2.4 + Math.sin(t * 6) * .3; p.cuerpo.position.y = Math.abs(Math.sin(t * 2)) * .05; return; }
+  else { p.piernaI.rotation.x = p.piernaD.rotation.x = 0; p.cuerpo.scale.y = 1 + Math.sin(t * 2) * .03; }
+  p.brazoI.rotation.z = -.5; p.brazoD.rotation.z = .5;
 }
