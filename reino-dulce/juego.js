@@ -635,11 +635,11 @@ window.iniciarReino = function () {
       objetivo = jug.pos.clone().add(V3(0, .35, 0));
       pos = jug.pos.clone().addScaledVector(f, 5.2).add(V3(0, 1.6, 0));
     } else {
-      const alt = modo === 'dentro' ? Math.max(cam.pitch, .7) : cam.pitch;
-      const dist = modo === 'dentro' ? Math.min(cam.dist, 11) : cam.dist;
+      const alt = modo === 'dentro' ? clamp(cam.pitch, .7, 1) : cam.pitch;
+      const dist = modo === 'dentro' ? clamp(cam.dist, 10, 14) : cam.dist;
       const yaw = modo === 'dentro' ? clamp(cam.yaw, -.5, .5) : cam.yaw;
       if (modo === 'dentro') cam.yaw = yaw;
-      objetivo = jug.pos.clone().add(V3(0, 1.3, 0));
+      objetivo = jug.pos.clone().add(V3(0, 1.3, modo === 'dentro' ? -2.5 : 0));
       pos = V3(objetivo.x + Math.sin(yaw) * Math.cos(alt) * dist, objetivo.y + Math.sin(alt) * dist, objetivo.z + Math.cos(yaw) * Math.cos(alt) * dist);
       if (pos.y < .8) pos.y = .8;
     }
@@ -811,7 +811,7 @@ window.iniciarReino = function () {
     let estadoL = 'saluda', tL = 0;
     const animL = (t, dt) => { tL += dt * (estadoL === 'camina' ? 9 : 3); animarPersona(L, estadoL, tL); };
     animados.push(animL);
-    cine = { centro: V3(T.x, 2.5, T.z), ang: .5, dist: C.tam * 1.9 + 9, alto: 5 + C.tam * .4, vel: .2 };
+    cine = { centro: V3(T.x, 1 + C.tam * .45, T.z), ang: -.75, dist: C.tam * 2.4 + 9, alto: 4 + C.tam * .5, vel: .09 };
     burbuja(L.g, '¡Yo te la construyo, princesa! 👷‍♂️💞', 2600, 3);
     await espera(1.8);
     burbuja(jug.raiz, '¡Sí, amor! 💞', 1800);
@@ -839,7 +839,6 @@ window.iniciarReino = function () {
     sonar('fanfarria');
     tween(.6, (k) => { const s = 1 + Math.sin(k * Math.PI) * .08; g.scale.set(s, 1 / s, s); });
     particulas('confeti', V3(T.x, 6, T.z), 60); particulas('corazon', V3(T.x, 4, T.z), 14);
-    cine.dist *= .9;
     burbuja(L.g, '¡Lista tu ' + C.n.toLowerCase() + ', mi amor! 💞', 3000, 3);
     jug.accion = { estado: 'baila', hasta: reloj + 3.2 };
     await espera(2.6);
@@ -1153,10 +1152,10 @@ window.iniciarReino = function () {
      ========================================================= */
   const TEMAS = {
     galleta: { w: 12, d: 9, pared: '#f6d2ae', piso: ['#e8b48a', '#dca37a'], marco: '#ffffff' },
-    caramelo: { w: 13, d: 10, pared: '#ffe2c6', piso: ['#ffd1e4', '#ffc0da'], marco: '#ff8fb8' },
+    caramelo: { w: 13, d: 10, pared: '#ffd6b0', piso: ['#ffbfd8', '#ffb0cf'], marco: '#ff8fb8' },
     chocolate: { w: 14, d: 10, pared: '#f6dcc7', piso: ['#a8724e', '#9b6544'], marco: '#fff3e6' },
-    pastel: { w: 16, d: 11, pared: '#ffe3ef', piso: ['#fff4e0', '#ffe6f0'], marco: '#ffffff' },
-    castillo: { w: 18, d: 13, pared: '#f1e6ff', piso: ['#ffe9f2', '#f6d9ff'], marco: '#ffd34d' },
+    pastel: { w: 16, d: 11, pared: '#ffd3e6', piso: ['#f3c9a0', '#ebbd92'], marco: '#ffffff' },
+    castillo: { w: 18, d: 13, pared: '#e6d4ff', piso: ['#ffc4dc', '#ffb3d1'], marco: '#ffd34d' },
   };
   let interInterior = [];
   function construirCuarto(id) {
@@ -1164,6 +1163,8 @@ window.iniciarReino = function () {
     const T = TEMAS[id], w = T.w, d = T.d;
     const texP = texCanvas(256, 256, (x) => { for (let i = 0; i < 8; i++) { x.fillStyle = T.piso[i % 2]; x.fillRect(0, i * 32, 256, 32); x.fillStyle = 'rgba(0,0,0,.06)'; x.fillRect(0, i * 32 + 30, 256, 2); x.fillRect((i * 97) % 256, i * 32, 2, 32); } }, [w / 4, d / 4]);
     malla(geo('caja', w, .2, d), new THREE.MeshLambertMaterial({ map: texP }), 0, -.1, 0, interior, false).receiveShadow = true;
+    malla(geo('caja', 90, .1, 90), new THREE.MeshLambertMaterial({ map: texPiso }), 0, -.16, 0, interior, false).receiveShadow = true;
+    for (let i = 0; i < 8; i++) { const ar = arbolAlgodon(coloresAlgodon[i % 5], 2.8); ar.position.set((i % 2 ? 1 : -1) * (w / 2 + 3 + (i % 3) * 2.5), 0, -d / 2 + i * 2.2); interior.add(ar); }
     const pared = mat(T.pared);
     malla(geo('caja', w, 5, .3), pared, 0, 2.5, -d / 2, interior, false).receiveShadow = true;
     for (const s of [-1, 1]) malla(geo('caja', .3, 5, d), pared, s * w / 2, 2.5, 0, interior, false).receiveShadow = true;
@@ -1196,7 +1197,7 @@ window.iniciarReino = function () {
       for (const o of E.colocados) if (o.dentro === i) pintarColocado(o);
       mundo.visible = false; interior.visible = true;
       jug.pos.set(INT.x, 0, INT.z + cuarto.d / 2 - 2); jug.ry = Math.PI;
-      cam.yaw = 0; cam.pitch = .8; cam.dist = 11;
+      cam.yaw = 0; cam.pitch = .78; cam.dist = 12.5;
       reconstruirInterColocados(); actualizarCamara(0, true);
       $('fundido').classList.remove('on'); pintarBajar();
       burbuja(jug.raiz, E.colocados.some(o => o.dentro === i) ? '¡Mi casita! 💞' : 'Está vacía… ¡a decorarla! 🛋️', 2200);
@@ -1307,7 +1308,7 @@ window.iniciarReino = function () {
     hemi.intensity = lerp(.55, .3, noche); sol.intensity = lerp(.62, .1, noche);
     hemi.color.set(noche > .5 ? '#c9b8ff' : '#fff0f7');
     sol.color.set(sun < .2 && sun > -.1 ? '#ffc29a' : noche > .5 ? '#9fa8ff' : '#fff3e0');
-    amb.intensity = modo === 'dentro' ? .3 : lerp(.12, .22, noche);
+    amb.intensity = modo === 'dentro' ? .1 : lerp(.12, .22, noche);
     estrellasMat.opacity = noche; luna.material.opacity = noche;
     for (const m of MATS_LUZ) m.emissiveIntensity = m.userData.base + noche * 1.1;
     const hh = Math.floor(E.hora * 24), mm = Math.floor((E.hora * 24 - hh) * 60 / 10) * 10;

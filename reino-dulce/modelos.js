@@ -261,17 +261,17 @@ function crearChica(ropa) {
     const cols = ['#ffd1e6', '#fff3a3', '#cfe9ff', '#ffd1e6', '#e6d1ff'];
     for (let i = 0; i < 5; i++) { const a = .5 + i * .52; malla(geo('esf', .07, 8, 6), cols[i], Math.cos(a) * .5, .5 + Math.sin(a) * .5, .12 - Math.abs(Math.cos(a)) * .1, cab); }
   } else if (acc.id === 'gorroNav') {
-    const gr = grupo(cab, 0, .82, -.05); gr.rotation.z = .25; gr.rotation.x = -.2;
+    const gr = grupo(cab, 0, .9, -.06); gr.rotation.z = .25; gr.rotation.x = -.2;
     malla(geo('cono', .44, .62, 20), acc.c, 0, .26, 0, gr);
     malla(geo('toro', .43, .07, 8, 22), '#ffffff', 0, -.02, 0, gr).rotation.x = Math.PI / 2;
     malla(geo('esf', .09, 10, 8), '#ffffff', 0, .58, 0, gr);
   } else if (acc.id === 'sombrero') {
-    const so = grupo(cab, 0, .86, -.02); so.rotation.x = -.15;
+    const so = grupo(cab, 0, .95, -.03); so.rotation.x = -.15;
     malla(geo('cil', .82, .82, .04, 28), acc.c, 0, 0, 0, so);
     malla(geo('cil', .36, .42, .3, 20), acc.c, 0, .16, 0, so);
     malla(geo('cil', .425, .425, .08, 20), '#ff8fb8', 0, .06, 0, so);
   } else if (acc.id === 'corona') {
-    const co = grupo(cab, 0, .93, -.04); co.rotation.x = -.15;
+    const co = grupo(cab, 0, 1.03, -.06); co.rotation.x = -.18;
     const oro = mat('#ffd34d', { brillo: 100, spec: 0x996600 });
     malla(geo('cil', .23, .25, .14, 20, true), oro, 0, 0, 0, co);
     for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; malla(geo('cono', .05, .14, 6), oro, Math.sin(a) * .23, .13, Math.cos(a) * .23, co); malla(geo('esf', .03, 6, 5), mat(i % 2 ? '#ff6fa3' : '#9ad7ff', { brillo: 120 }), Math.sin(a) * .245, 0, Math.cos(a) * .245, co, false); }
