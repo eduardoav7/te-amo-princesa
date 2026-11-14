@@ -1274,7 +1274,13 @@ window.iniciarReino = function () {
   function destinoGuia() {
     const m = metaSiguiente(); if (!m || modo !== 'fuera') return null;
     const falta = (pide) => Object.keys(pide).find(k => cuenta(k) < pide[k]);
-    const lugar = (item) => ({ galleta: [-58, -18], gomita: [-58, 16], azucar: [-58, 32], caramelo: [56, -24], chocolate: [riox(-22) + 5, -22], huevo: [62, 30], tomatillo: [46, 14], tomate: [52, 14], chile: [58, 14], trigo: [46, 22], maiz: [52, 22], fresa: [58, 22] }[item] || (ITEMS[item]?.precio ? [tiendaPos('mercado').x, tiendaPos('mercado').z] : null));
+    const lugar = (item) => {
+      if (ITEMS[item]?.precio) { const p = tiendaPos('mercado'); return [p.x, p.z]; }
+      // el árbol / roca / planta más cercano que tenga ese material (primero los que ya están listos)
+      let mejor = null, md = 1e9;
+      for (const listo of [true, false]) { for (const n of nodos) { if (n.item !== item || n.listo !== listo) continue; const d = Math.hypot(n.x - jug.pos.x, n.z - jug.pos.z); if (d < md) { md = d; mejor = [n.x, n.z]; } } if (mejor) break; }
+      return mejor;
+    };
     const sp = RECETAS[0].pide;
     switch (m.id) {
       case 'm1': return lugar('galleta');
@@ -1394,13 +1400,22 @@ window.iniciarReino = function () {
     let pt = !cine && !panelAbierto ? pasoTutorial() : null;
     if (pt && interActual) pt = `Toca el botón rosa: ${interActual.txt()} ${interActual.ic}`;
     if (pt !== pasoPrev) { pasoPrev = pt; const el = $('paso'); el.hidden = !pt; if (pt) { el.textContent = pt; el.classList.remove('nuevo'); void el.offsetWidth; el.classList.add('nuevo'); } }
-    if (pt && dg && !jug.accion) {
-      const dx = dg[0] - jug.pos.x, dz = dg[1] - jug.pos.z, d = Math.hypot(dx, dz);
-      if (d > 4.5) {
+    if (dg && modo === 'fuera' && !cine && !panelAbierto && !jug.accion) {
+      // si el destino está del otro lado del río, primero lleva al puente más cercano
+      let tx = dg[0], tz = dg[1];
+      const ladoJ = jug.pos.x < riox(jug.pos.z), ladoD = dg[0] < riox(dg[1]);
+      if (ladoJ !== ladoD) {
+        const pz = PUENTES.reduce((a, b) => Math.abs(b - jug.pos.z) + Math.abs(b - dg[1]) < Math.abs(a - jug.pos.z) + Math.abs(a - dg[1]) ? b : a);
+        const enPuente = Math.abs(jug.pos.z - pz) < 2.5 && Math.abs(jug.pos.x - riox(pz)) < 6;
+        if (!enPuente) { tx = riox(pz) + (ladoJ ? -6 : 6); tz = pz; if (Math.hypot(tx - jug.pos.x, tz - jug.pos.z) < 1.5) { tx = riox(pz) + (ladoJ ? 6 : -6); } }
+        else { tx = riox(pz) + (ladoJ ? 6 : -6); tz = pz; }
+      }
+      const dx = tx - jug.pos.x, dz = tz - jug.pos.z, d = Math.hypot(dx, dz);
+      if (d > 3.2 && Math.hypot(dg[0] - jug.pos.x, dg[1] - jug.pos.z) > 3.6) {
         flecha.visible = true;
         const off = 2.9 + Math.sin(reloj * 5) * .35;
         flecha.position.set(jug.pos.x + dx / d * off, .12 + (jug.veh ? .1 : 0), jug.pos.z + dz / d * off);
-        flecha.rotation.y = Math.atan2(dx, dz);
+        flecha.rotation.y = Math.atan2(dx, dz) + Math.PI;
         flecha.scale.setScalar(1.35 + Math.sin(reloj * 5) * .08);
       } else flecha.visible = false;
     } else flecha.visible = false;
