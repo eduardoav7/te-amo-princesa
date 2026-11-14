@@ -891,6 +891,49 @@ window.iniciarReino = function () {
     await espera(2.6);
     burbuja(jug.raiz, '¡Gracias, amor! ¡Está preciosa! 💞', 2400);
     await espera(2.2);
+    // La primera casa: aparece Lalito chiquito con los Dulcecitos
+    if ((E.stats.casas || 0) === 1 && !E.vistoBebe) {
+      E.vistoBebe = true; guardar();
+      saltando = false;
+      const fj = V3(Math.cos(jug.ry), 0, -Math.sin(jug.ry));
+      const B = crearBebe(); const bp = jug.pos.clone().addScaledVector(fj, 1.9).addScaledVector(V3(Math.sin(jug.ry), 0, Math.cos(jug.ry)), .8);
+      B.g.position.copy(bp); B.g.rotation.y = Math.atan2(jug.pos.x - bp.x, jug.pos.z - bp.z); scene.add(B.g);
+      B.g.scale.setScalar(.01); tween(.5, (k) => B.g.scale.setScalar(Math.max(.01, easeBack(k)) * .95));
+      particulas('chispa', bp.clone().setY(.8), 20); particulas('corazon', bp.clone().setY(1.4), 6); sonar('puf');
+      const peques = [];
+      ['#ff7eb6', '#9b7bff', '#7bd389', '#ffd23f', '#7fc8ff'].forEach((c, k) => {
+        const d = crearDulcecito(c); const a = k / 5 * Math.PI * 2;
+        d.g.position.set(bp.x + Math.cos(a) * 1.9, 0, bp.z + Math.sin(a) * 1.9); d.g.rotation.y = Math.atan2(bp.x - d.g.position.x, bp.z - d.g.position.z) + Math.PI;
+        d.g.scale.setScalar(.01); scene.add(d.g); peques.push(d);
+        espera(.3 + k * .15).then(() => { tween(.4, (q) => d.g.scale.setScalar(Math.max(.01, easeBack(q)))); particulas('chispa', d.g.position.clone().setY(.6), 5); sonar('pop'); });
+      });
+      let tB = 0, estB = 'saluda';
+      const animB = (t, dt) => { tB += dt * 3; animarPersona(B, estB, tB); peques.forEach((d, k) => animarDulcecito(d, 'baila', tB + k)); };
+      animados.push(animB);
+      mirarA(bp.x, bp.z);
+      { const fr = V3(Math.cos(jug.ry), 0, -Math.sin(jug.ry)); cine = { centro: bp.clone().lerp(jug.pos, .5).setY(.95), ang: Math.atan2(fr.x, fr.z) + .3, dist: 4.4, alto: 1.4, vel: .03 }; }
+      jug.accion = { estado: 'quieta', hasta: reloj + 16 };
+      await espera(1);
+      burbuja(B.g, '¡Hola, Brittybee! Soy Lalito chiquito 👶', 2800, 2);
+      await espera(3);
+      burbuja(B.g, 'Estoy muy orgulloso de ti, princesa 💞', 3000, 2);
+      particulas('corazon', bp.clone().setY(1.6), 6);
+      await espera(3.2);
+      estB = 'baila';
+      burbuja(B.g, '¡Te amo demasiado! 💞💞💞', 3000, 2);
+      particulas('confeti', bp.clone().setY(3), 40); particulas('corazon', bp.clone().setY(1.8), 10); sonar('fanfarria');
+      await espera(2.4);
+      jug.accion = { estado: 'abraza', hasta: reloj + 2.6 };
+      burbuja(jug.raiz, '¡Ayyy, qué bonito! Yo también te amo 🥹💞', 2800);
+      await espera(3);
+      estB = 'saluda';
+      burbuja(B.g, '¡Adiós! 👋💞', 1600, 2);
+      await espera(1.6);
+      particulas('chispa', bp.clone().setY(.8), 24); sonar('puf');
+      scene.remove(B.g); peques.forEach(d => { particulas('chispa', d.g.position.clone().setY(.6), 4); scene.remove(d.g); });
+      animados.splice(animados.indexOf(animB), 1);
+      jug.accion = null;
+    }
     particulas('chispa', L.g.position.clone().setY(1.2), 20); particulas('corazon', L.g.position.clone().setY(2), 6); sonar('puf');
     scene.remove(L.g); animados.splice(animados.indexOf(animL), 1);
     piezas.forEach(p => { p.visible = true; p.scale.setScalar(1); });

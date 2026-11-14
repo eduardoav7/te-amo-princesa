@@ -1055,3 +1055,42 @@ function animarDulcecito(p, estado, t) {
   else { p.piernaI.rotation.x = p.piernaD.rotation.x = 0; p.cuerpo.scale.y = 1 + Math.sin(t * 2) * .03; }
   p.brazoI.rotation.z = -.5; p.brazoD.rotation.z = .5;
 }
+
+/* ---------- Lalito chiquito (bebé con gorrito azul y camisa de rayas) ---------- */
+function crearBebe() {
+  const g = new THREE.Group(), p = { g };
+  const cuerpo = grupo(g); p.cuerpo = cuerpo;
+  const rayas = new THREE.MeshLambertMaterial({ map: texRayas('#cfd8ec', '#5c6fa6', 6, false) });
+  for (const s of [-1, 1]) {
+    const pi = grupo(cuerpo, s * .11, .4, 0);
+    malla(geo('cil', .1, .09, .32, 10), '#4f73b0', 0, -.16, 0, pi);
+    const z = malla(geo('esf', 1, 12, 8), '#ffffff', 0, -.34, .04, pi); z.scale.set(.1, .07, .14);
+    p[s < 0 ? 'piernaI' : 'piernaD'] = pi;
+  }
+  malla(geo('cil', .24, .24, .14, 16), '#4f73b0', 0, .44, 0, cuerpo);
+  malla(geo('cil', .245, .245, .04, 16), '#c0392b', 0, .52, 0, cuerpo);
+  p.torso = malla(geo('cil', .22, .26, .38, 18), rayas, 0, .7, 0, cuerpo);
+  for (let i = 0; i < 3; i++) malla(geo('esf', .022, 6, 5), '#e8d6b0', 0, .82 - i * .09, .22 + i * .01, cuerpo, false);
+  for (const s of [-1, 1]) {
+    const br = grupo(cuerpo, s * .28, .84, 0); br.rotation.z = s * .2;
+    malla(geo('cil', .075, .07, .3, 10), rayas, 0, -.15, 0, br);
+    malla(geo('esf', .075, 10, 8), PIEL, 0, -.32, 0, br);
+    p[s < 0 ? 'brazoI' : 'brazoD'] = br;
+  }
+  const cab = grupo(cuerpo, 0, .86, 0); p.cabeza = cab;
+  const c = new THREE.Vector3(0, .42, 0);
+  const h = malla(geo('esf', .46, 26, 18), PIEL, 0, .42, 0, cab); h.scale.set(1.04, 1, 1);
+  // cachetes gorditos
+  for (const s of [-1, 1]) malla(geo('esf', .16, 12, 10), PIEL, s * .22, .26, .26, cab);
+  Object.assign(p, cara(cab, c, { rubor: '#ff9fb2' }));
+  p.boca.scale.set(.6, .6, .6);
+  // gorrito azul clarito que tapa las orejas
+  const gorro = mat('#bcd8ea');
+  const go = malla(geo('esf', .5, 26, 16, 0, Math.PI * 2, 0, Math.PI * .5), gorro, 0, .44, -.02, cab); go.rotation.x = -.35;
+  malla(geo('toro', .45, .07, 8, 28), gorro, 0, .52, .06, cab).rotation.x = Math.PI / 2 - .35;
+  for (const s of [-1, 1]) { const o = malla(geo('esf', 1, 12, 10), gorro, s * .42, .3, -.04, cab); o.scale.set(.1, .2, .17); }
+  malla(geo('esf', .09, 10, 8), '#f4e6d0', .12, .82, .16, cab);
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  g.scale.setScalar(.95);
+  return p;
+}
