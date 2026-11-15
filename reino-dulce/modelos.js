@@ -1094,3 +1094,69 @@ function crearBebe() {
   g.scale.setScalar(.95);
   return p;
 }
+
+/* ---------- Fiesta de cumpleaños ---------- */
+function crearPastelCumple() {
+  const g = new THREE.Group();
+  malla(geo('cil', .42, .42, .04, 28), '#ffffff', 0, .02, 0, g);
+  malla(geo('cil', .36, .36, .26, 28), '#ffd1e4', 0, .17, 0, g);
+  malla(geo('toro', .35, .04, 6, 28), '#ffffff', 0, .3, 0, g).rotation.x = Math.PI / 2;
+  malla(geo('cil', .26, .26, .18, 26), '#fff4e0', 0, .39, 0, g);
+  malla(geo('toro', .25, .035, 6, 24), '#ff8fb8', 0, .48, 0, g).rotation.x = Math.PI / 2;
+  for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; malla(geo('esf', .04, 8, 6), mat('#ff3b5c', { brillo: 90 }), Math.sin(a) * .3, .32, Math.cos(a) * .3, g); }
+  const llamas = [];
+  for (let i = 0; i < 5; i++) {
+    const a = i / 5 * Math.PI * 2, x = Math.sin(a) * .14, z = Math.cos(a) * .14;
+    malla(geo('cil', .018, .018, .16, 8), new THREE.MeshLambertMaterial({ map: texRayas('#ffffff', ['#7fc8ff', '#ff8fb8', '#ffd23f'][i % 3], 3) }), x, .56, z, g);
+    const l = malla(geo('esf', 1, 8, 6), matLuz('#ffb347', 1.2), x, .67, z, g, false); l.scale.set(.025, .05, .025); llamas.push(l);
+  }
+  g.userData.llamas = llamas;
+  return g;
+}
+function crearRefresco() {
+  const g = new THREE.Group();
+  malla(geo('cil', .07, .07, .22, 16), mat('#1f4fbf', { brillo: 90 }), 0, .11, 0, g);
+  malla(geo('cil', .072, .072, .05, 16), mat('#ffffff', { brillo: 60 }), 0, .12, 0, g);
+  malla(geo('cil', .062, .07, .02, 16), mat('#c8ccd4', { brillo: 120 }), 0, .23, 0, g);
+  malla(geo('cil', .006, .006, .2, 5), '#ff6fa3', .02, .3, 0, g).rotation.z = .3;
+  return g;
+}
+function crearGlobos(n = 3) {
+  const g = new THREE.Group(); const cols = ['#ff6fa3', '#ffd23f', '#9b7bff', '#7fc8ff', '#7bd389', '#ff9f43'];
+  g.userData.globos = [];
+  for (let i = 0; i < n; i++) {
+    const a = i / n * Math.PI * 2, x = Math.sin(a) * .35, z = Math.cos(a) * .35, h = 2.4 + (i % 2) * .4;
+    const gl = grupo(g, x, h, z);
+    malla(geo('esf', .32, 16, 12), mat(cols[(i * 2 + n) % cols.length], { brillo: 100 }), 0, 0, 0, gl).scale.y = 1.2;
+    malla(geo('cono', .05, .08, 6), cols[(i * 2 + n) % cols.length], 0, -.4, 0, gl).rotation.x = Math.PI;
+    const hilo = malla(geo('cil', .006, .006, h - .4, 4), '#ffffff', -x / 2, -(h - .4) / 2 - .4, -z / 2, gl, false); hilo.rotation.z = Math.atan2(x, h) * .5; hilo.rotation.x = -Math.atan2(z, h) * .5;
+    g.userData.globos.push(gl);
+  }
+  malla(geo('caja', .2, .12, .2), '#ff8fb8', 0, .06, 0, g);
+  return g;
+}
+function crearRegaloGrande(c, lazo, carta) {
+  const g = new THREE.Group();
+  const caja = grupo(g); g.userData.caja = caja;
+  malla(geo('caja', .7, .55, .7), c, 0, .28, 0, caja);
+  malla(geo('caja', .72, .56, .14), lazo, 0, .28, 0, caja); malla(geo('caja', .14, .56, .72), lazo, 0, .28, 0, caja);
+  const tapa = grupo(g, 0, .55, 0); g.userData.tapa = tapa;
+  malla(geo('caja', .78, .14, .78), c, 0, .07, 0, tapa);
+  malla(geo('caja', .8, .15, .14), lazo, 0, .07, 0, tapa); malla(geo('caja', .14, .15, .8), lazo, 0, .07, 0, tapa);
+  for (const s of [-1, 1]) { const m = malla(geo('toro', .12, .04, 6, 14), lazo, s * .1, .22, 0, tapa); m.rotation.y = Math.PI / 2; m.rotation.z = s * .5; }
+  if (carta) { const sobre = grupo(g, 0, .45, 0); g.userData.sobre = sobre; malla(geo('caja', .42, .28, .03), '#fffaf3', 0, 0, 0, sobre); const s1 = malla(geo('cono', .24, .14, 3), '#ffd1e4', 0, .07, .02, sobre); s1.rotation.z = Math.PI; s1.scale.z = .1; malla(geo('circ', .05, 16), mat('#e2457f', { doble: true }), 0, 0, .025, sobre); sobre.visible = false; }
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  return g;
+}
+function crearLetreroCumple(txt) {
+  const g = new THREE.Group();
+  for (const s of [-1, 1]) malla(geo('cil', .06, .06, 2.8, 8), new THREE.MeshLambertMaterial({ map: texRayas('#ffffff', '#ff8fb8', 4) }), s * 2, 1.4, 0, g);
+  const t = texCanvas(1024, 200, (x) => {
+    const cs = ['#ff6fa3', '#ffd23f', '#9b7bff', '#7fc8ff', '#7bd389'];
+    for (let i = 0; i < 16; i++) { x.fillStyle = cs[i % 5]; x.beginPath(); x.moveTo(i * 64, 0); x.lineTo(i * 64 + 64, 0); x.lineTo(i * 64 + 32, 50); x.fill(); }
+    x.fillStyle = '#fff'; redondo(x, 20, 60, 984, 130, 40); x.fill(); x.lineWidth = 8; x.strokeStyle = '#ff8fb8'; x.stroke();
+    x.fillStyle = '#e2457f'; x.font = '900 72px Nunito, system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(txt, 512, 128);
+  });
+  const p = new THREE.Mesh(geo('plano', 4, .8), new THREE.MeshLambertMaterial({ map: t, transparent: true, side: THREE.DoubleSide })); p.position.y = 2.5; g.add(p);
+  return g;
+}

@@ -181,6 +181,18 @@ body.cinema #saltar { display: block; }
 #hud, #accionCaja, #joyPista, #reloj, #metaMini { transition: opacity .3s; }
 @media (min-width: 900px) and (pointer: fine) { #joyPista { display: none; } }
 /* ---------- Tutorial ---------- */
+#cartaFiesta { position: fixed; z-index: 41; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(110, 40, 80, .4); opacity: 0; pointer-events: none; transition: opacity .3s; }
+#cartaFiesta.on { opacity: 1; pointer-events: auto; }
+#cartaFiesta .papel { position: relative; width: min(420px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; padding: 26px 22px 18px; border-radius: 10px; background: #fffaf0 repeating-linear-gradient(180deg, transparent 0 29px, #f6dbe6 29px 30px); box-shadow: 0 0 0 6px #ffd1e4, 0 20px 50px rgba(110, 40, 80, .4); transform: scale(.8) rotate(-3deg); transition: transform .4s cubic-bezier(.2, 1.4, .4, 1); }
+#cartaFiesta.on .papel { transform: none; }
+#cartaFiesta .sello { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); font-size: 34px; }
+#cartaFiesta .de { font: 400 34px/1 'Great Vibes', cursive; color: #e2457f; text-align: center; }
+#cartaFiesta .txt { margin: 14px 0; font-size: 16.5px; line-height: 30px; color: var(--ink); white-space: pre-wrap; }
+#cartaFiesta .firma { text-align: right; font-size: 15px; color: var(--ink-2); }
+#cartaFiesta .firma span { font: 400 30px/1.2 'Great Vibes', cursive; color: #e2457f; }
+#cartaFiesta .btn { display: block; margin: 14px auto 0; }
+#cancion { position: fixed; z-index: 16; left: 50%; top: calc(9vh + 10px); transform: translateX(-50%); padding: 7px 16px; border-radius: 999px; background: rgba(255, 255, 255, .92); font-weight: 900; color: #d63f7a; animation: late 1.4s ease-in-out infinite; }
+textarea.carta-edit { width: 100%; min-height: 160px; padding: 12px; border-radius: 14px; border: 2px solid #ffd1e4; font: 600 15px/1.5 var(--font); color: var(--ink); background: #fffaf3; resize: vertical; -webkit-user-select: text; user-select: text; touch-action: auto; }
 #tuto { position: fixed; inset: 0; z-index: 42; display: grid; place-items: center; padding: 16px; background: rgba(110, 40, 80, .35); opacity: 0; pointer-events: none; transition: opacity .25s; }
 #tuto.on { opacity: 1; pointer-events: auto; }
 #tuto .tarjeta { width: min(400px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; padding: 20px 20px 16px; border-radius: 24px; background: #fffaf3; box-shadow: 0 0 0 6px #ffd1e4, 0 20px 50px rgba(110, 40, 80, .35); text-align: center; }
@@ -270,6 +282,7 @@ body.cinema #saltar { display: block; }
   <div class="botones">
     <button class="btn-hud" id="bMochila" aria-label="Mochila">🎒</button>
     <button class="btn-hud" id="bMetas" aria-label="Metas">📜<span class="punto" id="puntoMetas" hidden></span></button>
+    <button class="btn-hud" id="bFiesta" hidden aria-label="Cumpleaños">🎂</button>
     <button class="btn-hud" id="bCorazon" hidden aria-label="Mandar corazón">💞</button>
     <button class="btn-hud" id="bMusica" aria-label="Música">🎵</button>
     <button class="btn-hud" id="bMenu" aria-label="Más">⚙️</button>
@@ -304,10 +317,12 @@ body.cinema #saltar { display: block; }
 </section>
 <div id="nota"><div class="papel"><div class="de">De Lalito</div><p class="txt" id="notaTxt"></p><p class="premio" id="notaPremio"></p><p class="meta-n" id="notaMeta"></p><button class="btn" id="notaOk">💞 Gracias, amor</button></div></div>
 <div id="fundido"></div>
+<div id="cartaFiesta"><div class="papel"><div class="sello">💞</div><div class="de">Para Brittybee</div><div class="txt" id="cartaFiestaTxt"></div><div class="firma">Con todo mi amor,<br><span>Lalito</span></div><button class="btn" id="cartaFiestaOk">💞 Cerrar mi cartita</button></div></div>
+<div id="cancion" hidden>🎵 Las mañanitas</div>
 <div id="tuto"><div class="tarjeta"><div class="ic">🍭</div><h3></h3><p></p><div class="puntos"></div><div class="tbtns"><button class="btn sec" id="tutoSaltar">Saltar</button><button class="btn" id="tutoSig">Siguiente ➜</button></div></div></div>
 <div id="girar"><div><div class="tel">📱</div><b>Gira tu teléfono</b><br>El Reino de Dulce se juega en horizontal 🍭</div></div>
 
-<script src="datos.js?v=12"></script>
+<script src="datos.js?v=14"></script>
 <script>
 // Carga de three.js y del juego
 (function () {
@@ -324,11 +339,11 @@ body.cinema #saltar { display: block; }
     btn.disabled = true; btn.textContent = 'Cargando el reino… 🍭';
     document.getElementById('errorCarga').hidden = true;
     try {
-      await cargar('nube.js?v=12');
+      await cargar('nube.js?v=14');
       const conexion = NUBE.conectar();
       if (!window.THREE) await cargar('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js');
-      await cargar('modelos.js?v=12');
-      await cargar('juego.js?v=12');
+      await cargar('modelos.js?v=14');
+      await cargar('juego.js?v=14');
       try { await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]); } catch (e) { }
       elegirPerfil(conexion);
     } catch (e) {

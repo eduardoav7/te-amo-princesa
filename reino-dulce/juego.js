@@ -683,7 +683,7 @@ window.iniciarReino = function (opc = {}) {
   renderer.domElement.addEventListener('pointercancel', soltar);
   renderer.domElement.addEventListener('wheel', (e) => { cam.dist = clamp(cam.dist + e.deltaY * .01, 5.5, 18); e.preventDefault(); }, { passive: false });
   addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT') return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     teclas[e.key.toLowerCase()] = true;
     if ((e.key === 'e' || e.key === 'Enter') && !bloqueado() && interActual) { e.preventDefault(); interActual.fn(); }
     if (e.key === ' ') { e.preventDefault(); brincar(); }
@@ -1802,6 +1802,7 @@ window.iniciarReino = function (opc = {}) {
       if (jug.sentada) levantarse();
       if (m.tipo === 'construir' && CASAS.some(c => c.id === m.id) && TERRENOS[m.i]) escenaConstruir(m.i, m.id, 'construye');
       else if (m.tipo === 'comer' && RECETAS.some(r => r.id === m.r)) escenaComer(m.r, V3(m.cx, 0, m.cz), m.ry, 'sirve');
+      else if (m.tipo === 'fiesta' && !ES_EL) { E.fiestaVista = Math.max(E.fiestaVista || 0, m.id || 0); guardar(); escenaFiesta({ C: V3(m.cx, 0, m.cz), ry: m.ry, carta: String(m.carta || '').slice(0, 3000), rol: 'cumpleVivo', id: m.id }); }
     } else if (m.t === 'saltar') {
       if (cine) saltando = true;
     } else if (m.t === 'dice') {
@@ -1857,6 +1858,210 @@ window.iniciarReino = function (opc = {}) {
     interOtro.x = otro.x; interOtro.z = otro.z;
   });
   addEventListener('pagehide', () => mandarJuntos({ t: 'adios' }));
+
+  /* =========================================================
+     CUMPLEAÑOS DE BRITTYBEE (se prepara desde el perfil de Lalito)
+     ========================================================= */
+  const TEMA_FIESTA = window.NUBE ? NUBE.SALA + '/fiesta' : null;
+  let fiestaNube = null, fiestaCorriendo = false;
+  if (TEMA_FIESTA) NUBE.suscribir(TEMA_FIESTA, (o) => { if (o && o.t && (!fiestaNube || o.t >= fiestaNube.t)) { fiestaNube = o; if (ES_EL && o.carta && !E.cartaBorrador) E.cartaBorrador = o.carta; } });
+  if (ES_EL) $('bFiesta').hidden = false;
+  $('bFiesta').onclick = () => panelFiesta();
+  function panelFiesta() {
+    abrirPanel({
+      tit: '🎂 Cumpleaños de Brittybee', sub: 'Prepárale una fiesta sorpresa con Lalito chiquito: pastel, pizza, su Pepsi, globos, regalos y una cartita tuya. Al darle el pastel suenan Las mañanitas 🎵',
+      render: (c) => {
+        c.append(h('<div style="font-weight:900;margin:2px 4px 6px">💌 Tu cartita para ella</div>'));
+        const ta = document.createElement('textarea'); ta.className = 'carta-edit'; ta.maxLength = 3000; ta.placeholder = 'Escríbele aquí tu cartita de cumpleaños…'; ta.value = E.cartaBorrador || '';
+        ta.oninput = () => { E.cartaBorrador = ta.value; };
+        c.append(ta);
+        const enLinea = otro && otro.perfil === 'brittani' && Date.now() - otro.ult < 3000;
+        const estado = fiestaNube && fiestaNube.pendiente ? '🎁 Ya tiene una sorpresa guardada esperándola.' : fiestaNube && fiestaNube.vista ? '✅ Ya vio su última fiesta.' : '';
+        c.append(h(`<p style="font-size:13.5px;color:#9a5577;margin:10px 4px">${enLinea ? '💞 <b>Brittybee está jugando ahorita</b>: la fiesta le sale en vivo a los dos.' : '📴 Brittybee no está conectada: la fiesta se guarda y le sale de sorpresa la próxima vez que entre.'} ${estado}</p>`));
+        const pie = $('panelPie'); pie.hidden = false; pie.innerHTML = '';
+        const b1 = document.createElement('button'); b1.className = 'btn sec'; b1.textContent = '👀 Ver cómo queda'; b1.style.flex = '0 0 auto';
+        b1.onclick = () => { E.cartaBorrador = ta.value; guardar(); cerrarPanel(); escenaFiesta({ C: frente(3), ry: jug.ry, carta: ta.value, rol: 'prueba' }); };
+        const b2 = document.createElement('button'); b2.className = 'btn verde'; b2.textContent = enLinea ? '🎉 ¡Hacerle la fiesta ahora!' : '🎁 Guardar la sorpresa';
+        b2.onclick = () => {
+          const carta = ta.value.trim(); if (!carta) { aviso('Escríbele su cartita primero 💌'); return; }
+          E.cartaBorrador = ta.value; guardar(true);
+          const id = Date.now();
+          const vivo = otro && otro.perfil === 'brittani' && otroDisponible();
+          NUBE.publicarRetenido(TEMA_FIESTA, { t: id, carta, pendiente: !vivo, vista: !!vivo });
+          fiestaNube = { t: id, carta, pendiente: !vivo, vista: !!vivo };
+          cerrarPanel();
+          if (vivo) {
+            const fr = V3(Math.sin(otro.ry), 0, Math.cos(otro.ry));
+            const C = otro.g.position.clone().addScaledVector(fr, 3); C.y = 0;
+            mandarJuntos({ t: 'escena', tipo: 'fiesta', cx: +C.x.toFixed(2), cz: +C.z.toFixed(2), ry: +otro.ry.toFixed(3), carta, id });
+            escenaFiesta({ C, ry: otro.ry, carta, rol: 'festeja' });
+          } else aviso('🎁 ¡Listo! La próxima vez que Brittybee entre al reino le saldrá su fiesta sorpresa 💞', 4200);
+        };
+        pie.append(b1, b2);
+      },
+    });
+  }
+  const frente = (d) => jug.pos.clone().addScaledVector(V3(Math.sin(jug.ry), 0, Math.cos(jug.ry)), d);
+  // Ella revisa si tiene una fiesta guardada esperándola
+  animados.push(() => {
+    if (ES_EL || fiestaCorriendo || !fiestaNube || !fiestaNube.pendiente || cine || panelAbierto || tutoAbierto || modo !== 'fuera' || $('nota').classList.contains('on')) return;
+    if ((E.fiestaVista || 0) >= fiestaNube.t) return;
+    if (reloj < 4) return;
+    E.fiestaVista = fiestaNube.t; guardar(true);
+    NUBE.publicarRetenido(TEMA_FIESTA, Object.assign({}, fiestaNube, { pendiente: false, vista: true }));
+    escenaFiesta({ C: frente(3.2), ry: jug.ry, carta: fiestaNube.carta, rol: 'cumple' });
+  });
+  function mostrarCarta(txt) {
+    return new Promise(ok => {
+      $('cartaFiestaTxt').textContent = txt || '';
+      $('cartaFiesta').classList.add('on'); sonar('abrir');
+      $('cartaFiestaOk').onclick = () => { $('cartaFiesta').classList.remove('on'); ok(); };
+    });
+  }
+  // rol: 'cumple' (ella, Lalito de mentiritas) · 'cumpleVivo' (ella, Lalito de verdad) · 'festeja' (yo Lalito, ella de verdad) · 'prueba' (yo Lalito viendo cómo queda)
+  async function escenaFiesta({ C, ry, carta, rol }) {
+    if (fiestaCorriendo) return; fiestaCorriendo = true;
+    const ellaSoyYo = rol === 'cumple' || rol === 'cumpleVivo';
+    if (panelAbierto) cerrarPanel(); bajar(true); pintarBajar(); if (jug.sentada) levantarse(); jug.accion = null;
+    modoCine(true); saltando = false;
+    $('fundido').classList.add('on'); await new Promise(r => setTimeout(r, 650));
+    const f = V3(Math.sin(ry), 0, Math.cos(ry)), lado = V3(Math.cos(ry), 0, -Math.sin(ry));
+    const fiesta = new THREE.Group(); scene.add(fiesta);
+    // mesa con pastel, pizza y Pepsi
+    const mesa = crearObjeto('mesa'); mesa.position.copy(C); mesa.rotation.y = ry; fiesta.add(mesa);
+    mesa.children.slice(-2).forEach(c => c.visible = false); // sin sillas
+    const pastel = crearPastelCumple(); pastel.position.copy(C).add(V3(0, .9, 0)); fiesta.add(pastel);
+    const pizza = crearPlato('pizza'); pizza.position.copy(C).addScaledVector(lado, .45).add(V3(0, .9, 0)); fiesta.add(pizza);
+    for (const k of [-1, 1]) { const r = crearRefresco(); r.position.copy(C).addScaledVector(lado, -.45).addScaledVector(f, k * .18).add(V3(0, .9, 0)); fiesta.add(r); }
+    // letrero y globos
+    const letrero = crearLetreroCumple('¡Feliz cumpleaños, Brittybee!'); letrero.position.copy(C).addScaledVector(f, 2.2); letrero.rotation.y = ry + Math.PI; fiesta.add(letrero);
+    const globos = [];
+    for (const [a, b] of [[-3.2, 1.8], [3.2, 1.8], [-1.7, 2.7], [1.7, 2.7]]) { const gl = crearGlobos(3 + (globos.length % 2)); gl.position.copy(C).addScaledVector(lado, a).addScaledVector(f, b); fiesta.add(gl); globos.push(gl); }
+    // regalos (el rosa trae la cartita)
+    const regalos = [['#9ad7ff', '#ffffff', false], ['#b89cf5', '#ffd23f', false], ['#ff6fa3', '#ffffff', true]].map(([c, l, carta], k) => { const r = crearRegaloGrande(c, l, carta); r.position.copy(C).addScaledVector(lado, -1.8 + k * .05).addScaledVector(f, -.9 + k * .95); r.rotation.y = ry + k; fiesta.add(r); return r; });
+    const anGlobos = (t) => globos.forEach((gl, i) => gl.userData.globos.forEach((b, k) => { b.position.y = 2.4 + (k % 2) * .4 + Math.sin(t * 1.4 + i + k) * .12; b.rotation.z = Math.sin(t + k) * .1; }));
+    animados.push(anGlobos);
+    // la cumpleañera
+    const posElla = C.clone().addScaledVector(f, -2.6);
+    let ella;
+    if (ellaSoyYo) { jug.pos.copy(posElla); jug.ry = ry; ella = { bur: jug.raiz, g: jug.raiz, set(e, s = 3) { jug.accion = { estado: e, hasta: reloj + s }; } }; }
+    else if (rol === 'festeja') ella = { bur: otro.g, g: otro.g, set() { } };
+    else { const pE = crearChica({ top: 'vestidoGala', abajo: 'jeans', zapatos: 'cristal', acc: 'corona', peinado: 'chongo' }); pE.g.position.copy(posElla); pE.g.rotation.y = ry; scene.add(pE.g); let est = 'quieta', t = 0; const an = (tt, dt) => { t += dt * 3; animarPersona(pE, est, t); }; animados.push(an); ella = { bur: pE.g, g: pE.g, p: pE, an, set(e) { est = e; } }; }
+    // Lalito y Lalito chiquito
+    const A = rol === 'cumple' ? actorNPC() : rol === 'cumpleVivo' ? actorRemoto() : actorYo();
+    if (A.p.casco) { A.p.casco.visible = false; A.p.martillo.visible = false; }
+    A.g.position.copy(C).addScaledVector(lado, 1.3).addScaledVector(f, .2); A.g.rotation.y = ry + Math.PI;
+    const B = crearBebe(); B.g.position.copy(C).addScaledVector(lado, -1.3).addScaledVector(f, -.4); B.g.rotation.y = ry + Math.PI; scene.add(B.g);
+    let estB = 'saluda', tB = 0; const anB = (t, dt) => { tB += dt * 3; animarPersona(B, estB, tB); }; animados.push(anB);
+    cine = { centro: C.clone().addScaledVector(f, -1).setY(1.2), ang: Math.atan2(-f.x, -f.z) + .55, dist: 7.5, alto: 2.6, vel: -.05 };
+    $('fundido').classList.remove('on');
+    await espera(.6);
+    // ¡Sorpresa!
+    sonar('fanfarria'); particulas('confeti', C.clone().setY(4), 70); particulas('corazon', C.clone().setY(2.5), 12);
+    A.set('baila'); estB = 'baila';
+    burbuja(A.bur, '¡SORPRESA! 🎉 ¡Feliz cumpleaños, mi amor!', 3000, 2.9);
+    burbuja(B.g, '¡Sorpresa! 🎈', 2600, 2);
+    await espera(2.4);
+    ella.set('abraza', 2.5); burbuja(ella.bur, '¡¿Qué?! ¡No puede ser! 🥹💞', 2600);
+    await espera(2.8);
+    // el pastel con Las mañanitas
+    A.set('lleva'); estB = 'quieta';
+    burbuja(A.bur, 'Te traje tu pastel 🎂', 2000, 2.9);
+    const ini = A.g.position.clone(), destino = posElla.clone().addScaledVector(f, 1.1);
+    const portaPastel = new THREE.Group(); scene.add(portaPastel); fiesta.remove(pastel); pastel.position.set(0, 1.05, .45); portaPastel.add(pastel);
+    const sigue = () => { portaPastel.position.copy(A.g.position); portaPastel.rotation.y = A.g.rotation.y; }; animados.push(sigue);
+    A.g.rotation.y = Math.atan2(destino.x - ini.x, destino.z - ini.z);
+    await tween(1.4, (k) => A.g.position.lerpVectors(ini, destino, k));
+    A.set('lleva'); A.g.rotation.y = ry + Math.PI;
+    cine = { centro: posElla.clone().lerp(destino, .5).setY(1.3), ang: Math.atan2(lado.x, lado.z) + .25, dist: 4.6, alto: 1.4, vel: .025 };
+    // suenan Las mañanitas
+    // se usa el mismo reproductor de la música de fondo (en iPhone ya tiene permiso para sonar)
+    const man = musica; const srcFondo = man.src, tFondo = man.currentTime;
+    man.pause(); man.loop = false; man.src = '../5-meses/musica/mananitas.mp3'; man.volume = .95;
+    try { await man.play(); } catch (e) { }
+    $('cancion').hidden = false;
+    estB = 'baila'; ella.set('quieta', 200);
+    const ivC = setInterval(() => particulas('corazon', posElla.clone().setY(2.6), 2), 900);
+    const t0 = performance.now();
+    while (!man.ended && !saltando && performance.now() - t0 < (man.duration ? man.duration * 1000 + 800 : 92000)) {
+      await new Promise(r => setTimeout(r, 300));
+      if (!man.duration && performance.now() - t0 > 4000 && man.paused) break; // no se pudo reproducir
+    }
+    if (saltando) { saltando = false; }
+    man.pause(); clearInterval(ivC); $('cancion').hidden = true;
+    man.src = srcFondo; man.loop = true; man.volume = .45;
+    const volver = () => { try { man.currentTime = tFondo; } catch (e) { } man.removeEventListener('loadedmetadata', volver); };
+    man.addEventListener('loadedmetadata', volver); tocarMusica();
+    // sopla las velitas
+    burbuja(A.bur, '¡Pide un deseo y sopla tus velitas! 🎂✨', 2600, 2.9);
+    await espera(2.6);
+    burbuja(ella.bur, '*Fuuuu* 🌬️💞', 1600); ella.set('saluda', 1.4);
+    await espera(.8);
+    pastel.userData.llamas.forEach(l => { l.visible = false; particulas('vapor', pastel.localToWorld(l.position.clone()), 2); });
+    sonar('fanfarria'); particulas('confeti', posElla.clone().setY(3.5), 60); particulas('corazon', posElla.clone().setY(2.4), 12);
+    estB = 'baila';
+    burbuja(B.g, '¡Yeeei! 🎉', 1800, 2);
+    await espera(2);
+    // a la mesa: pastel, pizza y Pepsi
+    portaPastel.remove(pastel); animados.splice(animados.indexOf(sigue), 1); scene.remove(portaPastel);
+    pastel.position.copy(C).add(V3(0, .9, 0)); fiesta.add(pastel);
+    A.g.position.copy(C).addScaledVector(lado, 1.3).addScaledVector(f, -.6); A.g.rotation.y = Math.atan2(-lado.x, -lado.z);
+    if (ellaSoyYo) { jug.pos.copy(C).addScaledVector(lado, -.3).addScaledVector(f, -1.2); jug.ry = ry; }
+    cine = { centro: C.clone().setY(1.1), ang: Math.atan2(-f.x, -f.z) + .4, dist: 6, alto: 2.2, vel: -.04 };
+    A.set('quieta');
+    burbuja(A.bur, '¡Hay pastel, pizza y tu Pepsi bien fría! 🍕🥤', 2800, 2.9);
+    await espera(2);
+    ella.set('come', 3); burbuja(ella.bur, '¡Mmm, qué rico! 🤤', 2200);
+    burbuja(B.g, '¡Yo quiero pastel! 🎂', 2200, 2);
+    const ivH = setInterval(() => particulas('corazon', C.clone().setY(2.2), 2), 500);
+    await espera(3);
+    clearInterval(ivH);
+    // los regalos
+    burbuja(A.bur, '¡Ahora abre tus regalos! 🎁', 2400, 2.9);
+    cine = { centro: regalos[1].position.clone().setY(.9), ang: Math.atan2(-lado.x, -lado.z) - .4, dist: 5, alto: 2, vel: .03 };
+    await espera(1.8);
+    const premios = [['¡300 monedas! 🪙', () => { E.monedas += 300; pintarMonedas(true); }], ['¡Un osito de peluche! 🧸', () => dar('peluche')], ['💌 ¡Una cartita!', null]];
+    for (let k = 0; k < regalos.length; k++) {
+      const r = regalos[k], tapa = r.userData.tapa;
+      tween(.3, (q) => { r.scale.set(1 + Math.sin(q * Math.PI) * .15, 1 - Math.sin(q * Math.PI) * .1, 1 + Math.sin(q * Math.PI) * .15); });
+      await espera(.3);
+      sonar('pop');
+      await tween(.6, (q) => { tapa.position.y = .55 + q * 1.4; tapa.rotation.z = q * 1.2; tapa.rotation.x = q * .6; });
+      tapa.visible = false;
+      particulas('chispa', r.position.clone().setY(1), 14); particulas('confeti', r.position.clone().setY(1.2), 20);
+      if (r.userData.sobre) { r.userData.sobre.visible = true; tween(.8, (q) => { r.userData.sobre.position.y = .45 + q * 1.1; r.userData.sobre.rotation.y = q * 6.28; }); }
+      flotante(r.position.clone().setY(1.6), premios[k][0]);
+      if (ellaSoyYo && premios[k][1]) premios[k][1]();
+      sonar('meta');
+      await espera(1.6);
+    }
+    // la cartita
+    await espera(.6);
+    if (carta && carta.trim()) await mostrarCarta(carta.trim());
+    // final
+    cine = { centro: C.clone().addScaledVector(f, -1).setY(1.2), ang: Math.atan2(-f.x, -f.z) + .3, dist: 7, alto: 2.4, vel: -.06 };
+    A.set('baila'); estB = 'baila'; ella.set('baila', 4);
+    sonar('fanfarria'); particulas('confeti', C.clone().setY(4), 80); particulas('corazon', C.clone().setY(2.6), 16);
+    burbuja(A.bur, '¡Feliz cumpleaños, mi princesa! Te amo 💞', 3200, 2.9);
+    await espera(1.6);
+    burbuja(B.g, '¡Te amo demasiado! 💞', 2600, 2);
+    await espera(2.6);
+    burbuja(ella.bur, '¡Gracias, mis amores! Los amo 🥹💞', 2800);
+    await espera(3);
+    // se acaba la fiesta
+    $('fundido').classList.add('on'); await new Promise(r => setTimeout(r, 650));
+    animados.splice(animados.indexOf(anGlobos), 1); animados.splice(animados.indexOf(anB), 1);
+    scene.remove(fiesta, B.g);
+    if (ella.an) { animados.splice(animados.indexOf(ella.an), 1); scene.remove(ella.g); }
+    A.fin();
+    if (rol === 'festeja' || rol === 'prueba') jug.pos.copy(C).addScaledVector(lado, 2);
+    jug.accion = null;
+    modoCine(false); saltando = false;
+    $('fundido').classList.remove('on');
+    if (ellaSoyYo) { stat('fiestas'); aviso('🎂 ¡Feliz cumpleaños, Brittybee! Te llegaron 300 monedas y un osito 🧸 a tu mochila', 4200); }
+    guardar(true);
+    fiestaCorriendo = false;
+  }
 
   /* =========================================================
      ARRANQUE

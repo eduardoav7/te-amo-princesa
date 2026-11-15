@@ -77,7 +77,8 @@ window.NUBE = (() => {
   }
   // Tiempo real: se manda por todos los servidores conectados (el que recibe ignora repetidos)
   function suscribir(t, fn) { extras[t] = fn; for (const c of clientes) if (c.connected) c.subscribe(t, { qos: 0 }); }
+  function publicarRetenido(t, obj) { const m = JSON.stringify(obj); let n = 0; for (const c of clientes) if (c.connected) { try { c.publish(t, m, { qos: 1, retain: true }); n++; } catch (e) { } } return n; }
   function publicar(t, obj) { const m = JSON.stringify(obj); let n = 0; for (const c of clientes) if (c.connected) { try { c.publish(t, m, { qos: 0 }); n++; } catch (e) { } } return n; }
   function estado() { return { conectados: conectados(), pendiente: !!pendiente }; }
-  return { SALA, suscribir, publicar, PERFILES, conectar, esperar, mejor, guardar, enviar, estado, local, guardarLocal, nube, escuchar: (f) => escuchas.push(f) };
+  return { SALA, suscribir, publicar, publicarRetenido, PERFILES, conectar, esperar, mejor, guardar, enviar, estado, local, guardarLocal, nube, escuchar: (f) => escuchas.push(f) };
 })();
