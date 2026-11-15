@@ -1802,7 +1802,7 @@ window.iniciarReino = function (opc = {}) {
       if (jug.sentada) levantarse();
       if (m.tipo === 'construir' && CASAS.some(c => c.id === m.id) && TERRENOS[m.i]) escenaConstruir(m.i, m.id, 'construye');
       else if (m.tipo === 'comer' && RECETAS.some(r => r.id === m.r)) escenaComer(m.r, V3(m.cx, 0, m.cz), m.ry, 'sirve');
-      else if (m.tipo === 'fiesta' && !ES_EL) { E.fiestaVista = Math.max(E.fiestaVista || 0, m.id || 0); guardar(); escenaFiesta({ C: V3(m.cx, 0, m.cz), ry: m.ry, carta: String(m.carta || '').slice(0, 3000), rol: 'cumpleVivo', id: m.id }); }
+      else if (m.tipo === 'fiesta' && !ES_EL) { E.fiestaVista = Math.max(E.fiestaVista || 0, m.id || 0); guardar(); escenaFiesta({ C: V3(m.cx, 0, m.cz), ry: m.ry, carta: String(m.carta || '').slice(0, 8000), rol: 'cumpleVivo', id: m.id }); }
     } else if (m.t === 'saltar') {
       if (cine) saltando = true;
     } else if (m.t === 'dice') {
@@ -1867,12 +1867,13 @@ window.iniciarReino = function (opc = {}) {
   if (TEMA_FIESTA) NUBE.suscribir(TEMA_FIESTA, (o) => { if (o && o.t && (!fiestaNube || o.t >= fiestaNube.t)) { fiestaNube = o; if (ES_EL && o.carta && !E.cartaBorrador) E.cartaBorrador = o.carta; } });
   if (ES_EL) $('bFiesta').hidden = false;
   $('bFiesta').onclick = () => panelFiesta();
+  const CARTA_CUMPLE = "Mi Brittybee hermosa:\n\n¡Feliz cumpleaños, mi princesa! Hoy es tu día y quise hacerte una fiesta aquí, en este reino que hice solo para ti, porque te mereces que todo el mundo, hasta uno hecho de dulces, celebre que existes.\n\nGracias por nacer. Gracias por llegar a mi vida justo cuando más la necesitaba. Desde aquel primer \"hola\" mi mundo cambió de colores, y cada día que pasa me doy cuenta de que eres lo más bonito que me ha pasado. Eres mi paz cuando el día se pone difícil, mi risa cuando estoy cansado y la razón por la que sonrío como tonto viendo el celular.\n\nSé que la distancia a veces pesa. Sé que hay días en los que quisiéramos abrazarnos y no podemos. Pero quiero que sepas algo: cada kilómetro que nos separa es un kilómetro que algún día voy a recorrer para llegar a ti. Sueño con el momento en que por fin te vea a los ojos, te abrace fuerte y no te suelte en un buen rato. Ese día va a llegar, mi amor, te lo prometo.\n\nEn este nuevo año de tu vida te deseo todo lo bonito del mundo: que se cumplan tus sueños, que nunca te falten razones para sonreír, que te rodee gente que te quiera de verdad y que siempre te sientas tan especial como eres. Y si algún día se te olvida lo increíble que eres, aquí voy a estar yo para recordártelo todas las veces que haga falta.\n\nEres fuerte, eres dulce, eres valiente y eres preciosa por dentro y por fuera. Admiro tu corazón, tu forma de querer y la manera en que haces que todo se sienta más ligero. Me siento el hombre más afortunado del mundo por poder llamarte mi novia.\n\nGracias por elegirme, por tenerme paciencia, por quererme como me quieres y por soñar conmigo un futuro juntos. Quiero estar en todos tus cumpleaños: en los que nos toquen lejos y en los que por fin pasemos juntos, con pastel de verdad, tu pizza, tu Pepsi bien fría y yo cantándote Las mañanitas en persona.\n\nTe amo hoy, te amo mañana y te voy a amar en todos los capítulos que nos falten por escribir. Eres y siempre serás mi princesa.\n\n¡Feliz cumpleaños, mi amor! 💞";
   function panelFiesta() {
     abrirPanel({
       tit: '🎂 Cumpleaños de Brittybee', sub: 'Prepárale una fiesta sorpresa con Lalito chiquito: pastel, pizza, su Pepsi, globos, regalos y una cartita tuya. Al darle el pastel suenan Las mañanitas 🎵',
       render: (c) => {
-        c.append(h('<div style="font-weight:900;margin:2px 4px 6px">💌 Tu cartita para ella</div>'));
-        const ta = document.createElement('textarea'); ta.className = 'carta-edit'; ta.maxLength = 3000; ta.placeholder = 'Escríbele aquí tu cartita de cumpleaños…'; ta.value = E.cartaBorrador || '';
+        c.append(h('<div style="font-weight:900;margin:2px 4px 6px">💌 Tu cartita para ella <small style="font-weight:700;color:#9a5577">(ya te dejé una escrita: puedes cambiarla como quieras)</small></div>'));
+        const ta = document.createElement('textarea'); ta.className = 'carta-edit'; ta.maxLength = 8000; ta.placeholder = 'Escríbele aquí tu cartita de cumpleaños…'; ta.value = E.cartaBorrador || CARTA_CUMPLE; ta.style.minHeight = '240px';
         ta.oninput = () => { E.cartaBorrador = ta.value; };
         c.append(ta);
         const enLinea = otro && otro.perfil === 'brittani' && Date.now() - otro.ult < 3000;
