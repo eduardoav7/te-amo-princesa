@@ -51,6 +51,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .btn-p { padding: 9px 14px; border-radius: 999px; font-weight: 900; font-size: 14px; color: #fff; background: #ff6fa6; }
 .btn-p.el { background: #5b8fe0; } .btn-p.nadie { background: #fff; color: var(--ink-2); box-shadow: 0 0 0 2px #ffd1e4 inset; }
 .nota-perfil { margin: 16px auto 0; max-width: 380px; font-size: 13px; color: var(--ink-2); }
+#enLinea { position: fixed; z-index: 10; left: 50%; top: calc(10px + env(safe-area-inset-top)); transform: translateX(-50%); padding: 6px 14px; border-radius: 999px; background: rgba(91, 143, 224, .92); color: #fff; font-size: 13px; font-weight: 900; pointer-events: none; white-space: nowrap; }
+body.cinema #enLinea { opacity: 0; }
 #nubeEstado { position: fixed; z-index: 10; top: calc(92px + env(safe-area-inset-top)); left: 12px; font-size: 11.5px; padding: 3px 9px; border-radius: 999px; background: rgba(255, 255, 255, .7); color: var(--ink-2); pointer-events: none; }
 @media (orientation: landscape) and (max-height: 540px) { #perfiles .tit-perfil { font-size: 38px; } #perfiles .sub { margin-top: 4px; font-size: 14px; } .perfil { padding: 10px 10px 10px; } .perfil b { font-size: 17px; } .perfil .jugar { margin-top: 6px; } .nota-perfil { margin-top: 8px; font-size: 12px; } #nubeEstado { top: calc(80px + env(safe-area-inset-top)); left: calc(12px + env(safe-area-inset-left)); } #perfiles .tarjetas { margin-top: 10px; } .perfil .cara { width: 64px; height: 64px; font-size: 34px; } #perfiles .dulces { display: none; } }
 body.cinema #nubeEstado { opacity: 0; }
@@ -268,12 +270,14 @@ body.cinema #saltar { display: block; }
   <div class="botones">
     <button class="btn-hud" id="bMochila" aria-label="Mochila">🎒</button>
     <button class="btn-hud" id="bMetas" aria-label="Metas">📜<span class="punto" id="puntoMetas" hidden></span></button>
+    <button class="btn-hud" id="bCorazon" hidden aria-label="Mandar corazón">💞</button>
     <button class="btn-hud" id="bMusica" aria-label="Música">🎵</button>
     <button class="btn-hud" id="bMenu" aria-label="Más">⚙️</button>
   </div>
 </div>
 <div id="reloj" hidden>☀️ Día</div>
 <div id="nubeEstado" hidden>☁️</div>
+<div id="enLinea" hidden></div>
 <div id="metaMini" hidden></div>
 <div id="paso" hidden></div>
 <div id="joy"><i></i></div>
@@ -303,7 +307,7 @@ body.cinema #saltar { display: block; }
 <div id="tuto"><div class="tarjeta"><div class="ic">🍭</div><h3></h3><p></p><div class="puntos"></div><div class="tbtns"><button class="btn sec" id="tutoSaltar">Saltar</button><button class="btn" id="tutoSig">Siguiente ➜</button></div></div></div>
 <div id="girar"><div><div class="tel">📱</div><b>Gira tu teléfono</b><br>El Reino de Dulce se juega en horizontal 🍭</div></div>
 
-<script src="datos.js?v=10"></script>
+<script src="datos.js?v=11"></script>
 <script>
 // Carga de three.js y del juego
 (function () {
@@ -320,11 +324,11 @@ body.cinema #saltar { display: block; }
     btn.disabled = true; btn.textContent = 'Cargando el reino… 🍭';
     document.getElementById('errorCarga').hidden = true;
     try {
-      await cargar('nube.js?v=10');
+      await cargar('nube.js?v=11');
       const conexion = NUBE.conectar();
       if (!window.THREE) await cargar('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js');
-      await cargar('modelos.js?v=10');
-      await cargar('juego.js?v=10');
+      await cargar('modelos.js?v=11');
+      await cargar('juego.js?v=11');
       try { await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]); } catch (e) { }
       elegirPerfil(conexion);
     } catch (e) {

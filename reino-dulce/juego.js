@@ -1598,7 +1598,7 @@ window.iniciarReino = function (opc = {}) {
     const vk = jug.veh && !jug.veh.patines ? 1 : clamp(jug.vel / 6, .6, 1.4);
     if (jug.sentada && jug.sentada.comiendo) jug.t += dt * 2;
     jug.t += dt * (estado === 'camina' ? 7 * vk : estado === 'pedalea' ? 9 : estado === 'patina' ? 4 : 3);
-    animarPersona(jug.p, estado, jug.t, 1);
+    animarPersona(jug.p, estado, jug.t, 1); jug.estadoAct = estado;
     if (jug.sentada) {
       const s = jug.sentada; s.t += dt;
       jug.p.g.position.y = s.alto - .6 + .02;
@@ -1664,6 +1664,126 @@ window.iniciarReino = function (opc = {}) {
     if (reloj - ultimoGuardado > 8) { ultimoGuardado = reloj; E.pos = { x: modo === 'fuera' ? jug.pos.x : (interactivos.find(o => o.puerta === casaDentro)?.x ?? 0), z: modo === 'fuera' ? jug.pos.z : (interactivos.find(o => o.puerta === casaDentro)?.z + 1.6 ?? 16), ry: jug.ry }; guardar(); }
     renderer.render(scene, camera);
   }
+
+  /* =========================================================
+     JUGAR LOS DOS AL MISMO TIEMPO (en tiempo real)
+     ========================================================= */
+  const NOMBRES = { brittani: 'Brittybee', lalito: 'Lalito' };
+  const MI_ID = Math.random().toString(36).slice(2, 10);
+  const TEMA_JUNTOS = window.NUBE ? NUBE.SALA + '/juntos' : null;
+  let otro = null, nEnv = 0, tEnv = 0, tInfo = 0;
+  const vistos = {};
+  function etiquetaNombre(txt, ella) {
+    const t = texCanvas(256, 64, (x) => { x.fillStyle = ella ? '#ff6fa6' : '#5b8fe0'; redondo(x, 4, 6, 248, 52, 26); x.fill(); x.fillStyle = '#fff'; x.font = '900 34px Nunito, system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(txt, 128, 34); });
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false })); sp.scale.set(1.8, .45, 1); return sp;
+  }
+  function crearOtro(m) {
+    const ella = m.perfil !== 'lalito';
+    const g = new THREE.Group();
+    const o = { id: m.de, perfil: m.perfil, g, ella, ropa: JSON.stringify(m.ropa || {}), p: null, veh: null, vehId: null, x: m.x || 0, z: m.z || 0, y: 0, ry: 0, tx: m.x || 0, tz: m.z || 0, ty: 0, try: 0, estado: 'quieta', t: 0, ult: Date.now(), modo: 'fuera' };
+    o.vestir = () => {
+      if (o.p) g.remove(o.p.g);
+      if (o.ella) o.p = crearChica(Object.assign({ top: 'blusaRosa', abajo: 'jeans', zapatos: 'tenis', acc: 'nada', peinado: 'suelto' }, JSON.parse(o.ropa)));
+      else { o.p = crearChico(); o.p.casco.visible = false; o.p.martillo.visible = false; }
+      g.add(o.p.g); o.acomodar();
+    };
+    o.acomodar = () => { o.p.g.position.set(0, 0, 0); if (o.veh) { if (o.veh.patines) { o.p.g.position.y = .1; for (const k of ['piernaI', 'piernaD']) { const pt = crearPatin(); pt.position.set(0, -.6, .04); o.p[k].add(pt); } } else o.p.g.position.set(0, o.veh.asiento - .6, o.veh.zPersona || 0); } };
+    o.lab = etiquetaNombre(NOMBRES[m.perfil] || 'Jugador', ella); o.lab.position.y = 2.75; g.add(o.lab);
+    o.vestir();
+    g.position.set(o.x, 0, o.z); scene.add(g);
+    particulas('chispa', V3(o.x, 1.2, o.z), 18); particulas('corazon', V3(o.x, 2, o.z), 6);
+    return o;
+  }
+  function quitarOtro(msg) {
+    if (!otro) return;
+    particulas('chispa', otro.g.position.clone().setY(1.2), 14);
+    scene.remove(otro.g); const n = NOMBRES[otro.perfil]; otro = null;
+    $('bCorazon').hidden = true; $('enLinea').hidden = true;
+    if (msg) aviso(msg.replace('{n}', n), 3000);
+  }
+  function mandarJuntos(m) { if (!TEMA_JUNTOS) return; m.de = MI_ID; m.n = ++nEnv; NUBE.publicar(TEMA_JUNTOS, m); }
+  function recibirJuntos(m) {
+    if (!m || m.de === MI_ID) return;
+    if (vistos[m.de] && m.n <= vistos[m.de]) return;  // repetido (llega por dos servidores)
+    vistos[m.de] = m.n;
+    if (otro && otro.id !== m.de) {
+      if (Date.now() - otro.ult < 4000) return;  // ya estoy jugando con alguien
+      quitarOtro();
+    }
+    if (m.t === 'adios') { if (otro) quitarOtro('{n} salió del reino 👋'); return; }
+    if (!otro) {
+      if (m.t !== 'pos' && m.t !== 'info') return;
+      otro = crearOtro(m);
+      $('bCorazon').hidden = false; $('enLinea').hidden = false; $('enLinea').textContent = `👥 ${NOMBRES[m.perfil]} está jugando`;
+      sonar('fanfarria'); aviso(`💞 ¡${NOMBRES[m.perfil]} entró al reino! Ya pueden jugar juntos`, 3600);
+      mandarJuntos(Object.assign(miPos(), { t: 'info', ropa: E.ropa, perfil: PERFIL }));
+    }
+    otro.ult = Date.now();
+    if (m.t === 'pos' || m.t === 'info') {
+      otro.tx = m.x; otro.tz = m.z; otro.ty = m.y || 0; otro.try = m.ry || 0; otro.estado = m.e || 'quieta'; otro.modo = m.m || 'fuera';
+      if (m.t === 'info' && m.ropa && JSON.stringify(m.ropa) !== otro.ropa) { otro.ropa = JSON.stringify(m.ropa); otro.vestir(); }
+      if ((m.v || null) !== otro.vehId) {
+        if (otro.veh) otro.g.remove(otro.veh.g);
+        otro.vehId = m.v || null; otro.veh = otro.vehId ? crearVehiculo(otro.vehId) : null;
+        if (otro.veh) otro.g.add(otro.veh.g);
+        otro.vestir();
+      }
+      if (m.sent && !otro.sentada) otro.sentada = true; else if (!m.sent) otro.sentada = false;
+    } else if (m.t === 'corazon') {
+      const p = otro.g.position.clone();
+      particulas('corazon', p.clone().setY(2.4), 10); burbuja(otro.g, '💞💞💞', 2200, 2.7); sonar('meta');
+      aviso(`💞 ${NOMBRES[otro.perfil]} te mandó un corazón`, 2400);
+    } else if (m.t === 'abrazo') {
+      if (otro.modo === modo) {
+        const p = otro.g.position;
+        if (Math.hypot(p.x - jug.pos.x, p.z - jug.pos.z) < 4 && !cine && !jug.veh) { mirarA(p.x, p.z); jug.accion = { estado: 'abraza', hasta: reloj + 2.4 }; }
+        particulas('corazon', p.clone().setY(2), 10); sonar('meta');
+        burbuja(otro.g, m.txt || '🤗💞', 2400, 2.7);
+      }
+    } else if (m.t === 'dice') {
+      burbuja(otro.g, String(m.txt || '').slice(0, 80), 2600, 2.7);
+    }
+  }
+  function miPos() {
+    const dentro = modo === 'dentro';
+    return { x: +jug.pos.x.toFixed(2), z: +jug.pos.z.toFixed(2), y: +jug.y.toFixed(2), ry: +jug.ry.toFixed(2), e: jug.estadoAct || 'quieta', v: jug.veh ? jug.veh.id : null, m: dentro ? 'dentro' + casaDentro : 'fuera', sent: !!jug.sentada, perfil: PERFIL };
+  }
+  if (TEMA_JUNTOS) NUBE.suscribir(TEMA_JUNTOS, recibirJuntos);
+  const interOtro = { x: 0, z: 0, r: 2.6, ic: '🤗', txt: () => 'Abrazar a ' + (otro ? NOMBRES[otro.perfil] : ''), activo: () => !!otro && otro.g.visible && !jug.veh, fn: () => {
+    if (!otro) return;
+    const p = otro.g.position; mirarA(p.x, p.z);
+    jug.accion = { estado: 'abraza', hasta: reloj + 2.4 };
+    particulas('corazon', p.clone().lerp(jug.pos, .5).setY(2), 10); sonar('meta');
+    const txt = T('¡Te amo! 🤗💞', '¡Te amo, princesa! 🤗💞');
+    burbuja(jug.raiz, txt, 2200);
+    mandarJuntos({ t: 'abrazo', txt });
+  } };
+  interactivos.push(interOtro);
+  $('bCorazon').onclick = () => { if (!otro) return; mandarJuntos({ t: 'corazon' }); particulas('corazon', jug.pos.clone().setY(2.4), 8); burbuja(jug.raiz, '💞', 1400); sonar('pop'); };
+  animados.push((t, dt) => {
+    if (!TEMA_JUNTOS) return;
+    tEnv += dt; tInfo += dt;
+    if (tInfo > 3) { tInfo = 0; mandarJuntos(Object.assign(miPos(), { t: 'info', ropa: E.ropa })); tEnv = 0; }
+    else if (tEnv > .1) { tEnv = 0; mandarJuntos(Object.assign(miPos(), { t: 'pos' })); }
+    if (!otro) return;
+    if (Date.now() - otro.ult > 7000) { quitarOtro('Se perdió la conexión con {n} 📶'); return; }
+    const mismoLugar = otro.modo === (modo === 'dentro' ? 'dentro' + casaDentro : 'fuera') && otro.modo === 'fuera';
+    otro.g.visible = mismoLugar;
+    $('enLinea').textContent = `👥 ${NOMBRES[otro.perfil]} ${mismoLugar ? 'está jugando' : otro.modo === 'fuera' ? 'está afuera' : 'está en su casita'}`;
+    const k = Math.min(1, dt * 12);
+    // si brincó lejos (cambio de lugar), aparece directo
+    if (Math.hypot(otro.tx - otro.x, otro.tz - otro.z) > 12) { otro.x = otro.tx; otro.z = otro.tz; }
+    otro.x = lerp(otro.x, otro.tx, k); otro.z = lerp(otro.z, otro.tz, k); otro.y = lerp(otro.y, otro.ty, k);
+    let d = otro.try - otro.ry; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2; otro.ry += d * k;
+    otro.g.position.set(otro.x, otro.y, otro.z); otro.g.rotation.y = otro.ry;
+    otro.t += dt * (otro.estado === 'camina' ? 7 : otro.estado === 'pedalea' ? 9 : 3);
+    animarPersona(otro.p, otro.estado, otro.t, 1);
+    if (otro.sentada || otro.estado === 'sentada' || otro.estado === 'comeSentada') otro.p.g.position.y = (otro.veh ? otro.veh.asiento : .5) - .6;
+    else if (!otro.veh) otro.p.g.position.y = 0;
+    if (otro.veh) { const vel = Math.hypot(otro.tx - otro.x, otro.tz - otro.z) * 10; otro.veh.ruedas.forEach(r => { r.rotation.x += vel * dt / .45; }); if (otro.veh.patas) otro.veh.patas.forEach((p, i) => { p.rotation.x = vel > .3 ? Math.sin(reloj * 10 + (i % 2) * Math.PI + (i > 1 ? Math.PI / 2 : 0)) * .5 : 0; }); }
+    interOtro.x = otro.x; interOtro.z = otro.z;
+  });
+  addEventListener('pagehide', () => mandarJuntos({ t: 'adios' }));
 
   /* =========================================================
      ARRANQUE

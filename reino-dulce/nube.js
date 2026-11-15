@@ -11,6 +11,7 @@ window.NUBE = (() => {
   const escuchas = [];
   let clientes = [];
   let pendiente = null, timer = null;
+  const extras = {};          // tema -> función (mensajes en tiempo real)
 
   const claveLocal = (p) => 'reinoDulce-v2-' + p;
   function local(p) { try { return JSON.parse(localStorage.getItem(claveLocal(p)) || 'null'); } catch (e) { return null; } }
@@ -26,8 +27,9 @@ window.NUBE = (() => {
     clientes = BROKERS.map(url => {
       let c;
       try { c = mqtt.connect(url, { clientId: 'rd_' + Math.random().toString(16).slice(2, 12), clean: true, connectTimeout: 8000, reconnectPeriod: 5000, keepalive: 30 }); } catch (e) { return null; }
-      c.on('connect', () => { c.subscribe(PERFILES.map(tema), { qos: 1 }); avisar(); if (pendiente) enviar(); });
+      c.on('connect', () => { c.subscribe(PERFILES.map(tema), { qos: 1 }); const ex = Object.keys(extras); if (ex.length) c.subscribe(ex, { qos: 0 }); avisar(); if (pendiente) enviar(); });
       c.on('message', (t, msg) => {
+        if (extras[t]) { try { extras[t](JSON.parse(typeof msg === 'string' ? msg : new TextDecoder().decode(msg))); } catch (e) { } return; }
         try {
           const o = JSON.parse(typeof msg === 'string' ? msg : new TextDecoder().decode(msg));
           const p = t.split('/').pop();
@@ -73,6 +75,9 @@ window.NUBE = (() => {
     clearTimeout(timer);
     if (urgente) enviar(); else timer = setTimeout(enviar, 4000);
   }
+  // Tiempo real: se manda por todos los servidores conectados (el que recibe ignora repetidos)
+  function suscribir(t, fn) { extras[t] = fn; for (const c of clientes) if (c.connected) c.subscribe(t, { qos: 0 }); }
+  function publicar(t, obj) { const m = JSON.stringify(obj); let n = 0; for (const c of clientes) if (c.connected) { try { c.publish(t, m, { qos: 0 }); n++; } catch (e) { } } return n; }
   function estado() { return { conectados: conectados(), pendiente: !!pendiente }; }
-  return { PERFILES, conectar, esperar, mejor, guardar, enviar, estado, local, guardarLocal, nube, escuchar: (f) => escuchas.push(f) };
+  return { SALA, suscribir, publicar, PERFILES, conectar, esperar, mejor, guardar, enviar, estado, local, guardarLocal, nube, escuchar: (f) => escuchas.push(f) };
 })();
