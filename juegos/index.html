@@ -174,7 +174,7 @@ const $ = s => document.querySelector(s);
 let S = {}; try { S = JSON.parse(localStorage.getItem('felices-4-meses-v2')) || {}; } catch (e) {}
 const J = S.juegos || {};
 function ganado(id) {
-  if (id === 'reino') { try { return !!((JSON.parse(localStorage.getItem('reinoDulce-v1')) || {}).metas || {}).m10; } catch (e) { return false; } }
+  if (id === 'reino') { try { const o = JSON.parse(localStorage.getItem('reinoDulce-v2-brittani')) || {}; return !!(((o.data || {}).metas || {}).m10); } catch (e) { return false; } }
   if (id === 'michirot') return !!(J.michirot && J.michirot.ganado);
   if (id === 'aventura') return !!(J.aventura && J.aventura.ganado);
   if (id === 'vales') return Array.isArray(J.vales) && J.vales.length >= 6;

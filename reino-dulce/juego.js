@@ -1,6 +1,8 @@
 /* El Reino de Dulce · el juego */
 'use strict';
-window.iniciarReino = function () {
+window.iniciarReino = function (opc = {}) {
+  const PERFIL = opc.perfil || 'brittani', ES_EL = PERFIL === 'lalito';
+  const T = (ella, el) => ES_EL ? el : ella;
   const $ = (id) => document.getElementById(id);
   const V3 = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -22,10 +24,16 @@ window.iniciarReino = function () {
       pos: { x: 0, z: 16, ry: Math.PI }, hora: .32, musica: true, efectos: true, nuevo: true,
     };
   }
-  let E;
-  try { E = Object.assign(estadoNuevo(), JSON.parse(localStorage.getItem(CLAVE) || 'null') || {}); } catch (e) { E = estadoNuevo(); }
-  let guardadoPend = false;
-  function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(E)); } catch (e) { } guardadoPend = false; }
+  let E = Object.assign(estadoNuevo(), opc.data || {});
+  if (ES_EL && E.nuevo && !opc.data) { E.ropa = { top: 'blusaRosa', abajo: 'jeans', zapatos: 'tenis', acc: 'nada', peinado: 'suelto' }; }
+  function guardar(urgente) { if (window.NUBE) NUBE.guardar(PERFIL, E, urgente === true); pintarNube(); }
+  function pintarNube() {
+    const el = document.getElementById('nubeEstado'); if (!el || !window.NUBE) return;
+    const st = NUBE.estado();
+    const tx = st.conectados ? (st.pendiente ? '☁️ Guardando…' : '☁️ Guardado') : '📱 Sin nube';
+    if (el.textContent !== tx) el.textContent = tx;
+  }
+  if (window.NUBE) { NUBE.escuchar(pintarNube); setInterval(pintarNube, 2000); }
   const cuenta = (id) => E.inv[id] || 0;
   const dar = (id, n = 1) => { E.inv[id] = cuenta(id) + n; };
   const alcanza = (pide) => Object.entries(pide).every(([k, n]) => cuenta(k) >= n);
@@ -354,7 +362,7 @@ window.iniciarReino = function () {
 
   /* ---------- Dulcecitos que viven en el reino ---------- */
   const DULCECITOS = [];
-  const SALUDOS = ['¡Hola, Brittybee! 🍬', '¡Bienvenida, princesa! ✨', '¡Las galletas están en el bosque! 🍪', '¡Qué bonita te ves hoy! 💞', '¡Lalito te quiere muchísimo! 💞', '¡El huerto tiene fresas! 🍓', '¡Vamos a bailar! 🎶', '¡Cuida tus flores! 🌷', '¡Me encanta el chocolate! 🍫'];
+  const SALUDOS = ES_EL ? ['¡Hola, Lalito! 🍬', '¡Bienvenido al reino! ✨', '¡Las galletas están en el bosque! 🍪', '¡Brittybee te quiere muchísimo! 💞', '¡El huerto tiene fresas! 🍓', '¡Vamos a bailar! 🎶', '¡Me encanta el chocolate! 🍫', '¡Cuida mucho a Brittybee! 💞'] : ['¡Hola, Brittybee! 🍬', '¡Bienvenida, princesa! ✨', '¡Las galletas están en el bosque! 🍪', '¡Qué bonita te ves hoy! 💞', '¡Lalito te quiere muchísimo! 💞', '¡El huerto tiene fresas! 🍓', '¡Vamos a bailar! 🎶', '¡Cuida tus flores! 🌷', '¡Me encanta el chocolate! 🍫'];
   [['#ff7eb6', 0, 6, 9], ['#9b7bff', -50, -14, 8], ['#7bd389', 52, 16, 7], ['#ffb347', 54, -22, 7], ['#7fc8ff', 0, 36, 10], ['#ff6b6b', -56, 30, 7], ['#ffd23f', -10, -40, 9], ['#c9a7ff', 22, -10, 9]].forEach(([c, x, z, rad], i) => {
     const d = crearDulcecito(c); d.g.position.set(x + azar(-2, 2), 0, z + azar(-2, 2)); mundo.add(d.g);
     DULCECITOS.push({ p: d, cx: x, cz: z, rad, dest: null, espera: azar(0, 3), estado: 'quieto', t: azar(0, 9), saludo: 0 });
@@ -387,7 +395,7 @@ window.iniciarReino = function () {
   /* ---------- Lalito chiquito paseando por el reino ---------- */
   const bebe = { p: null, dest: null, espera: 2, estado: 'quieta', t: 0, saludo: -99, abrazo: 0 };
   bebe.p = crearBebe(); bebe.p.g.position.set(4, 0, -18); mundo.add(bebe.p.g);
-  const FRASES_BEBE = ['¡Hola, princesa! 👶', 'Te amo demasiado 💞', 'Estoy muy orgulloso de ti 💞', '¡Qué bonita casa tienes! 🏡', '¿Me das un abrazo? 🤗', '¡Eres la mejor, Brittybee! ✨', '¡Vamos a jugar! 🍭', 'Cuando sea grande me voy a casar contigo 💍', '¡Hoy te ves preciosa! 💞'];
+  const FRASES_BEBE = ES_EL ? ['¡Hola, Lalito grande! 👶', '¡Cuando sea grande quiero ser como tú! 💪', '¡Brittybee nos ama! 💞', '¿Me das un abrazo? 🤗', '¡Vamos a jugar! 🍭', '¡Cuida mucho a Brittybee! 💞', '¡Qué bonita casa! 🏡'] : ['¡Hola, princesa! 👶', 'Te amo demasiado 💞', 'Estoy muy orgulloso de ti 💞', '¡Qué bonita casa tienes! 🏡', '¿Me das un abrazo? 🤗', '¡Eres la mejor, Brittybee! ✨', '¡Vamos a jugar! 🍭', 'Cuando sea grande me voy a casar contigo 💍', '¡Hoy te ves preciosa! 💞'];
   const interBebe = { x: 0, z: 0, r: 2.2, ic: '🤗', txt: () => 'Abrazar a Lalito chiquito', activo: () => bebe.p.g.visible && modo === 'fuera', fn: () => abrazarBebe() };
   interactivos.push(interBebe);
   function abrazarBebe() {
@@ -439,7 +447,9 @@ window.iniciarReino = function () {
   scene.add(jug.raiz);
   function vestir(ropa) {
     if (jug.p) jug.raiz.remove(jug.p.g);
-    jug.p = crearChica(ropa); jug.raiz.add(jug.p.g);
+    if (ES_EL) { jug.p = crearChico(); jug.p.casco.visible = false; jug.p.martillo.visible = false; }
+    else jug.p = crearChica(ropa);
+    jug.raiz.add(jug.p.g);
     acomodarVehiculo();
   }
   function acomodarVehiculo() {
@@ -472,6 +482,17 @@ window.iniciarReino = function () {
   $('bajar').onclick = () => { if (jug.veh) bajar(); else { const id = E.vehUltimo || E.vehTengo[E.vehTengo.length - 1]; if (id) subir(id); } };
   vestir(E.ropa);
   if (E.veh && E.vehTengo.includes(E.veh)) { jug.veh = crearVehiculo(E.veh); jug.veh.id = E.veh; jug.raiz.add(jug.veh.g); vestir(E.ropa); }
+
+  // En el perfil de Brittybee el que ayuda es Lalito; en el de Lalito, la que ayuda es Brittybee
+  function crearCompa() {
+    if (!ES_EL) return crearChico();
+    const p = crearChica({ top: 'vestidoFresa', abajo: 'jeans', zapatos: 'flats', acc: 'mono', peinado: 'suelto' });
+    const mart = grupo(p.brazoD, 0, -.48, .06); mart.rotation.x = Math.PI / 2;
+    malla(geo('cil', .035, .035, .5, 8), '#ff8fb8', 0, .16, 0, mart);
+    malla(geo('caja', .26, .12, .12), mat('#ffd34d', { brillo: 80 }), 0, .42, 0, mart);
+    p.martillo = mart; p.casco = new THREE.Group();
+    return p;
+  }
 
   /* =========================================================
      PARTÍCULAS, BURBUJAS Y TEXTOS FLOTANTES
@@ -900,14 +921,14 @@ window.iniciarReino = function () {
     // Brittani mirando
     jug.pos.set(T.x + 4.5, 0, T.z + 10.5); mirarA(T.x, T.z); jug.estado = 'quieta';
     // Lalito llega
-    const L = crearChico(); L.g.position.set(T.x - 4, 0, T.z + 9); scene.add(L.g);
+    const L = crearCompa(); L.g.position.set(T.x - 4, 0, T.z + 9); scene.add(L.g);
     L.g.rotation.y = Math.atan2(jug.pos.x - L.g.position.x, jug.pos.z - L.g.position.z);
     particulas('chispa', L.g.position.clone().setY(1.2), 18); particulas('corazon', L.g.position.clone().setY(2), 5); sonar('puf');
     let estadoL = 'saluda', tL = 0;
     const animL = (t, dt) => { tL += dt * (estadoL === 'camina' ? 9 : 3); animarPersona(L, estadoL, tL); };
     animados.push(animL);
     cine = { centro: V3(T.x, 1 + C.tam * .45, T.z), ang: -.75, dist: C.tam * 2.4 + 9, alto: 4 + C.tam * .5, vel: .09 };
-    burbuja(L.g, '¡Yo te la construyo, princesa! 👷‍♂️💞', 2600, 3);
+    burbuja(L.g, T('¡Yo te la construyo, princesa! 👷‍♂️💞', '¡Yo te la construyo, amor! 👷‍♀️💞'), 2600, 3);
     await espera(1.8);
     burbuja(jug.raiz, '¡Sí, amor! 💞', 1800);
     const porPieza = clamp(9 / piezas.length, .45, 1);
@@ -937,10 +958,10 @@ window.iniciarReino = function () {
     burbuja(L.g, '¡Lista tu ' + C.n.toLowerCase() + ', mi amor! 💞', 3000, 3);
     jug.accion = { estado: 'baila', hasta: reloj + 3.2 };
     await espera(2.6);
-    burbuja(jug.raiz, '¡Gracias, amor! ¡Está preciosa! 💞', 2400);
+    burbuja(jug.raiz, T('¡Gracias, amor! ¡Está preciosa! 💞', '¡Gracias, mi princesa! ¡Quedó increíble! 💞'), 2400);
     await espera(2.2);
     // La primera casa: aparece Lalito chiquito con los Dulcecitos
-    if ((E.stats.casas || 0) === 1 && !E.vistoBebe) {
+    if ((E.stats.casas || 0) === 1 && !E.vistoBebe && !ES_EL) {
       E.vistoBebe = true; guardar();
       saltando = false;
       const fj = V3(Math.cos(jug.ry), 0, -Math.sin(jug.ry));
@@ -1048,7 +1069,7 @@ window.iniciarReino = function () {
     jug.pos.copy(silla(-1)); jug.ry = ry;
     jug.sentada = { o: { ref: { ry } }, alto: .48, t: 0, comiendo: false };
     // Lalito llega con los platos
-    const L = crearChico(); L.casco.visible = false; L.martillo.visible = false;
+    const L = crearCompa(); L.casco.visible = false; L.martillo.visible = false;
     const lejos = C.clone().addScaledVector(V3(Math.cos(ry), 0, -Math.sin(ry)), 5).addScaledVector(f, 2);
     L.g.position.copy(lejos); scene.add(L.g);
     particulas('chispa', lejos.clone().setY(1.2), 16); particulas('corazon', lejos.clone().setY(2), 4);
@@ -1059,7 +1080,7 @@ window.iniciarReino = function () {
     const anim = (t, dt) => { tL += dt * (estL === 'lleva' ? 8 : 3); animarPersona(L, estL, tL); };
     animados.push(anim);
     cine = { centro: C.clone().setY(1), ang: Math.atan2(-Math.cos(ry), Math.sin(ry)) + .35, dist: 5, alto: 1.9, vel: -.04 };
-    burbuja(L.g, '¡Te traigo de comer, princesa! 💞', 2400, 2.9);
+    burbuja(L.g, T('¡Te traigo de comer, princesa! 💞', '¡Te traigo de comer, amor! 💞'), 2400, 2.9);
     await espera(1.2);
     // camina a la mesa (lado de ella)
     const junto = C.clone().addScaledVector(V3(Math.cos(ry), 0, -Math.sin(ry)), .95).addScaledVector(f, -.55);
@@ -1091,7 +1112,7 @@ window.iniciarReino = function () {
     burbuja(jug.raiz, frases[r.id] || '¡Delicioso!', 2600);
     const iv = setInterval(() => { particulas('corazon', C.clone().setY(2.2), 2); }, 450);
     await espera(2.8);
-    burbuja(L.g, 'Lo más rico es comer contigo 💞', 2600, 2.6);
+    burbuja(L.g, T('Lo más rico es comer contigo 💞', 'Lo más rico es comer contigo, mi amor 💞'), 2600, 2.6);
     await espera(2.8);
     clearInterval(iv);
     // se acaba
@@ -1165,6 +1186,7 @@ window.iniciarReino = function () {
   /* ---------- Boutique ---------- */
   let vistaBoutique = false;
   function panelBoutique() {
+    if (ES_EL) { aviso('La boutique es de Brittybee 👗 ¡Cómprale algo bonito desde su perfil! 💞', 3200); return; }
     bajar(true); pintarBajar();
     const prueba = { ...E.ropa };
     vistaBoutique = true;
@@ -1449,7 +1471,8 @@ window.iniciarReino = function () {
     if (cine || $('nota').classList.contains('on') || !colaNotas.length) return;
     if (panelAbierto) cerrarPanel();
     const m = colaNotas.shift();
-    $('notaTxt').textContent = m.nota; $('notaPremio').textContent = `+${m.premio} monedas 🪙`; $('notaMeta').textContent = '✓ ' + m.n;
+    $('nota').querySelector('.de').textContent = T('De Lalito', '¡Meta cumplida! 🎉'); $('notaOk').textContent = T('💞 Gracias, amor', '¡Sigamos! 💪');
+    $('notaTxt').textContent = T(m.nota, ['¡Muy bien, Lalito! Sigue así 💪', '¡Eres todo un constructor! 🔨', 'Brittybee estaría muy orgullosa de ti 💞', '¡El reino se ve cada vez más bonito! ✨'][Object.keys(E.metas).length % 4]); $('notaPremio').textContent = `+${m.premio} monedas 🪙`; $('notaMeta').textContent = '✓ ' + m.n;
     $('nota').classList.add('on'); sonar('meta');
     particulas('corazon', jug.pos.clone().setY(2.4), 8);
   }
@@ -1647,6 +1670,7 @@ window.iniciarReino = function () {
      ========================================================= */
   document.addEventListener('pointerdown', () => asegurarAudio(), { passive: true });
   function asegurarAudio() { if (E.musica && musica.paused && !document.hidden) tocarMusica(); if (!actx) iniciarAudio(); if (actx && actx.state === 'suspended') actx.resume(); }
+  tocarMusica();
   for (const o of E.colocados) if (o.dentro === -1) pintarColocado(o);
   for (const f of E.flores) pintarFlor(f);
   reconstruirInterColocados();
@@ -1657,16 +1681,16 @@ window.iniciarReino = function () {
   asegurarAudio();
   $('intro').style.transition = 'opacity .7s'; $('intro').style.opacity = 0;
   setTimeout(() => $('intro').remove(), 750);
-  ['hud', 'reloj', 'metaMini', 'brincar'].forEach(id => $(id).hidden = false);
+  ['hud', 'reloj', 'metaMini', 'brincar', 'nubeEstado'].forEach(id => $(id).hidden = false);
   if (matchMedia('(pointer: coarse)').matches) $('joyPista').hidden = false;
   requestAnimationFrame(cuadro);
   // Tutorial de cómo empezar a jugar
   const TUTO = [
-    ['🍭', '¡Bienvenida a tu reino, Brittybee!', 'Aquí vas a juntar dulces, construir tu casa (¡hasta un castillo!), cocinar, decorar y pasear. Te enseño cómo se juega 💞'],
+    ES_EL ? ['🍭', '¡Bienvenido a tu reino, Lalito!', 'Aquí vas a juntar dulces, construir tu casa (¡hasta un castillo!), cocinar, decorar y pasear. Así se juega 👇'] : ['🍭', '¡Bienvenida a tu reino, Brittybee!', 'Aquí vas a juntar dulces, construir tu casa (¡hasta un castillo!), cocinar, decorar y pasear. Te enseño cómo se juega 💞'],
     ['🕹️', 'Para caminar', 'Pon tu dedo en el <b>lado izquierdo</b> de la pantalla y deslízalo hacia donde quieras ir.'],
     ['👆', 'Para mirar alrededor', 'Desliza tu dedo en el <b>lado derecho</b> para girar la cámara. Con <b>dos dedos</b> te acercas o te alejas.'],
     ['✋', 'El botón rosa', 'Cuando estés junto a algo (un árbol de galletas, una tienda, tu terreno, la cocinita…) aparece un <b>botón rosa</b> abajo a la derecha. Tócalo para recoger, construir, cocinar o entrar.'],
-    ['🎒', 'Tu mochila y tus metas', 'Arriba está tu <b>mochila 🎒</b> con todo lo que juntas y compras, y tus <b>metas 📜</b>. Cada meta trae una notita mía 💌'],
+    ['🎒', 'Tu mochila y tus metas', 'Arriba está tu <b>mochila 🎒</b> con todo lo que juntas y compras, y tus <b>metas 📜</b>. ' + T('Cada meta trae una notita mía 💌', 'Cada meta te da monedas de premio 🪙')],
     ['👉', '¡A jugar!', 'Sigue la <b>flecha rosa</b> en el piso y las instrucciones de abajo. Tu primera meta: juntar galletas en el Bosque de Galleta 🍪, para que te construya tu primera casita.'],
   ];
   function mostrarTutorial() {
@@ -1688,8 +1712,8 @@ window.iniciarReino = function () {
     E.nuevo = false; guardar();
     setTimeout(mostrarTutorial, 900);
   } else setTimeout(() => burbuja(jug.raiz, '¡Volví a mi reino! 💞', 2400), 900);
-  document.addEventListener('visibilitychange', () => { if (document.hidden) guardar(); });
-  addEventListener('pagehide', guardar);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) guardar(true); });
+  addEventListener('pagehide', () => guardar(true));
   // botón ⚙️
   $('bMenu').onclick = () => {
     abrirPanel({
@@ -1698,7 +1722,9 @@ window.iniciarReino = function () {
         fila(c, { ic: '🎵', tit: 'Música', sub: E.musica ? 'Encendida' : 'Apagada', botones: [[E.musica ? 'Apagar' : 'Encender', () => { $('bMusica').click(); repintar(); }, 'sec']] });
         fila(c, { ic: '🔔', tit: 'Efectos de sonido', sub: E.efectos ? 'Encendidos' : 'Apagados', botones: [[E.efectos ? 'Apagar' : 'Encender', () => { E.efectos = !E.efectos; if (sfxGain) sfxGain.gain.value = E.efectos ? .7 : 0; guardar(); repintar(); }, 'sec']] });
         fila(c, { ic: '🕹️', tit: 'Cómo se juega', sub: 'Ver otra vez el tutorial', botones: [['Ver', () => { cerrarPanel(); setTimeout(mostrarTutorial, 300); }, 'sec']] });
-        fila(c, { ic: '🏠', tit: 'Volver al menú', sub: 'Tu avance se guarda solito 💞', botones: [['Salir', () => { guardar(); location.href = '../'; }, 'sec']] });
+        fila(c, { ic: '👥', tit: 'Cambiar de perfil', sub: 'Estás jugando como ' + T('Brittybee 👑', 'Lalito 🔨'), botones: [['Cambiar', () => { guardar(true); setTimeout(() => location.reload(), 700); }, 'sec']] });
+        fila(c, { ic: '☁️', tit: 'Guardado en la nube', sub: NUBE && NUBE.estado().conectados ? 'Tu avance se guarda solito en la nube y en este teléfono' : 'Sin conexión: se guarda en este teléfono y se sube cuando haya internet' });
+        fila(c, { ic: '🏠', tit: 'Volver al menú', sub: 'Tu avance se guarda solito 💞', botones: [['Salir', () => { guardar(true); setTimeout(() => { location.href = '../'; }, 600); }, 'sec']] });
       },
     });
   };
