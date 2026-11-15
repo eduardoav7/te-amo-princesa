@@ -653,7 +653,6 @@ window.iniciarReino = function (opc = {}) {
   renderer.domElement.addEventListener('pointerdown', (e) => {
     if (bloqueado()) return;
     toques.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (toques.size === 2 && joy.id === null) { const [a, b] = [...toques.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), dist: cam.dist }; cam.id = null; return; }
     if (e.clientX < innerWidth * .45 && joy.id === null && e.pointerType !== 'mouse') {
       joy.id = e.pointerId; joy.x0 = e.clientX; joy.y0 = e.clientY; joy.dx = joy.dy = 0;
       const j = $('joy'); j.style.left = e.clientX + 'px'; j.style.top = e.clientY + 'px'; j.classList.add('on'); j.firstElementChild.style.transform = '';
@@ -663,7 +662,6 @@ window.iniciarReino = function (opc = {}) {
   });
   renderer.domElement.addEventListener('pointermove', (e) => {
     if (toques.has(e.pointerId)) toques.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (pinch && toques.size >= 2) { const [a, b] = [...toques.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y); cam.dist = clamp(pinch.dist * pinch.d / d, 5.5, 18); return; }
     if (e.pointerId === joy.id) {
       let dx = e.clientX - joy.x0, dy = e.clientY - joy.y0; const L = Math.hypot(dx, dy), M = 52;
       if (L > M) { dx *= M / L; dy *= M / L; }
@@ -681,7 +679,7 @@ window.iniciarReino = function (opc = {}) {
   };
   renderer.domElement.addEventListener('pointerup', soltar);
   renderer.domElement.addEventListener('pointercancel', soltar);
-  renderer.domElement.addEventListener('wheel', (e) => { cam.dist = clamp(cam.dist + e.deltaY * .01, 5.5, 18); e.preventDefault(); }, { passive: false });
+  renderer.domElement.addEventListener('wheel', (e) => { e.preventDefault(); }, { passive: false });
   addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     teclas[e.key.toLowerCase()] = true;
@@ -743,7 +741,7 @@ window.iniciarReino = function (opc = {}) {
       if (innerWidth > innerHeight) { const der = V3(Math.cos(jug.ry), 0, -Math.sin(jug.ry)); objetivo.add(V3(0, .9, 0)).addScaledVector(der, 1.6); pos.add(V3(0, -.6, 0)).addScaledVector(der, 1.6); }
     } else {
       const alt = modo === 'dentro' ? clamp(cam.pitch, .7, 1) : cam.pitch;
-      const dist = modo === 'dentro' ? clamp(cam.dist, 10, 14) : cam.dist;
+      const dist = modo === 'dentro' ? 12.5 : 10;
       const yaw = modo === 'dentro' ? clamp(cam.yaw, -.5, .5) : cam.yaw;
       if (modo === 'dentro') cam.yaw = yaw;
       objetivo = jug.pos.clone().add(V3(0, 1.3, modo === 'dentro' ? -2.5 : 0));
@@ -784,7 +782,8 @@ window.iniciarReino = function (opc = {}) {
     if (actx && E.efectos) { const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain(); o.frequency.setValueAtTime(380, t); o.frequency.exponentialRampToValueAtTime(900, t + .18); g.gain.setValueAtTime(.14, t); g.gain.exponentialRampToValueAtTime(.001, t + .22); o.connect(g); g.connect(sfxGain); o.start(t); o.stop(t + .25); }
     particulas('chispa', jug.pos.clone().setY(.3), 5);
   }
-  $('brincar').onclick = brincar;
+  $('brincar').addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); brincar(); });
+  $('brincar').addEventListener('touchstart', (e) => { e.preventDefault(); }, { passive: false });
   $('accion').onclick = () => { if (!bloqueado() && interActual) { asegurarAudio(); interActual.fn(); } };
   $('accion2').onclick = () => { if (!bloqueado() && interActual?.fn2) interActual.fn2(); };
   const mirarA = (x, z) => { jug.ry = Math.atan2(x - jug.pos.x, z - jug.pos.z); };
@@ -2090,7 +2089,7 @@ window.iniciarReino = function (opc = {}) {
   const TUTO = [
     ES_EL ? ['🍭', '¡Bienvenido a tu reino, Lalito!', 'Aquí vas a juntar dulces, construir tu casa (¡hasta un castillo!), cocinar, decorar y pasear. Así se juega 👇'] : ['🍭', '¡Bienvenida a tu reino, Brittybee!', 'Aquí vas a juntar dulces, construir tu casa (¡hasta un castillo!), cocinar, decorar y pasear. Te enseño cómo se juega 💞'],
     ['🕹️', 'Para caminar', 'Pon tu dedo en el <b>lado izquierdo</b> de la pantalla y deslízalo hacia donde quieras ir.'],
-    ['👆', 'Para mirar alrededor', 'Desliza tu dedo en el <b>lado derecho</b> para girar la cámara. Con <b>dos dedos</b> te acercas o te alejas.'],
+    ['👆', 'Para mirar alrededor', 'Desliza tu dedo en el <b>lado derecho</b> para girar la cámara.'],
     ['✋', 'El botón rosa', 'Cuando estés junto a algo (un árbol de galletas, una tienda, tu terreno, la cocinita…) aparece un <b>botón rosa</b> abajo a la derecha. Tócalo para recoger, construir, cocinar o entrar.'],
     ['🎒', 'Tu mochila y tus metas', 'Arriba está tu <b>mochila 🎒</b> con todo lo que juntas y compras, y tus <b>metas 📜</b>. ' + T('Cada meta trae una notita mía 💌', 'Cada meta te da monedas de premio 🪙')],
     ['👉', '¡A jugar!', 'Sigue el <b>diamante rosa</b> que flota en el cielo y las instrucciones de abajo. Tu primera meta: juntar galletas en el Bosque de Galleta 🍪, para que te construya tu primera casita.'],
