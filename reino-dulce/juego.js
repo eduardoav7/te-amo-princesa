@@ -640,7 +640,7 @@ window.iniciarReino = function (opc = {}) {
   const easeBack = (k) => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
   let cine = null; // {centro, ang, dist, alto}
   function modoCine(on) { document.body.classList.toggle('cinema', on); if (!on) { cine = null; saltando = false; } }
-  $('saltar').onclick = () => { saltando = true; };
+  $('saltar').onclick = () => { saltando = true; if (typeof mandarJuntos === 'function') mandarJuntos({ t: 'saltar' }); };
 
   /* =========================================================
      CONTROLES
@@ -905,43 +905,84 @@ window.iniciarReino = function (opc = {}) {
       },
     });
   }
+  // ¿Está el otro jugador cerca y libre para salir en la escena?
+  const otroDisponible = () => !!(otro && otro.g.visible && !otro.ocupado && !otro.guion && Date.now() - otro.ult < 2500);
   async function construir(i, id) {
     const C = CASAS.find(c => c.id === id);
     if (!alcanza(C.pide) || E.monedas < C.monedas) return;
     gastar(C.pide); E.monedas -= C.monedas; pintarMonedas(true);
-    E.casas[i] = id; stat('casas'); guardar();
-    bajar(true); pintarBajar();
+    E.casas[i] = id; stat('casas'); guardar(true);
+    const coop = otroDisponible();
+    if (coop) mandarJuntos({ t: 'escena', tipo: 'construir', i, id, dueño: PERFIL });
+    await escenaConstruir(i, id, coop ? 'mira' : 'solo');
+  }
+  // Herramientas (casco y martillo) para quien construye
+  function herramientas(p, on) {
+    if (!p.martillo) {
+      const mart = grupo(p.brazoD, 0, -.48, .06); mart.rotation.x = Math.PI / 2;
+      malla(geo('cil', .035, .035, .5, 8), '#ff8fb8', 0, .16, 0, mart);
+      malla(geo('caja', .26, .12, .12), mat('#ffd34d', { brillo: 80 }), 0, .42, 0, mart);
+      p.martillo = mart; p.casco = new THREE.Group();
+    }
+    p.martillo.visible = on; p.casco.visible = on;
+  }
+  // Quien hace la escena: un actor de mentiritas, el otro jugador (visto desde aquí) o yo mismo
+  function actorNPC() {
+    const L = crearCompa(); scene.add(L.g); let est = 'saluda', t = 0;
+    const anim = (tt, dt) => { t += dt * (est === 'camina' ? 9 : est === 'lleva' ? 8 : 3); animarPersona(L, est, t); if (est === 'sentada' || est === 'comeSentada') L.cuerpo.position.y = 0; };
+    animados.push(anim);
+    return { g: L.g, p: L, bur: L.g, set(e) { est = e; if (e === 'martillo') t = 0; }, sentar(on) { L.g.position.y = on ? -.1 : 0; }, aparece() { particulas('chispa', L.g.position.clone().setY(1.2), 18); particulas('corazon', L.g.position.clone().setY(2), 5); sonar('puf'); }, fin() { particulas('chispa', L.g.position.clone().setY(1.2), 20); particulas('corazon', L.g.position.clone().setY(2), 6); sonar('puf'); scene.remove(L.g); animados.splice(animados.indexOf(anim), 1); } };
+  }
+  function actorRemoto() {
+    otro.guion = { est: 'saluda', sent: false };
+    return { g: otro.g, p: otro.p, bur: otro.g, set(e) { if (otro && otro.guion) otro.guion.est = e; }, sentar(on) { if (otro && otro.guion) otro.guion.sent = on; }, aparece() { particulas('chispa', otro.g.position.clone().setY(1.2), 14); }, fin() { if (!otro) return; otro.guion = null; herramientas(otro.p, false); if (otro.ella) { otro.p.martillo.visible = false; } } };
+  }
+  function actorYo() {
+    const proxy = new THREE.Object3D(); proxy.position.copy(jug.pos); proxy.rotation.y = jug.ry;
+    jug.guion = { obj: proxy, est: 'saluda', sent: false };
+    return { g: proxy, p: jug.p, bur: jug.raiz, set(e) { if (jug.guion) jug.guion.est = e; }, sentar(on) { if (jug.guion) jug.guion.sent = on; }, aparece() { particulas('chispa', proxy.position.clone().setY(1.2), 14); }, fin() { jug.guion = null; if (jug.p.martillo) { jug.p.martillo.visible = false; jug.p.casco.visible = false; } acomodarVehiculo(); } };
+  }
+  // rol: 'solo' (actor de mentiritas) · 'mira' (yo veo y el otro jugador construye) · 'construye' (yo construyo la casa del otro)
+  async function escenaConstruir(i, id, rol) {
+    const C = CASAS.find(c => c.id === id);
+    const yoConstruyo = rol === 'construye';
+    const constructorEsEl = yoConstruyo ? ES_EL : !ES_EL;   // ¿quien construye es Lalito?
+    bajar(true); pintarBajar(); if (panelAbierto) cerrarPanel(); jug.sentada = null; jug.accion = null;
     modoCine(true); saltando = false;
     const T = TERRENOS[i];
-    const { g, piezas } = ponerCasa(i, id);
+    let g, piezas, casaPropia = null;
+    if (yoConstruyo) {
+      casaPropia = casasMesh[i]; if (casaPropia) casaPropia.visible = false;
+      ({ g, piezas } = crearCasa(id)); g.position.set(T.x, 0, T.z - .5); mundo.add(g);
+    } else ({ g, piezas } = ponerCasa(i, id));
     g.updateMatrixWorld(true);
     const centro = V3(T.x, 0, T.z - .5);
     const info = piezas.map(p => { const b = new THREE.Box3().setFromObject(p); const cc = b.getCenter(V3()); return { p, c: cc, y0: p.position.y, s: b.getSize(V3()) }; });
     piezas.forEach(p => { p.visible = false; });
-    // Brittani mirando
-    jug.pos.set(T.x + 4.5, 0, T.z + 10.5); mirarA(T.x, T.z); jug.estado = 'quieta';
-    // Lalito llega
-    const L = crearCompa(); L.g.position.set(T.x - 4, 0, T.z + 9); scene.add(L.g);
-    L.g.rotation.y = Math.atan2(jug.pos.x - L.g.position.x, jug.pos.z - L.g.position.z);
-    particulas('chispa', L.g.position.clone().setY(1.2), 18); particulas('corazon', L.g.position.clone().setY(2), 5); sonar('puf');
-    let estadoL = 'saluda', tL = 0;
-    const animL = (t, dt) => { tL += dt * (estadoL === 'camina' ? 9 : 3); animarPersona(L, estadoL, tL); };
-    animados.push(animL);
+    // quien mira (la dueña o el dueño de la casa)
+    const mirador = yoConstruyo ? { g: otro.g, bur: otro.g, pos: V3(T.x + 4.5, 0, T.z + 10.5) } : { g: jug.raiz, bur: jug.raiz };
+    if (!yoConstruyo) { jug.pos.set(T.x + 4.5, 0, T.z + 10.5); mirarA(T.x, T.z); }
+    const mp = yoConstruyo ? mirador.pos : jug.pos;
+    // quien construye llega
+    const A = rol === 'solo' ? actorNPC() : rol === 'mira' ? actorRemoto() : actorYo();
+    herramientas(A.p, true);
+    A.g.position.set(T.x - 4, 0, T.z + 9);
+    A.g.rotation.y = Math.atan2(mp.x - A.g.position.x, mp.z - A.g.position.z);
+    A.aparece();
     cine = { centro: V3(T.x, 1 + C.tam * .45, T.z), ang: -.75, dist: C.tam * 2.4 + 9, alto: 4 + C.tam * .5, vel: .09 };
-    burbuja(L.g, T('¡Yo te la construyo, princesa! 👷‍♂️💞', '¡Yo te la construyo, amor! 👷‍♀️💞'), 2600, 3);
+    burbuja(A.bur, constructorEsEl ? '¡Yo te la construyo, princesa! 👷‍♂️💞' : '¡Yo te la construyo, amor! 👷‍♀️💞', 2600, 3);
     await espera(1.8);
-    burbuja(jug.raiz, '¡Sí, amor! 💞', 1800);
+    burbuja(mirador.bur, '¡Sí, amor! 💞', 1800);
     const porPieza = clamp(9 / piezas.length, .45, 1);
     for (const it of info) {
-      // Lalito camina hacia la pieza
       const dir = V3(it.c.x - centro.x, 0, it.c.z - centro.z); if (dir.lengthSq() < .01) dir.set(0, 0, 1); dir.normalize();
       const destino = centro.clone().addScaledVector(dir, C.tam * .78 + 1.7);
-      const ini = L.g.position.clone();
-      estadoL = 'camina';
-      L.g.rotation.y = Math.atan2(destino.x - ini.x, destino.z - ini.z);
-      await tween(porPieza * .35, (k) => L.g.position.lerpVectors(ini, destino, k));
-      L.g.rotation.y = Math.atan2(it.c.x - destino.x, it.c.z - destino.z);
-      estadoL = 'martillo'; tL = 0;
+      const ini = A.g.position.clone();
+      A.set('camina');
+      A.g.rotation.y = Math.atan2(destino.x - ini.x, destino.z - ini.z);
+      await tween(porPieza * .35, (k) => A.g.position.lerpVectors(ini, destino, k));
+      A.g.rotation.y = Math.atan2(it.c.x - destino.x, it.c.z - destino.z);
+      A.set('martillo');
       it.p.visible = true;
       const ySub = Math.max(2.5, it.s.y * .8);
       await tween(porPieza * .6, (k) => { const e = easeBack(k); it.p.scale.setScalar(Math.max(.01, e)); it.p.position.y = it.y0 + (1 - k) * ySub; });
@@ -950,16 +991,29 @@ window.iniciarReino = function (opc = {}) {
       particulas('chispa', it.c, 4);
     }
     // ¡Lista!
-    estadoL = 'saluda';
-    L.g.rotation.y = Math.atan2(jug.pos.x - L.g.position.x, jug.pos.z - L.g.position.z);
+    A.set('saluda');
+    A.g.rotation.y = Math.atan2(mp.x - A.g.position.x, mp.z - A.g.position.z);
     sonar('fanfarria');
     tween(.6, (k) => { const s = 1 + Math.sin(k * Math.PI) * .08; g.scale.set(s, 1 / s, s); });
     particulas('confeti', V3(T.x, 6, T.z), 60); particulas('corazon', V3(T.x, 4, T.z), 14);
-    burbuja(L.g, '¡Lista tu ' + C.n.toLowerCase() + ', mi amor! 💞', 3000, 3);
-    jug.accion = { estado: 'baila', hasta: reloj + 3.2 };
+    burbuja(A.bur, '¡Lista tu ' + C.n.toLowerCase() + ', mi amor! 💞', 3000, 3);
+    if (!yoConstruyo) jug.accion = { estado: 'baila', hasta: reloj + 3.2 };
     await espera(2.6);
-    burbuja(jug.raiz, T('¡Gracias, amor! ¡Está preciosa! 💞', '¡Gracias, mi princesa! ¡Quedó increíble! 💞'), 2400);
+    burbuja(mirador.bur, constructorEsEl ? '¡Gracias, amor! ¡Está preciosa! 💞' : '¡Gracias, mi princesa! ¡Quedó increíble! 💞', 2400);
     await espera(2.2);
+    herramientas(A.p, false);
+    A.fin();
+    piezas.forEach(p => { p.visible = true; p.scale.setScalar(1); });
+    info.forEach(it => { it.p.position.y = it.y0; });
+    g.scale.setScalar(1);
+    if (yoConstruyo) {
+      // la casa era del otro: se quita y vuelve la mía
+      particulas('chispa', V3(T.x, 3, T.z), 20);
+      mundo.remove(g); if (casaPropia) casaPropia.visible = true;
+      jug.accion = null; modoCine(false);
+      cam.yaw = Math.atan2(jug.pos.x - T.x, jug.pos.z - T.z); cam.pitch = .38;
+      return;
+    }
     // La primera casa: aparece Lalito chiquito con los Dulcecitos
     if ((E.stats.casas || 0) === 1 && !E.vistoBebe && !ES_EL) {
       E.vistoBebe = true; guardar();
@@ -1001,13 +1055,7 @@ window.iniciarReino = function (opc = {}) {
       particulas('chispa', bp.clone().setY(.8), 24); sonar('puf');
       scene.remove(B.g); peques.forEach(d => { particulas('chispa', d.g.position.clone().setY(.6), 4); scene.remove(d.g); });
       animados.splice(animados.indexOf(animB), 1);
-      jug.accion = null;
     }
-    particulas('chispa', L.g.position.clone().setY(1.2), 20); particulas('corazon', L.g.position.clone().setY(2), 6); sonar('puf');
-    scene.remove(L.g); animados.splice(animados.indexOf(animL), 1);
-    piezas.forEach(p => { p.visible = true; p.scale.setScalar(1); });
-    info.forEach(it => { it.p.position.y = it.y0; });
-    g.scale.setScalar(1);
     jug.accion = null;
     modoCine(false);
     cam.yaw = Math.atan2(jug.pos.x - T.x, jug.pos.z - T.z); cam.pitch = .38;
@@ -1054,79 +1102,85 @@ window.iniciarReino = function (opc = {}) {
   async function comer(r) {
     if (cuenta(r.id) < 1 || cine) return;
     E.inv[r.id]--; stat('comido'); guardar();
-    bajar(true); pintarBajar(); levantarse && jug.sentada && levantarse();
-    modoCine(true); saltando = false;
+    bajar(true); pintarBajar(); if (jug.sentada) levantarse();
     const f = V3(Math.sin(jug.ry), 0, Math.cos(jug.ry));
     const C = jug.pos.clone().addScaledVector(f, 1.4);
     if (modo === 'dentro') { C.x = clamp(C.x, INT.x - cuarto.w / 2 + 2, INT.x + cuarto.w / 2 - 2); C.z = clamp(C.z, INT.z - cuarto.d / 2 + 2, INT.z + cuarto.d / 2 - 2); }
-    const ry = jug.ry;
+    const coop = modo === 'fuera' && otroDisponible();
+    if (coop) mandarJuntos({ t: 'escena', tipo: 'comer', r: r.id, cx: +C.x.toFixed(2), cz: +C.z.toFixed(2), ry: +jug.ry.toFixed(3) });
+    await escenaComer(r.id, C, jug.ry, coop ? 'mira' : 'solo');
+  }
+  // rol: 'solo' · 'mira' (el otro jugador me sirve) · 'sirve' (yo le sirvo al otro)
+  async function escenaComer(rid, C, ry, rol) {
+    const yoSirvo = rol === 'sirve';
+    const servidorEsEl = yoSirvo ? ES_EL : !ES_EL;
+    if (panelAbierto) cerrarPanel(); bajar(true); pintarBajar(); if (jug.sentada) levantarse(); jug.accion = null;
+    modoCine(true); saltando = false;
+    const f = V3(Math.sin(ry), 0, Math.cos(ry)), lado = V3(Math.cos(ry), 0, -Math.sin(ry));
     const mesa = crearObjeto('mesa'); mesa.position.copy(C); mesa.rotation.y = ry - Math.PI / 2; scene.add(mesa);
     mesa.scale.setScalar(.01); tween(.4, (k) => mesa.scale.setScalar(Math.max(.01, easeBack(k))));
     particulas('chispa', C.clone().setY(1), 10); sonar('puf');
     const silla = (s) => C.clone().addScaledVector(f, s * 1.25);
-    // ella se sienta
+    // quien come (la que pidió la comida) se sienta
     const pos0 = jug.pos.clone();
-    jug.pos.copy(silla(-1)); jug.ry = ry;
-    jug.sentada = { o: { ref: { ry } }, alto: .48, t: 0, comiendo: false };
-    // Lalito llega con los platos
-    const L = crearCompa(); L.casco.visible = false; L.martillo.visible = false;
-    const lejos = C.clone().addScaledVector(V3(Math.cos(ry), 0, -Math.sin(ry)), 5).addScaledVector(f, 2);
-    L.g.position.copy(lejos); scene.add(L.g);
-    particulas('chispa', lejos.clone().setY(1.2), 16); particulas('corazon', lejos.clone().setY(2), 4);
-    const plato1 = crearPlato(r.id), plato2 = crearPlato(r.id);
-    plato1.position.set(-.2, 1.08, .5); plato2.position.set(.2, 1.12, .5);
-    L.g.add(plato1, plato2);
-    let estL = 'lleva', tL = 0;
-    const anim = (t, dt) => { tL += dt * (estL === 'lleva' ? 8 : 3); animarPersona(L, estL, tL); };
-    animados.push(anim);
+    let comensal;
+    if (!yoSirvo) { jug.pos.copy(silla(-1)); jug.ry = ry; jug.sentada = { o: { ref: { ry } }, alto: .48, t: 0, comiendo: false }; comensal = { bur: jug.raiz, comer(on) { if (jug.sentada) jug.sentada.comiendo = on; } }; }
+    else comensal = { bur: otro.g, comer() { } };
+    // quien sirve llega con los platos
+    const A = rol === 'solo' ? actorNPC() : rol === 'mira' ? actorRemoto() : actorYo();
+    if (A.p.casco) { A.p.casco.visible = false; A.p.martillo.visible = false; }
+    const lejos = C.clone().addScaledVector(lado, 5).addScaledVector(f, 2);
+    A.g.position.copy(lejos); A.aparece();
+    const plato1 = crearPlato(rid), plato2 = crearPlato(rid);
+    // en el actor de mentiritas los platos van en sus manos; con jugadores de verdad, flotan frente a él
+    const portaPlatos = new THREE.Group(); scene.add(portaPlatos);
+    plato1.position.set(-.2, 1.08, .5); plato2.position.set(.2, 1.12, .5); portaPlatos.add(plato1, plato2);
+    const sigue = () => { portaPlatos.position.copy(A.g.position); portaPlatos.rotation.y = A.g.rotation.y; };
+    animados.push(sigue);
+    A.set('lleva');
     cine = { centro: C.clone().setY(1), ang: Math.atan2(-Math.cos(ry), Math.sin(ry)) + .35, dist: 5, alto: 1.9, vel: -.04 };
-    burbuja(L.g, T('¡Te traigo de comer, princesa! 💞', '¡Te traigo de comer, amor! 💞'), 2400, 2.9);
+    burbuja(A.bur, servidorEsEl ? '¡Te traigo de comer, princesa! 💞' : '¡Te traigo de comer, amor! 💞', 2400, 2.9);
     await espera(1.2);
-    // camina a la mesa (lado de ella)
-    const junto = C.clone().addScaledVector(V3(Math.cos(ry), 0, -Math.sin(ry)), .95).addScaledVector(f, -.55);
-    let a = L.g.position.clone();
-    L.g.rotation.y = Math.atan2(junto.x - a.x, junto.z - a.z);
-    await tween(1.6, (k) => L.g.position.lerpVectors(a, junto, k));
-    estL = 'quieta'; L.g.rotation.y = Math.atan2(-Math.cos(ry), Math.sin(ry));
+    const junto = C.clone().addScaledVector(lado, .95).addScaledVector(f, -.55);
+    let a = A.g.position.clone();
+    A.g.rotation.y = Math.atan2(junto.x - a.x, junto.z - a.z);
+    await tween(1.6, (k) => A.g.position.lerpVectors(a, junto, k));
+    A.set('quieta'); A.g.rotation.y = Math.atan2(-Math.cos(ry), Math.sin(ry));
     // le sirve su plato
-    L.g.remove(plato1); plato1.position.copy(C).addScaledVector(f, -.42).setY(.9); plato1.rotation.y = ry; scene.add(plato1);
+    portaPlatos.remove(plato1); plato1.position.copy(C).addScaledVector(f, -.42).setY(.9); plato1.rotation.y = ry; scene.add(plato1);
     plato1.scale.setScalar(.5); tween(.35, (k) => plato1.scale.setScalar(lerp(.5, 1, easeBack(k))));
     particulas('chispa', plato1.position, 8); sonar('pop');
-    burbuja(L.g, 'Para ti, mi amor. Hecho con mucho amor 💞', 2600, 2.9);
+    burbuja(A.bur, 'Para ti, mi amor. Hecho con mucho amor 💞', 2600, 2.9);
     await espera(1.4);
-    burbuja(jug.raiz, '¡Gracias, amor! 🥹💞', 2000);
+    burbuja(comensal.bur, '¡Gracias, amor! 🥹💞', 2000);
     await espera(1);
-    // él se sienta enfrente con su plato
-    a = L.g.position.clone(); const suSilla = silla(1);
-    estL = 'lleva'; L.g.rotation.y = Math.atan2(suSilla.x - a.x, suSilla.z - a.z);
-    await tween(1, (k) => L.g.position.lerpVectors(a, suSilla, k));
-    L.g.remove(plato2); plato2.position.copy(C).addScaledVector(f, .42).setY(.9); plato2.rotation.y = ry + Math.PI; scene.add(plato2);
-    L.g.rotation.y = ry + Math.PI; estL = 'sentado';
-    L.cuerpo.position.y = 0; L.g.position.y = -.1;
-    const animL2 = () => { if (estL === 'come') animarPersona(L, 'comeSentada', tL); else if (estL === 'sentado') animarPersona(L, 'sentada', tL); };
-    animados.push(animL2);
-    // ¡a comer juntos!
-    estL = 'come'; jug.sentada.comiendo = true;
+    // se sienta enfrente con su plato
+    a = A.g.position.clone(); const suSilla = silla(1);
+    A.set('lleva'); A.g.rotation.y = Math.atan2(suSilla.x - a.x, suSilla.z - a.z);
+    await tween(1, (k) => A.g.position.lerpVectors(a, suSilla, k));
+    portaPlatos.remove(plato2); plato2.position.copy(C).addScaledVector(f, .42).setY(.9); plato2.rotation.y = ry + Math.PI; scene.add(plato2);
+    A.g.rotation.y = ry + Math.PI; A.sentar(true); A.set('comeSentada');
+    comensal.comer(true);
     sonar('meta');
     const frases = { spaghetti: '¡Mmm! Mi spaghetti en salsa verde con milanesa 🤤', pizza: '¡Qué rica pizza! 🍕', cheetos: '*crunch crunch* ¡Mis Cheetos! 😋', dulces: '¡Dulcecitos de fresa! 🍬', pastel: '¡Qué rico pastelito! 🍰', galletas: '¡Recién horneadas! 🍪', chocolatito: 'Calientito… ☕', elote: '¡Con mucho chile! 🌽' };
-    burbuja(jug.raiz, frases[r.id] || '¡Delicioso!', 2600);
+    burbuja(comensal.bur, frases[rid] || '¡Delicioso!', 2600);
     const iv = setInterval(() => { particulas('corazon', C.clone().setY(2.2), 2); }, 450);
     await espera(2.8);
-    burbuja(L.g, T('Lo más rico es comer contigo 💞', 'Lo más rico es comer contigo, mi amor 💞'), 2600, 2.6);
+    burbuja(A.bur, servidorEsEl ? 'Lo más rico es comer contigo 💞' : 'Lo más rico es comer contigo, mi amor 💞', 2600, 2.6);
     await espera(2.8);
     clearInterval(iv);
-    // se acaba
-    tween(.5, (k) => { const e = Math.max(.01, 1 - k); plato1.children.slice(2).forEach(c => c.scale.multiplyScalar(.9)); plato2.children.slice(2).forEach(c => c.scale.multiplyScalar(.9)); });
+    tween(.5, () => { plato1.children.slice(2).forEach(c => c.scale.multiplyScalar(.9)); plato2.children.slice(2).forEach(c => c.scale.multiplyScalar(.9)); });
     await espera(.6);
-    jug.sentada.comiendo = false;
-    estL = 'saluda'; L.g.position.y = 0;
-    burbuja(L.g, '¡Te amo! 💞', 1800, 2.9);
+    comensal.comer(false);
+    A.sentar(false); A.set('saluda');
+    burbuja(A.bur, '¡Te amo! 💞', 1800, 2.9);
     await espera(1.8);
-    particulas('chispa', L.g.position.clone().setY(1.2), 18); particulas('corazon', L.g.position.clone().setY(2), 6); sonar('puf');
-    scene.remove(L.g, mesa, plato1, plato2);
-    animados.splice(animados.indexOf(anim), 1); animados.splice(animados.indexOf(animL2), 1);
-    jug.sentada = null; acomodarVehiculo();
-    jug.pos.copy(pos0);
+    animados.splice(animados.indexOf(sigue), 1);
+    scene.remove(mesa, plato1, plato2, portaPlatos);
+    particulas('chispa', C.clone().setY(1), 14);
+    A.fin();
+    if (yoSirvo) { jug.pos.copy(silla(1)).addScaledVector(lado, 1.4); }
+    else { jug.sentada = null; acomodarVehiculo(); jug.pos.copy(pos0); }
     modoCine(false);
     guardar();
   }
@@ -1594,11 +1648,13 @@ window.iniciarReino = function (opc = {}) {
     if (jug.accion && reloj > jug.accion.hasta) jug.accion = null;
     let estado = jug.accion ? jug.accion.estado : moviendo && jug.vel > .5 ? (jug.veh ? jug.veh.pose : 'camina') : jug.veh ? (jug.veh.patines ? 'quieta' : jug.veh.pose === 'pedalea' ? 'maneja' : jug.veh.pose) : 'quieta';
     if (jug.sentada) estado = jug.sentada.comiendo ? 'comeSentada' : 'sentada';
+    if (jug.guion) { jug.pos.copy(jug.guion.obj.position); jug.ry = jug.guion.obj.rotation.y; estado = jug.guion.est; }
     if (vistaBoutique) estado = 'quieta';
     const vk = jug.veh && !jug.veh.patines ? 1 : clamp(jug.vel / 6, .6, 1.4);
     if (jug.sentada && jug.sentada.comiendo) jug.t += dt * 2;
     jug.t += dt * (estado === 'camina' ? 7 * vk : estado === 'pedalea' ? 9 : estado === 'patina' ? 4 : 3);
     animarPersona(jug.p, estado, jug.t, 1); jug.estadoAct = estado;
+    if (jug.guion) jug.p.g.position.y = jug.guion.sent ? -.1 : (jug.veh ? jug.p.g.position.y : 0);
     if (jug.sentada) {
       const s = jug.sentada; s.t += dt;
       jug.p.g.position.y = s.alto - .6 + .02;
@@ -1729,6 +1785,7 @@ window.iniciarReino = function (opc = {}) {
         otro.vestir();
       }
       if (m.sent && !otro.sentada) otro.sentada = true; else if (!m.sent) otro.sentada = false;
+      otro.ocupado = !!m.c;
     } else if (m.t === 'corazon') {
       const p = otro.g.position.clone();
       particulas('corazon', p.clone().setY(2.4), 10); burbuja(otro.g, '💞💞💞', 2200, 2.7); sonar('meta');
@@ -1740,13 +1797,20 @@ window.iniciarReino = function (opc = {}) {
         particulas('corazon', p.clone().setY(2), 10); sonar('meta');
         burbuja(otro.g, m.txt || '🤗💞', 2400, 2.7);
       }
+    } else if (m.t === 'escena') {
+      if (cine || modo !== 'fuera' || otro.modo !== 'fuera') return;
+      if (jug.sentada) levantarse();
+      if (m.tipo === 'construir' && CASAS.some(c => c.id === m.id) && TERRENOS[m.i]) escenaConstruir(m.i, m.id, 'construye');
+      else if (m.tipo === 'comer' && RECETAS.some(r => r.id === m.r)) escenaComer(m.r, V3(m.cx, 0, m.cz), m.ry, 'sirve');
+    } else if (m.t === 'saltar') {
+      if (cine) saltando = true;
     } else if (m.t === 'dice') {
       burbuja(otro.g, String(m.txt || '').slice(0, 80), 2600, 2.7);
     }
   }
   function miPos() {
     const dentro = modo === 'dentro';
-    return { x: +jug.pos.x.toFixed(2), z: +jug.pos.z.toFixed(2), y: +jug.y.toFixed(2), ry: +jug.ry.toFixed(2), e: jug.estadoAct || 'quieta', v: jug.veh ? jug.veh.id : null, m: dentro ? 'dentro' + casaDentro : 'fuera', sent: !!jug.sentada, perfil: PERFIL };
+    return { x: +jug.pos.x.toFixed(2), z: +jug.pos.z.toFixed(2), y: +jug.y.toFixed(2), ry: +jug.ry.toFixed(2), e: jug.estadoAct || 'quieta', v: jug.veh ? jug.veh.id : null, m: dentro ? 'dentro' + casaDentro : 'fuera', sent: !!(jug.sentada || (jug.guion && jug.guion.sent)), c: cine ? 1 : 0, perfil: PERFIL };
   }
   if (TEMA_JUNTOS) NUBE.suscribir(TEMA_JUNTOS, recibirJuntos);
   const interOtro = { x: 0, z: 0, r: 2.6, ic: '🤗', txt: () => 'Abrazar a ' + (otro ? NOMBRES[otro.perfil] : ''), activo: () => !!otro && otro.g.visible && !jug.veh, fn: () => {
@@ -1770,6 +1834,15 @@ window.iniciarReino = function (opc = {}) {
     const mismoLugar = otro.modo === (modo === 'dentro' ? 'dentro' + casaDentro : 'fuera') && otro.modo === 'fuera';
     otro.g.visible = mismoLugar;
     $('enLinea').textContent = `👥 ${NOMBRES[otro.perfil]} ${mismoLugar ? 'está jugando' : otro.modo === 'fuera' ? 'está afuera' : 'está en su casita'}`;
+    if (otro.guion) {
+      otro.x = otro.g.position.x; otro.z = otro.g.position.z; otro.ry = otro.g.rotation.y;
+      otro.g.visible = true;
+      otro.t += dt * (otro.guion.est === 'camina' ? 9 : otro.guion.est === 'lleva' ? 8 : 3);
+      animarPersona(otro.p, otro.guion.est, otro.t, 1);
+      otro.p.g.position.y = otro.guion.sent ? -.1 : 0;
+      interOtro.x = otro.x; interOtro.z = otro.z;
+      return;
+    }
     const k = Math.min(1, dt * 12);
     // si brincó lejos (cambio de lugar), aparece directo
     if (Math.hypot(otro.tx - otro.x, otro.tz - otro.z) > 12) { otro.x = otro.tx; otro.z = otro.tz; }
