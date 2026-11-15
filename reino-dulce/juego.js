@@ -1588,7 +1588,7 @@ window.iniciarReino = function (opc = {}) {
     const donde = (k) => ITEMS[k].precio ? 'en el Mercado 🧺' : k === 'huevo' ? 'en el gallinero del huerto' : ['galleta', 'gomita'].includes(k) ? 'en el Bosque de Galleta' : k === 'azucar' ? 'en los Cristales de Azúcar' : k === 'caramelo' ? 'en la Cantera de Caramelo' : k === 'chocolate' ? 'en el Río de Chocolate' : 'en el huerto 🌽';
     const consigue = (k, n) => `Consigue ${ITEMS[k].n.toLowerCase()} ${ITEMS[k].e} ${donde(k)} (${cuenta(k)}/${n})`;
     switch (m.id) {
-      case 'm1': return `Sigue la flecha al Bosque de Galleta 🍪 (${Math.min(E.stats.galletas || 0, 6)}/6)`;
+      case 'm1': return `Ve al Bosque de Galleta 🍪 (${Math.min(E.stats.galletas || 0, 6)}/6)`;
       case 'm2': { const f = falta(CASAS[0].pide); return f ? consigue(f, CASAS[0].pide[f]) + ' para tu primera casita' : '¡Ya tienes todo! Ve a tu terreno y toca 🔨 Construir'; }
       case 'm3': { const f = falta(RECETAS[0].pide); return f ? consigue(f, RECETAS[0].pide[f]) + ' para tu spaghetti 🍝' : 'Ve a la cocinita 🍳 y prepara tu spaghetti'; }
       case 'm4': return RECETAS.some(r => cuenta(r.id)) ? 'Lleva tu comida al Mercado y véndela 🧺' : 'Cocina algo rico en la cocinita 🍳';
@@ -1689,7 +1689,7 @@ window.iniciarReino = function (opc = {}) {
     let pt = !cine && !panelAbierto ? pasoTutorial() : null;
     if (pt && interActual) pt = `Toca el botón rosa: ${interActual.txt()} ${interActual.ic}`;
     if (pt !== pasoPrev) { pasoPrev = pt; const el = $('paso'); el.hidden = !pt; if (pt) { el.textContent = pt; el.classList.remove('nuevo'); void el.offsetWidth; el.classList.add('nuevo'); } }
-    if (dg && modo === 'fuera' && !cine && !panelAbierto && !jug.accion) {
+    if (false && dg && modo === 'fuera' && !cine && !panelAbierto && !jug.accion) { // flecha desactivada (a petición)
       // si el destino está del otro lado del río, primero lleva al puente más cercano
       let tx = dg[0], tz = dg[1];
       const ladoJ = jug.pos.x < riox(jug.pos.z), ladoD = dg[0] < riox(dg[1]);
@@ -2093,7 +2093,7 @@ window.iniciarReino = function (opc = {}) {
     ['👆', 'Para mirar alrededor', 'Desliza tu dedo en el <b>lado derecho</b> para girar la cámara. Con <b>dos dedos</b> te acercas o te alejas.'],
     ['✋', 'El botón rosa', 'Cuando estés junto a algo (un árbol de galletas, una tienda, tu terreno, la cocinita…) aparece un <b>botón rosa</b> abajo a la derecha. Tócalo para recoger, construir, cocinar o entrar.'],
     ['🎒', 'Tu mochila y tus metas', 'Arriba está tu <b>mochila 🎒</b> con todo lo que juntas y compras, y tus <b>metas 📜</b>. ' + T('Cada meta trae una notita mía 💌', 'Cada meta te da monedas de premio 🪙')],
-    ['👉', '¡A jugar!', 'Sigue la <b>flecha rosa</b> en el piso y las instrucciones de abajo. Tu primera meta: juntar galletas en el Bosque de Galleta 🍪, para que te construya tu primera casita.'],
+    ['👉', '¡A jugar!', 'Sigue el <b>diamante rosa</b> que flota en el cielo y las instrucciones de abajo. Tu primera meta: juntar galletas en el Bosque de Galleta 🍪, para que te construya tu primera casita.'],
   ];
   function mostrarTutorial() {
     let i = 0; tutoAbierto = true; const el = $('tuto');
