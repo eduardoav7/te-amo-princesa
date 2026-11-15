@@ -1685,7 +1685,7 @@ window.iniciarReino = function (opc = {}) {
     else guia.visible = false;
     if (!cine) buscarInteractivo();
     // flecha y texto del tutorial
-    let pt = !cine && !panelAbierto ? pasoTutorial() : null;
+    let pt = null; // instrucciones de abajo desactivadas (a petición)
     if (pt && interActual) pt = `Toca el botón rosa: ${interActual.txt()} ${interActual.ic}`;
     if (pt !== pasoPrev) { pasoPrev = pt; const el = $('paso'); el.hidden = !pt; if (pt) { el.textContent = pt; el.classList.remove('nuevo'); void el.offsetWidth; el.classList.add('nuevo'); } }
     if (false && dg && modo === 'fuera' && !cine && !panelAbierto && !jug.accion) { // flecha desactivada (a petición)
@@ -2092,7 +2092,7 @@ window.iniciarReino = function (opc = {}) {
     ['👆', 'Para mirar alrededor', 'Desliza tu dedo en el <b>lado derecho</b> para girar la cámara.'],
     ['✋', 'El botón rosa', 'Cuando estés junto a algo (un árbol de galletas, una tienda, tu terreno, la cocinita…) aparece un <b>botón rosa</b> abajo a la derecha. Tócalo para recoger, construir, cocinar o entrar.'],
     ['🎒', 'Tu mochila y tus metas', 'Arriba está tu <b>mochila 🎒</b> con todo lo que juntas y compras, y tus <b>metas 📜</b>. ' + T('Cada meta trae una notita mía 💌', 'Cada meta te da monedas de premio 🪙')],
-    ['👉', '¡A jugar!', 'Sigue el <b>diamante rosa</b> que flota en el cielo y las instrucciones de abajo. Tu primera meta: juntar galletas en el Bosque de Galleta 🍪, para que te construya tu primera casita.'],
+    ['👉', '¡A jugar!', 'Sigue el <b>diamante rosa</b> que flota en el cielo y revisa tu meta arriba a la derecha. Tu primera meta: juntar galletas en el Bosque de Galleta 🍪, para que te construya tu primera casita.'],
   ];
   function mostrarTutorial() {
     let i = 0; tutoAbierto = true; const el = $('tuto');
