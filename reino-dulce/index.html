@@ -322,7 +322,7 @@ textarea.carta-edit { width: 100%; min-height: 160px; padding: 12px; border-radi
 <div id="tuto"><div class="tarjeta"><div class="ic">🍭</div><h3></h3><p></p><div class="puntos"></div><div class="tbtns"><button class="btn sec" id="tutoSaltar">Saltar</button><button class="btn" id="tutoSig">Siguiente ➜</button></div></div></div>
 <div id="girar"><div><div class="tel">📱</div><b>Gira tu teléfono</b><br>El Reino de Dulce se juega en horizontal 🍭</div></div>
 
-<script src="datos.js?v=15"></script>
+<script src="datos.js?v=16"></script>
 <script>
 // Carga de three.js y del juego
 (function () {
@@ -339,11 +339,11 @@ textarea.carta-edit { width: 100%; min-height: 160px; padding: 12px; border-radi
     btn.disabled = true; btn.textContent = 'Cargando el reino… 🍭';
     document.getElementById('errorCarga').hidden = true;
     try {
-      await cargar('nube.js?v=15');
+      await cargar('nube.js?v=16');
       const conexion = NUBE.conectar();
       if (!window.THREE) await cargar('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js');
-      await cargar('modelos.js?v=15');
-      await cargar('juego.js?v=15');
+      await cargar('modelos.js?v=16');
+      await cargar('juego.js?v=16');
       try { await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]); } catch (e) { }
       elegirPerfil(conexion);
     } catch (e) {
